@@ -1,0 +1,9 @@
+# Dossiers à ignorer
+
+Figures/
+Simulations/
+BackupScripts/
+
+# Fichiers à ignorer
+
+*.hdf5
