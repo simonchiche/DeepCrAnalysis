@@ -155,6 +155,6 @@ PlotHpoleVpoleEradRatiovsThetavsE(Eradice_allsims, SelDepth, title, OutputPath)
 
 
 ## Polarization
-# Write a script with histograms of the Hpole/Vpole ratio at the antenna level (1) for different simulations (zenith angles) at 10^17.5 eV 
+# Write a script with histograms of the Hpol/Vpol ratio at the antenna level (1) for different simulations (zenith angles) at 10^17.5 eV 
 # and (2) for all zenith angles but different energy bins
 ## Frequency spectra
