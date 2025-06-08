@@ -138,7 +138,7 @@ def PropagateRay(SourcePos, Xmax, depth, glevel, model):
     while(tempDepth>-depth):
         
         n1 = n(tempDepth, model)
-        print(n1)
+        #print(n1)
         RayPos = RayPos + uray*dl
         xray.append(RayPos[0])
         yray.append(RayPos[1])
