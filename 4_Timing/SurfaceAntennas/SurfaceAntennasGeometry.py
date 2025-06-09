@@ -5,11 +5,12 @@ import math
 import sys
 import os
 from Modules.ModuleSurfaceAntennas import cartesian_to_spherical_angles, GetShowerDirection, generate_footprint, PropagateRayAll, sample_points_in_polygon, getXmaxPosition, GetDantXmax, GetTransmittedFraction
-from Modules.ModulePlotSurfaceAntennas import PlotSurfaceFootprint, CompareFootprints
+from Modules.ModulePlotSurfaceAntennas import PlotSurfaceFootprint, CompareFootprints, PlotFootprintPolygons, PlotSampledFootprint, PlotTimeDelayDistribution, PlotAmplitudeDilution
 from  MainModules.PlotConfig import MatplotlibConfig
 from MainModules.ShowerClass import CreateShowerfromHDF5
 from shapely.geometry import Polygon
 # endregion
+
 
 #region Path definition
 WorkPath = os.getcwd()
@@ -45,8 +46,13 @@ footprint = \
 all_xray, all_yray, all_zray, all_nray, all_dt, all_dL =\
     PropagateRayAll(footprint, XmaxPos, 100, Shower.glevel, IceModel)
 
+# Footpint comparison and deep triggers only area
+polygon_surface = Polygon(footprint)
+ice_footprint_coords = np.column_stack((all_xray, all_yray))
+polygon_deep = Polygon(ice_footprint_coords)
+
 # Sampled positions for time and amplitude distributions
-Nsamples = 1000
+Nsamples = 5000
 footprint_samples = sample_points_in_polygon(footprint, Nsamples)
 
 all_xray_samples, all_yray_samples, all_zray_samples, all_nray_samples, all_dt_samples, all_dL_samples =\
@@ -71,36 +77,17 @@ PlotSurfaceFootprint(footprint, XmaxPos, Shower.zenith, Shower.azimuth, Save, Ba
 # Compare the surface footprint with the in-ice footprint
 CompareFootprints(footprint, Shower.zenith, Shower.azimuth, all_xray, all_yray, Save, BatchID)
 
+# Plot footprint polygons with deep trigger only fraction
+PlotFootprintPolygons(polygon_surface, polygon_deep)
 
-# Plot the sampled surface footprint
-plt.scatter(footprint_samples[:, 0], footprint_samples[:, 1], color='blue', s=1, label='Sampled points')
-plt.xlabel('x [m]')
-plt.ylabel('y [m]')
-plt.title(f'Sampled surface footprint ($\\theta$={Shower.zenith}°, $\\varphi$={Shower.azimuth}°)')
-#plt.savefig(f"{OutputPath}_SampledFootprint.pdf", bbox_inches="tight") if Save else None
-plt.show()
-#sys.exit()
+# Sampled surface footprint
+PlotSampledFootprint(footprint_samples, Shower)
 
 # Histogram of the time delay distribution
-plt.hist(np.array(all_dt_samples)*1e9, bins=10, color='sandybrown', alpha=0.7, edgecolor='black')
-plt.xlabel('Time [ns]')
-plt.ylabel('Count')
-plt.show()
+PlotTimeDelayDistribution(all_dt_samples)
 
 # Amplitude dilution scatter plot
-plt.scatter(all_xray_samples, all_yray_samples, c=DilutionFactor, cmap='jet', s=1, label='Ray paths')
-cbar = plt.colorbar()
-cbar.set_label('1/dL [$m^{-1}$]')
-plt.show()
-
-# Amplitude dilution scatter plot
-plt.scatter(all_xray_samples, all_yray_samples, c=SurfaceDeepRatio*100, cmap='jet', s=1, label='Ray paths')
-cbar = plt.colorbar()
-cbar.set_label('$[\%]$')
-plt.show()
-
-
-
+PlotAmplitudeDilution(all_xray_samples, all_yray_samples, SurfaceDeepRatio)
 
 
 

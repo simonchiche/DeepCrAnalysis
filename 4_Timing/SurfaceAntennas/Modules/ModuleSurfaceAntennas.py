@@ -265,7 +265,6 @@ def GetTransmittedFraction(XmaxPos, footprint_samples, IceModel, Shower):
         n2 = n(0, IceModel) # ice refractive index at the surface
         itheta1, phi = cartesian_to_spherical_angles(uray)
         itheta2 = np.arcsin(n1/n2*np.sin(itheta1))
-        print(itheta1*180/np.pi, itheta2*180/np.pi, "itheta1, itheta2")
 
         t_TE = 2*n1*np.cos(itheta1)/(n1*np.cos(itheta1) + n2*np.cos(itheta2))
         TransmittedFraction[i] = t_TE
