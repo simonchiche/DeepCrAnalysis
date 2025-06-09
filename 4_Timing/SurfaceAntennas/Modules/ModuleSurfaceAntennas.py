@@ -20,7 +20,7 @@ def cartesian_to_spherical_angles(uv):
     if phi < 0:
         phi += 2 * math.pi
 
-    return theta, phi
+    return np.pi-theta, phi
 
 def GetShowerDirection(theta, phi):
     """Transforme des coordonnées sphériques en cartésiennes (unit vector)."""
@@ -30,10 +30,13 @@ def GetShowerDirection(theta, phi):
         -np.cos(theta)
     ])
 
-def generate_footprint(Xmax, zenith_deg, azimuth_deg, theta_C_deg=1.0, n_rays=360):
+def generate_footprint(Shower, theta_C_deg=1.0, n_rays=360):
+
+    Xmax = Shower.xmaxpos.copy()  # Copy Xmax position from the Shower object
+    Xmax[2] = Xmax[2] - Shower.glevel  # Adjust Xmax position to ground level
     # Convert angles to radians
-    zenith = np.radians(zenith_deg)
-    azimuth = np.radians(azimuth_deg)
+    zenith = np.radians(Shower.zenith) 
+    azimuth = np.radians(Shower.azimuth) 
     theta_C = np.radians(theta_C_deg)
 
     # Direction de la gerbe (vecteur unitaire)
@@ -87,7 +90,7 @@ def n(z, model):
     if(model ==1): # Greenland
         A = 1.775
         if(z>-14.9):
-            #print(z)
+            #print("z", abs(z))
             B = -0.5019
             C =0.03247 
            
@@ -139,6 +142,7 @@ def PropagateRay(SourcePos, Xmax, depth, glevel, model):
         
         n1 = n(tempDepth, model)
         #print(n1)
+        #sys.exit()
         RayPos = RayPos + uray*dl
         xray.append(RayPos[0])
         yray.append(RayPos[1])
@@ -229,10 +233,41 @@ def getXmaxPosition(zenith, azimuth, glevel, Dxmax):
     # Calculate the unit vector in the shower direction
     print(zenith, azimuth, "zenith, azimuth")
     uv = GetShowerDirection(zenith, azimuth)
-    print(uv, "uv")
+    #print(uv, "uv")
     XmaxPosition = -uv*Dxmax  # Xmax position in the shower direction
     #print(XmaxPosition, "XmaxPosition")
     # We correct the z-coordinate to account for the ground level
     XmaxPosition[2] = XmaxPosition[2] + glevel  
             
     return XmaxPosition
+
+def GetDantXmax(footprint_samples, XmaxPos, Shower):
+    """
+    Calculate the distance from each sampled point to the Xmax position.
+    """
+    Vecz = np.ones(len(footprint_samples)) * Shower.glevel - XmaxPos[2]
+    DantXmax = np.sqrt((XmaxPos[0] - footprint_samples[:, 0])**2 + 
+                       (XmaxPos[1] - footprint_samples[:, 1])**2 + 
+                       Vecz**2)
+    return DantXmax
+
+
+def GetTransmittedFraction(XmaxPos, footprint_samples, IceModel, Shower):
+
+    TransmittedFraction = np.zeros(len(footprint_samples))
+
+    for i in range(len(footprint_samples)):
+        SourcePos = np.array([footprint_samples[i][0], footprint_samples[i][1], Shower.glevel])
+
+        uray = SourcePos- XmaxPos
+        uray = uray/np.sqrt(uray[0]**2 + uray[1]**2 + uray[2]**2)
+        n1 = 1 # air refractive index
+        n2 = n(0, IceModel) # ice refractive index at the surface
+        itheta1, phi = cartesian_to_spherical_angles(uray)
+        itheta2 = np.arcsin(n1/n2*np.sin(itheta1))
+        print(itheta1*180/np.pi, itheta2*180/np.pi, "itheta1, itheta2")
+
+        t_TE = 2*n1*np.cos(itheta1)/(n1*np.cos(itheta1) + n2*np.cos(itheta2))
+        TransmittedFraction[i] = t_TE
+    
+    return TransmittedFraction
