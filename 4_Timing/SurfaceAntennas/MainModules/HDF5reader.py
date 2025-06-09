@@ -83,8 +83,8 @@ def GetXmaxFromHdf5(HDF5filepath):
     # Ice altitude above sea level in meters
     with h5py.File(HDF5filepath, "r") as f:
         input_attrs = f["CoREAS"].attrs
-        XmaxDepth = input_attrs['DepthOfShowerMaximum']
-        XmaxDist = input_attrs['DistanceOfShowerMaximum']
+        XmaxDepth = input_attrs['DepthOfShowerMaximum']/1e2 # Convert from cm to m
+        XmaxDist = input_attrs['DistanceOfShowerMaximum']/1e2  # Convert from cm to m
     return XmaxDepth, XmaxDist
 
 

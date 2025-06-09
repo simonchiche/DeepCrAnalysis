@@ -214,3 +214,25 @@ def sample_points_in_polygon(contour_points, N):
         points.extend(accepted.tolist())
 
     return np.array(points[:N])
+
+def getXmaxPosition(zenith, azimuth, glevel, Dxmax):
+    """
+    Calculate the Xmax position based on the shower direction and distance from the ground.
+    zenith: Zenith angle in degrees
+    azimuth: Azimuth angle in degrees
+    glevel: Ground level in the ice sheet
+    Dxmax: Distance from the ground to the Xmax position in meters
+    """
+    zenith = deg2rad(zenith)
+    azimuth = deg2rad(azimuth)
+
+    # Calculate the unit vector in the shower direction
+    print(zenith, azimuth, "zenith, azimuth")
+    uv = GetShowerDirection(zenith, azimuth)
+    print(uv, "uv")
+    XmaxPosition = -uv*Dxmax  # Xmax position in the shower direction
+    #print(XmaxPosition, "XmaxPosition")
+    # We correct the z-coordinate to account for the ground level
+    XmaxPosition[2] = XmaxPosition[2] + glevel  
+            
+    return XmaxPosition

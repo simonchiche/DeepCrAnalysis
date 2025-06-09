@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def PlotSurfaceFootprint(footprint, Xmax, zenith, azimuth, Save, BatchID):
     plt.figure(figsize=(6, 6))
     plt.plot(footprint[:, 0], footprint[:, 1], label='Surface footprint', color='blue')

@@ -35,7 +35,7 @@ class Shower:
         self.xmaxdist = XmaxParam[1]
         
         
-        self.xmaxpos = [0,0,0] #XmaxPosition
+        self.xmaxpos = self.getXmaxPosition()
         self.distplane = self.get_distplane()
         self.inclination = np.arctan(Bgeo[1]/Bgeo[0])
 
@@ -50,7 +50,7 @@ class Shower:
         azimuth = azimuth*np.pi/180.0
         
         uv = np.array([np.sin(zenith)*np.cos(azimuth), \
-                       np.sin(zenith)*np.sin(azimuth), np.cos(zenith)])
+                       np.sin(zenith)*np.sin(azimuth), -np.cos(zenith)])
         
         return uv
     
@@ -694,9 +694,11 @@ class Shower:
     def getXmaxPosition(self):
         
         uv = self.showerdirection()
-        showerDistance = self.getGroundXmaxDistance()
+        showerDistance = self.xmaxdist
         XmaxPosition = -uv*showerDistance 
-        XmaxPosition[2] = XmaxPosition[2] + self.glevel  
+        XmaxPosition[2] = XmaxPosition[2] + self.glevel
+        print(self.glevel)
+        print(uv)  
                 
         return XmaxPosition
     
