@@ -15,7 +15,7 @@ from shapely.geometry import Polygon
 #region Path definition
 WorkPath = os.getcwd()
 SimDir = "DeepCrLib"  
-SimName = "Rectangle_Proton_0.0316_50_0_1"
+SimName = "Rectangle_Proton_0.0316_10_0_1"
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/"\
       + SimName + "_0.hdf5"
 BatchID = "SurfaceAntennas"
@@ -52,7 +52,7 @@ ice_footprint_coords = np.column_stack((all_xray, all_yray))
 polygon_deep = Polygon(ice_footprint_coords)
 
 # Sampled positions for time and amplitude distributions
-Nsamples = 5000
+Nsamples = 1000
 footprint_samples = sample_points_in_polygon(footprint, Nsamples)
 
 all_xray_samples, all_yray_samples, all_zray_samples, all_nray_samples, all_dt_samples, all_dL_samples =\
@@ -88,6 +88,5 @@ PlotTimeDelayDistribution(all_dt_samples)
 
 # Amplitude dilution scatter plot
 PlotAmplitudeDilution(all_xray_samples, all_yray_samples, SurfaceDeepRatio)
-
 
 

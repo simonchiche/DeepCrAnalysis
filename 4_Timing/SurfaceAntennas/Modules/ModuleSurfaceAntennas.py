@@ -128,7 +128,7 @@ def PropagateRay(SourcePos, Xmax, depth, glevel, model):
     # model: 1 for Greenland, 2 for South Pole
 
     # step size along the shower axis in m
-    dl =1 
+    dl =0.1 
     # arrays to store the x and z positions, and the refractive index
     xray, yray, zray, nray, dt, dL = [SourcePos[0]], [SourcePos[1]], [SourcePos[2]], [1], [0], [0]
     z0 = SourcePos[2]

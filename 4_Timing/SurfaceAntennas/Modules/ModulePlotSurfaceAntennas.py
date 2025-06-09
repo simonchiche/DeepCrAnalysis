@@ -54,7 +54,7 @@ def PlotFootprintPolygons(polygon_surface, polygon_deep):
     ax.set_ylabel("y [m]")
     ax.axis("equal")
     plt.grid(True)
-    plt.legend(["Surface", "Depth"])
+    plt.legend(["Surface", "100m-deep"])
     plt.text(
         0.05, 0.95,  # x and y in axes coordinates (0 to 1)
         f"Deep triggers only: {fraction_outside:.2%}",
