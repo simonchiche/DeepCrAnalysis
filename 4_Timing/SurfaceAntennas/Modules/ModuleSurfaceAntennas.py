@@ -2,6 +2,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
+from shapely.plotting import plot_polygon
 
 def cartesian_to_spherical_angles(uv):
     """
@@ -270,3 +271,13 @@ def GetTransmittedFraction(XmaxPos, footprint_samples, IceModel, Shower):
         TransmittedFraction[i] = t_TE
     
     return TransmittedFraction
+
+
+def GetDeepTriggerFrac(polygon_surface, polygon_deep):
+
+    difference = polygon_deep.difference(polygon_surface)
+    area_depth = polygon_deep.area
+    area_outside = difference.area
+    fraction_outside = area_outside / area_depth if area_depth > 0 else 0
+
+    return fraction_outside

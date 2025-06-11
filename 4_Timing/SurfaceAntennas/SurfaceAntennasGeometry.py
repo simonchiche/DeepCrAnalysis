@@ -15,7 +15,7 @@ from shapely.geometry import Polygon
 #region Path definition
 WorkPath = os.getcwd()
 SimDir = "DeepCrLib"  
-SimName = "Rectangle_Proton_0.0316_0_0_1"
+SimName = "Rectangle_Proton_0.316_0_0_1"
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/"\
       + SimName + "_0.hdf5"
 BatchID = "IndividualSufaceAntennas"
