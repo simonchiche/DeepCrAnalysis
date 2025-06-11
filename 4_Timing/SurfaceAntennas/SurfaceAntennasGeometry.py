@@ -15,10 +15,10 @@ from shapely.geometry import Polygon
 #region Path definition
 WorkPath = os.getcwd()
 SimDir = "DeepCrLib"  
-SimName = "Rectangle_Proton_0.0316_10_0_1"
+SimName = "Rectangle_Proton_0.0316_0_0_1"
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/"\
       + SimName + "_0.hdf5"
-BatchID = "SurfaceAntennas"
+BatchID = "IndividualSufaceAntennas"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 # endregion
 Save = False
@@ -71,22 +71,22 @@ SurfaceDeepRatio = DilutionFactor*TransFrac_ortho
 
 #######  PLOTS #########
 # Display the surface footprint
-Save = False
+Save = True
 # Plot the surface footprint
-PlotSurfaceFootprint(footprint, XmaxPos, Shower.zenith, Shower.azimuth, Save, BatchID)
+PlotSurfaceFootprint(footprint, Shower, Save, BatchID, OutputPath)
 # Compare the surface footprint with the in-ice footprint
-CompareFootprints(footprint, Shower.zenith, Shower.azimuth, all_xray, all_yray, Save, BatchID)
+CompareFootprints(footprint, Shower, all_xray, all_yray, Save, BatchID, OutputPath)
 
 # Plot footprint polygons with deep trigger only fraction
-PlotFootprintPolygons(polygon_surface, polygon_deep)
+PlotFootprintPolygons(polygon_surface, polygon_deep, Shower, Save, BatchID, OutputPath)
 
 # Sampled surface footprint
-PlotSampledFootprint(footprint_samples, Shower)
+PlotSampledFootprint(footprint_samples, Shower, Save, BatchID, OutputPath)
 
 # Histogram of the time delay distribution
-PlotTimeDelayDistribution(all_dt_samples)
+PlotTimeDelayDistribution(all_dt_samples, Shower, Save, BatchID, OutputPath)
 
 # Amplitude dilution scatter plot
-PlotAmplitudeDilution(all_xray_samples, all_yray_samples, SurfaceDeepRatio)
+PlotAmplitudeDilution(all_xray_samples, all_yray_samples, SurfaceDeepRatio,  Shower, Save, BatchID, OutputPath)
 
 

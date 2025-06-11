@@ -12,6 +12,7 @@ def MatplotlibConfig(WorkPath, SimDir):
             'size'   : 14}
 
     plt.rc('font', **font)
+    plt.rc('axes', titlesize=12)  
     #endregion
 
     #region Store configuration
