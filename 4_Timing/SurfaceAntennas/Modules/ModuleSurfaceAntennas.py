@@ -3,6 +3,7 @@ import math
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 from shapely.plotting import plot_polygon
+from scipy.signal import hilbert
 
 def cartesian_to_spherical_angles(uv):
     """
@@ -281,3 +282,73 @@ def GetDeepTriggerFrac(polygon_surface, polygon_deep):
     fraction_outside = area_outside / area_depth if area_depth > 0 else 0
 
     return fraction_outside
+
+def GetDeltatDistributionfromSims(Shower, selDepth):
+
+    # We extract the antenna positions
+    Pos = Shower.pos
+    # We select the surface and deep positions
+    selsurface = (Pos[:, 2] == Shower.glevel)
+    seldeep = (Pos[:, 2] == (Shower.glevel-selDepth))  # 100 m below the surface
+    Pos_surface = Pos[selsurface, :2]
+    Pos_deep = Pos[seldeep, :2]
+
+    # We select the surface and deep traces
+    Traces_C= Shower.traces_c
+    Traces_C = np.array(list(Traces_C.values()))
+    Traces_C_surface = Traces_C[selsurface]
+    Traces_C_deep = Traces_C[seldeep]
+
+    # We calculate the time delay distribution
+    tsurface = np.zeros(len(Traces_C_surface))
+    tdeep = np.zeros(len(Traces_C_deep))
+    Epeak_surface = np.zeros(len(Traces_C_surface))
+    Epeak_deep = np.zeros(len(Traces_C_deep))
+    Nlay, Nplane, Depths = Shower.GetDepths()
+    for i in range(Nplane):
+        Trace = Traces_C_surface[i]
+        # We calculate the total electric field at the surface to set a trigger condition
+        Etot_t_surface = abs(hilbert(np.sqrt(Trace[:,1]**2 + Trace[:,2]**2 + Trace[:,3]**2)))
+        Epeak_surface[i] = np.max(Etot_t_surface)
+        # We calculate the peak time of surface antennas
+        argtmax = np.argmax(Etot_t_surface)
+        tmax = Trace[argtmax, 0]
+        tsurface[i] = tmax
+
+        # We calculate the total electric field at the deep antennas to set a trigger condition
+        Trace = Traces_C_deep[i]
+        Etot_t_deep = abs(hilbert(np.sqrt(Trace[:,1]**2 + Trace[:,2]**2 + Trace[:,3]**2)))
+        Epeak_deep[i] = np.max(Etot_t_deep)
+        # We calculate the peak time of deep antennas
+        argtmax = np.argmax(Etot_t_deep)
+        tmax = Trace[argtmax, 0]
+        tdeep[i] = tmax
+
+    # Trigger conditions
+    sel_Epeak_deep = Epeak_deep > 60
+    sel_Epeak_surface = Epeak_surface > 60
+    tdeep = tdeep[sel_Epeak_deep]
+    tsurface = tsurface[sel_Epeak_surface]
+    Pos_surface = Pos_surface[sel_Epeak_surface]
+    Pos_deep = Pos_deep[sel_Epeak_deep]
+
+
+    # Among the selected triggered antennas we find the closest pairs in the (x,y) plane and calulate their time delay
+    deltat = np.zeros(len(Pos_surface))
+    for i in range(len(Pos_surface)):
+        dist_vec = Pos_surface[i] - Pos_deep
+        dist = np.sqrt(dist_vec[:, 0]**2 + dist_vec[:, 1]**2)
+        #print(min(dist), "dist")
+        arg_min_dist = np.argmin(dist)
+
+        deltat[i] = tdeep[arg_min_dist] - tsurface[i]
+    return deltat, tsurface, tdeep, Pos_surface, Pos_deep
+
+def GetMeandeltat(dt_all_sims):
+
+    mean_deltat = np.zeros(len(dt_all_sims))
+    std_deltat = np.zeros(len(dt_all_sims))
+    for i in range(len(dt_all_sims)):
+        mean_deltat[i] = np.mean(dt_all_sims[i])
+        std_deltat[i] = np.std(dt_all_sims[i])
+    return mean_deltat, std_deltat

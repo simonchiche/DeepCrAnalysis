@@ -113,3 +113,69 @@ def PlotSampledFootprint(footprint_samples,  Shower, Save, BatchID, OutputPath):
     plt.legend()
     plt.savefig(OutputPath + f"{BatchID}_SampledFootprint_E{Energy}_theta{zenith}_phi{azimuth}.pdf", bbox_inches = "tight") if Save else None
     plt.show()
+
+
+def PlotXmaxDistanceVsZenith(EnergyAll, ZenithAll, XmaxDistAll):
+    """
+    Plot the Xmax distance as a function of the zenith angle for different energies.
+    """
+    plt.figure(figsize=(10, 6))
+    Ebins = np.unique(EnergyAll)
+    for i in range(len(Ebins)):
+        sel = EnergyAll == Ebins[i]
+        arg = np.argsort(ZenithAll[sel])
+        plt.plot(ZenithAll[sel][arg], XmaxDistAll[sel][arg]/1e3, '-o', label=f"E={Ebins[i]} EeV")
+    plt.xlabel("$\\theta$ [degrees]")
+    plt.ylabel("Xmax distance [km]")
+    plt.legend()
+    plt.grid(True, linestyle='--', alpha=0.5)
+    #plt.yscale('log')
+    plt.show()
+
+def PlotDeepTriggersVsZenith(EnergyAll, ZenithAll, DeepTriggerAll):
+    """
+    Plot the deep trigger fraction as a function of the zenith angle for different energies.
+    """
+    #plt.figure(figsize=(10, 6))
+    Ebins = np.unique(EnergyAll)
+    for i in range(len(Ebins)):
+        sel = EnergyAll == Ebins[i]
+        arg = np.argsort(ZenithAll[sel])
+        plt.plot(ZenithAll[sel][arg], DeepTriggerAll[sel][arg]*100, 'o', label=f"E={Ebins[i]} EeV")
+    plt.xlabel("$\\theta$ [degrees]")
+    plt.ylabel("Deep trigger only events [$\%$]")
+    plt.legend()
+    plt.grid(True, linestyle='--', alpha=0.5)
+    #plt.yscale('log')
+    plt.show()
+
+def PlotMeanTimedelayEbin(ZenithAll, EnergyAll, meandeltat, stddeltat):
+    
+    Ebins = np.unique(EnergyAll)
+    for i in range(len(Ebins)):
+        sel = EnergyAll == Ebins[i]
+        arg = np.argsort(ZenithAll[sel])
+        plt.errorbar(ZenithAll[sel][arg], meandeltat[sel][arg]*1e9, yerr=stddeltat[sel][arg]*1e9, fmt='o', label=f"E={Ebins[i]} EeV")
+    plt.xlabel("Time delay [ns]")
+    #plt.ylabel("Count")
+    plt.legend()
+    plt.show()
+
+def PlotTimeDistributionAllsimsperEbin(ZenithAll, EnergyAll, dt_all_sims, selE):
+    
+    zenithmask = np.array([10, 28, 39, 50])
+    bins = np.linspace(350, 750, 30 + 1)
+
+    argsort = np.argsort(ZenithAll)
+
+    for i in range(len(ZenithAll[argsort])):
+        if(ZenithAll[argsort][i] not in zenithmask): continue
+        if(EnergyAll[argsort][i] != selE): continue
+        print(i)
+        dt_all_sims_sorted = [dt_all_sims[i] for i in argsort]
+
+        plt.hist(dt_all_sims_sorted[i]*1e9, bins = bins, alpha=0.7, edgecolor='black', label=f"$\\theta$={ZenithAll[argsort][i]}$^\\circ$")
+    plt.xlabel("Time delay [ns]")
+    plt.ylabel("Count")
+    plt.legend()
+    plt.show()
