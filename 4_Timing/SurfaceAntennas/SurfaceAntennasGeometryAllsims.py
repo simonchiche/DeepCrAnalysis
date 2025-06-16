@@ -51,12 +51,7 @@ for simpath in SimpathAll:
     dt_all_sims.append(deltat)
 
 
-
-    #######  PLOTS #########
-    # Display the surface footprint
     Save = False
-    # Plot the surface footprint
-
     # Histogram of the time delay distribution
     PlotTimeDelayDistribution(deltat, Shower, Save, BatchID, OutputPath)
 
@@ -66,6 +61,7 @@ EnergyAll, ZenithAll, XmaxDistAll =\
 mean_deltat, std_deltat = GetMeandeltat(dt_all_sims)
 
 
+#######  PLOTS #########
 PlotXmaxDistanceVsZenith(EnergyAll, ZenithAll, XmaxDistAll)
 PlotTimeDistributionAllsimsperEbin(ZenithAll, EnergyAll, dt_all_sims, selE=0.1)
 PlotMeanTimedelayEbin(ZenithAll, EnergyAll, mean_deltat, std_deltat)

@@ -110,6 +110,7 @@ mean_deltat, std_deltat = GetMeandeltat(dt_all_sims)
 PlotXmaxDistanceVsZenith(EnergyAll, ZenithAll, XmaxDistAll)
 PlotDeepTriggersVsZenith(EnergyAll, ZenithAll, DeepTriggerAll)
 PlotTimeDistributionAllsimsperEbin(ZenithAll, EnergyAll, dt_all_sims, selE=0.1)
+PlotMeanTimedelayEbin(ZenithAll, EnergyAll, mean_deltat, std_deltat)
 
 
 
