@@ -32,14 +32,14 @@ from scipy.optimize import curve_fit
 
 #region Path definition
 SimDir = "DeepCrLib"  #"InterpSim"
-SimName = "Rectangle_Proton_0.1_50_0_1"
+SimName = "Rectangle_Proton_0.0316_0_0_1"
 WorkPath = os.getcwd()
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/"\
       + SimName + "_0.hdf5"
-BatchID = "Log10"
+BatchID = "Proton_vs_Gamma"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
-Save = False
+Save = True
 Shower = CreateShowerfromHDF5(simpath)
 
 # =============================================================================
@@ -95,12 +95,12 @@ ExG_int, EyG_int, EzG_int, EtotG_int, peakTime = Shower.GetIntTraces(Traces_G)
 # =============================================================================
 
 # Coreas
-EfieldMap(Pos, Depths, Nplane, np.log10(EtotC_int), "In-air", \
-          True, energy, theta, OutputPath)
+EfieldMap(Pos, Depths, Nplane, np.log10(EtotC), "In-air", \
+          Save, energy, theta, OutputPath)
 
 # Geant 
-EfieldMap(Pos, Depths, Nplane, np.log10(EtotG_int+ 1), "In-ice",\
-          True, energy, theta, OutputPath)
+EfieldMap(Pos, Depths, Nplane, np.log10(EtotG+ 1), "In-ice",\
+          False, energy, theta, OutputPath)
     
 # z-component
 #EfieldMap(Pos, Depths, Nplane, np.log10(EzC_int), "Log10(Ez) CoreasHilbert", \

@@ -34,7 +34,10 @@ BatchID = "PolarDense_Erad_filtered"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
 Save = False
-SimpathAll = glob.glob("/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/*")
+#simpathfolder = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/"
+simpathfolder = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/FullDenseDeepCr/"
+
+SimpathAll = glob.glob(simpathfolder + "*")
 
 Eradair_allsims = []
 Eradice_allsims = []
@@ -58,7 +61,7 @@ for simpath in SimpathAll:
     #                                Filter
     # =============================================================================
 
-    Filter = True
+    Filter = False
     if(Filter):
         fs, lowcut, highcut = 5e9, 50e6, 1e9
         #Traces_C_filtered =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
