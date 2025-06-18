@@ -162,7 +162,7 @@ def PlotEradvsDepths(Depths, EradAllDepths):
 
     plt.scatter(Depths, EradAllDepths)
     ymin = max(EradAllDepths/3)
-    ymax = max(EradAllDepths*3)
+    ymax = max(EradAllDepths*1.5)
     plt.ylim(ymin, ymax)
     plt.xlabel("Depth [m]")
     plt.ylabel("$E_{rad}$")
