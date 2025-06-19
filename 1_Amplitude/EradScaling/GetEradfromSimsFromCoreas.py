@@ -74,8 +74,8 @@ for simpath in SimpathAll:
     #                         Radiation energy
     # =============================================================================
 
-    Eradair_allsims.append(Shower.GetEradFromSim(Traces_C))
-    #Eradice_allsims.append(Shower.GetEradFromSim(Traces_G))
+    Eradair_allsims.append(Shower.GetRadiationEnergyGeneric(Traces_C))
+    #Eradice_allsims.append(Shower.GetEradFromSGim(Traces_G))
  
 Eradair_allsims = np.concatenate(Eradair_allsims, axis =0)
 #Eradice_allsims = np.concatenate(Eradice_allsims, axis =0)

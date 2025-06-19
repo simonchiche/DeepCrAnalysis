@@ -39,7 +39,7 @@ simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/"\
 BatchID = "Proton_vs_Gamma"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
-Save = True
+Save = False
 Shower = CreateShowerfromHDF5(simpath)
 
 # =============================================================================
@@ -95,12 +95,12 @@ ExG_int, EyG_int, EzG_int, EtotG_int, peakTime = Shower.GetIntTraces(Traces_G)
 # =============================================================================
 
 # Coreas
-EfieldMap(Pos, Depths, Nplane, np.log10(EtotC), "In-air", \
+EfieldMap(Pos, Depths, Nplane, np.log10(EtotC_int), "In-air", \
           Save, energy, theta, OutputPath)
 
 # Geant 
-EfieldMap(Pos, Depths, Nplane, np.log10(EtotG+ 1), "In-ice",\
-          False, energy, theta, OutputPath)
+EfieldMap(Pos, Depths, Nplane, np.log10(EtotG+ 1), "In-ice_proton",\
+          True, energy, theta, OutputPath)
     
 # z-component
 #EfieldMap(Pos, Depths, Nplane, np.log10(EzC_int), "Log10(Ez) CoreasHilbert", \

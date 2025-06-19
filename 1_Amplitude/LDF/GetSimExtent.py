@@ -138,3 +138,6 @@ PlotMaxLDF(posx60_MaxAirLDF, posx60_MaxIceLDF, Ex60_MaxAirLDF, Ex60_MaxIceLDF, "
 PlotMaxLDF(posy60_MaxAirLDF, posy60_MaxIceLDF, Ey60_MaxAirLDF, Ey60_MaxIceLDF, "y",Depths[2], Shower, OutputPath)
 PlotMaxLDF(posx100_MaxAirLDF, posx100_MaxIceLDF, Ex100_MaxAirLDF, Ex100_MaxIceLDF, "x", Depths[4], Shower, OutputPath)
 PlotMaxLDF(posy100_MaxAirLDF, posy100_MaxIceLDF, Ey100_MaxAirLDF, Ey100_MaxIceLDF, "y",Depths[4], Shower, OutputPath)
+
+np.savetxt("ProtonLDFdataPosIce100.txt", posx100_MaxIceLDF)
+np.savetxt("ProtonLDFdataEIce100.txt",Ex100_MaxIceLDF )

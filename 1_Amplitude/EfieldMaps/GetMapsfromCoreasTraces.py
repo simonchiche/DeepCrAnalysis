@@ -40,26 +40,31 @@ from Modules.ModuleGetCoreasMaps import interpolate_rbf, GetFluence, GetRadiatio
 #region Path definition
 SimDir = "DenseDeepCr"  #"InterpSim"
 WorkPath = os.getcwd()
-BatchID = "Coreas"
+BatchID = "CoreasMapOnlyProton"
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/FullDenseDeepCr/Polar_Proton_0.316_0_0_1.hdf5" 
 #simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/Rectangle_Proton_0.316_43_0_1_0.hdf5" 
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
-Save = False
+Save = True
+
 
 Shower = CreateShowerfromHDF5(simpath)
 Shower.traces_c = GetCoreasTracesfromHDF5(simpath)
 Shower.traces_c = Traces_cgs_to_si(Shower.traces_c)
 
+energy, theta, Nant = Shower.energy, Shower.zenith, Shower.nant
+Nlay, Nplane, Depths = Shower.GetDepths()
 Filter = False
 if(Filter):
     fs, lowcut, highcut = 5e9, 50e6, 1e9
     Shower.traces_c =Shower.filter_all_traces(Shower.traces_c, fs, lowcut, highcut)
 
 ExC, EyC, EzC, EtotC, peakTime = Shower.GetIntTraces(Shower.traces_c)
-
+ExC, EyC, EzC, EtotC = Shower.GetPeakTraces(Shower.traces_c)
 # Coreas maps
-PlotCoreasMaps(Shower, EtotC)
+EfieldMap(Shower.pos, Depths, Nplane, np.log10(EtotC), "In-air", \
+          Save, energy, theta, OutputPath)
+#PlotCoreasMaps(Shower, EtotC)
 
 #Depths, EradAllDepths = Shower.GetRadiationEnergyGeneric(Shower.traces_c)
 #PlotEradvsDepths(Depths, EradAllDepths)
