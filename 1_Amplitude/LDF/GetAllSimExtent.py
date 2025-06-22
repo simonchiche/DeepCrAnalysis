@@ -212,20 +212,22 @@ plt.show()
 
 
 
-Lextentx60_air = (Lextentx100_air + Lextentx_air)/2.0
-LextentData = np.concatenate([Lextentx_air, Lextentx60_air, Lextentx100_air])
-ZenithData = np.concatenate([ZenithAll, ZenithAll, ZenithAll])
-Depth1 = np.ones(len(Lextentx_air))*Depths[0]
-Depth2 = np.ones(len(Lextentx_air))*Depths[2]
-Depth3 = np.ones(len(Lextentx_air))*Depths[4]
-DepthData = np.concatenate([Depth1, Depth2,Depth3 ])
-ExtentData = np.array([LextentData, ZenithData, DepthData]).T
+# =============================================================================
+#                         Extent tests
+# =============================================================================
 
-plt.scatter(ExtentData[:,1], ExtentData[:,0])
-plt.show()
+#Lextentx60_air = (Lextentx100_air + Lextentx_air)/2.0
+#LextentData = np.concatenate([Lextentx_air, Lextentx60_air, Lextentx100_air])
+#ZenithData = np.concatenate([ZenithAll, ZenithAll, ZenithAll])
+#Depth1 = np.ones(len(Lextentx_air))*Depths[0]
+#Depth2 = np.ones(len(Lextentx_air))*Depths[2]
+#Depth3 = np.ones(len(Lextentx_air))*Depths[4]
+#DepthData = np.concatenate([Depth1, Depth2,Depth3 ])
+#ExtentData = np.array([LextentData, ZenithData, DepthData]).T
 
-
-np.savetxt("./Data/ExtentData.txt", ExtentData)
+#plt.scatter(ExtentData[:,1], ExtentData[:,0])
+#plt.show()
+#np.savetxt("./Data/ExtentData.txt", ExtentData)
 
 
 

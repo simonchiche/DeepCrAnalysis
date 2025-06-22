@@ -19,14 +19,14 @@ def EfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, path):
         sel = (Pos[:,2] == Depths[i])
         s = 10 + 20 * (E[sel] - np.min(E)) / (np.max(E) - np.min(E))
         plt.scatter(Pos[sel,0], Pos[sel,1], \
-                    c= E[sel], cmap = "jet", s=s, edgecolors='k', linewidth=0.2)
+                    c= E[sel], cmap = "jet", s=s, edgecolors='k', linewidth=0.2, vmin = 0, vmax = 3)
         cbar = plt.colorbar()
         plt.xlabel("x [m]")
         plt.ylabel("y [m]")
         cbar.set_label("$\log_{10}(E)$ [$\mu V/m$]")
         depth =Depths[0]- Depths[i]
-        plt.xlim(-200,200)
-        plt.ylim(-200,200)
+        #plt.xlim(-200,200)
+        #plt.ylim(-200,200)
         plt.legend(["Depth = %.f m" %(depth)], loc ="upper right")
         plt.title(sim + " map (E =$%.2f\,$EeV, $\\theta=%.1f^{\circ}$)" %(energy, theta), size =14)
         plt.grid(True, linestyle='--', alpha=0.3)

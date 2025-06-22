@@ -33,13 +33,15 @@ from Modules.ModuleGetAmplitudeDistrib import GetAmplitudeDistribution
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLib"  #"InterpSim"
+SimDir = "DeepCrLibV1"  #"InterpSim"
 WorkPath = os.getcwd()
-BatchID = "Log10"
+BatchID = "LogscaleTrigger"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
+print("OutputPath: ", OutputPath)
 #endregion
 Save = False
-SimpathAll = glob.glob("/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/*")
+simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/" + SimDir
+SimpathAll = glob.glob(simpath + "/*")
 
 EnergyAll, ZenithAll, EtotAirAll, EtotIceAll, PosAll = \
     ([] for _ in range(5))
@@ -88,7 +90,7 @@ for simpath in SimpathAll:
     # We restrict the analysis to deep antennas only
     #sel = Pos[:,2] == 3116
     for lst, val in zip([EtotAirAll, EtotIceAll, EnergyAll, ZenithAll, PosAll],
-                        [EtotC_int, EtotG_int, energy, theta, Pos]):
+                        [EtotC, EtotG, energy, theta, Pos]):
         lst.append(val)
 
 
@@ -96,30 +98,33 @@ EtotAirAll, EtotIceAll, EnergyAll, ZenithAll, PosAll =\
       map(np.array, [EtotAirAll, EtotIceAll, EnergyAll, ZenithAll, PosAll])
 
 
+EnergyBins = np.sort(np.unique(EnergyAll))
 
 EtotAirAll16_5 = \
-    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, 0.0316, 3116)
+    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[0], 3116)
 
 EtotAirAll17 = \
-    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, 0.1, 3116)
+    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[1], 3116)
 
 EtotAirAll17_5 = \
-    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, 0.316, 3116)
+    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[2], 3116)
 
 EtotIceAll16_5 = \
-    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, 0.0316, 3116)
+    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[0], 3116)
 
 EtotIceAll17 = \
-    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, 0.1, 3116)
+    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[1], 3116)
 
 EtotIceAll17_5 = \
-    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, 0.316, 3116)
+    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[2], 3116)
 
 ### Plots
+
 labels=('$10^{16.5}$ eV', '$10^{17}$ eV', '$10^{17.5}$ eV')
-bin_edges = np.linspace(0, 7000, 80) 
-PlotAmplitudeDistribution(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5, bin_edges, labels)
+bin_edges = np.linspace(20,6000, 50) 
+PlotAmplitudeDistribution(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5, bin_edges, labels, True, OutputPath, "In-air", "log")
 
-bin_edges = np.linspace(0, 6000, 60) 
-PlotAmplitudeDistribution(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, bin_edges, labels, "log")
+bin_edges = np.linspace(20, 6000, 50) 
+PlotAmplitudeDistribution(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, bin_edges, labels, True, OutputPath, "In-ice", "log")
 
+print(OutputPath)

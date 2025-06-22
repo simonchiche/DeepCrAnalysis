@@ -32,7 +32,8 @@ BatchID = "Erad_filtered"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
 Save = False
-SimpathAll = glob.glob("/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/*")
+simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/" + SimDir
+SimpathAll = glob.glob(simpath + "/*")
 
 Eradair_allsims = []
 Eradice_allsims = []

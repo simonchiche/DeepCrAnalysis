@@ -31,11 +31,11 @@ from scipy.optimize import curve_fit
 #endregion
 
 #region Path definition
-SimDir =  "DeepCrLib"  #"InterpSim" #"GammaShower"
-SimName = "Rectangle_Proton_0.316_0_0_1_0"
+SimDir =  "DeepCrLibV1"  #"InterpSim" #"GammaShower"
+SimName = "Rectangle_Proton_0.316_0_0_1_0.hdf5"
 WorkPath = os.getcwd()
-simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/"\
-      + SimName + ".hdf5"
+simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/"\
++ SimDir + "/" + SimName 
 BatchID = "Log10_Interp"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion

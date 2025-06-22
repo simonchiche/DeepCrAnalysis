@@ -33,11 +33,11 @@ from scipy.signal import butter, filtfilt
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLib"  #"InterpSim"
-SimName = "Rectangle_Proton_0.316_50_0_1"
+SimDir = "DeepCrLibV1"  #"InterpSim"
+SimName = "Rectangle_Proton_0.316_50_0_1_0.hdf5"
 WorkPath = os.getcwd()
-simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/"\
-      + SimName + "_0.hdf5"
+simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/" \
++ SimDir + "/" + SimName 
 BatchID = "Linear"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion

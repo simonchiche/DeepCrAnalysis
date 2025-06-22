@@ -34,11 +34,11 @@ from Modules.ModuleSimExtent import GetRadioExtent, GetMaxLDF, GetCaracExtent
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLib"  #"InterpSim"
-SimName = "Rectangle_Proton_0.316_0_0_1"
+SimDir = "DeepCrLibV1"  #"InterpSim"
+SimName = "Rectangle_Proton_0.316_0_0_1_0.hdf5"
 WorkPath = os.getcwd()
-simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/"\
-      + SimName + "_0.hdf5"
+simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/" + SimDir + "/"\
+      + SimName 
 BatchID = ""
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
@@ -139,5 +139,5 @@ PlotMaxLDF(posy60_MaxAirLDF, posy60_MaxIceLDF, Ey60_MaxAirLDF, Ey60_MaxIceLDF, "
 PlotMaxLDF(posx100_MaxAirLDF, posx100_MaxIceLDF, Ex100_MaxAirLDF, Ex100_MaxIceLDF, "x", Depths[4], Shower, OutputPath)
 PlotMaxLDF(posy100_MaxAirLDF, posy100_MaxIceLDF, Ey100_MaxAirLDF, Ey100_MaxIceLDF, "y",Depths[4], Shower, OutputPath)
 
-np.savetxt("ProtonLDFdataPosIce100.txt", posx100_MaxIceLDF)
-np.savetxt("ProtonLDFdataEIce100.txt",Ex100_MaxIceLDF )
+#np.savetxt("ProtonLDFdataPosIce100.txt", posx100_MaxIceLDF)
+#np.savetxt("ProtonLDFdataEIce100.txt",Ex100_MaxIceLDF )

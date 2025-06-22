@@ -31,11 +31,11 @@ from scipy.optimize import curve_fit
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLib"  #"InterpSim"
-SimName = "Rectangle_Proton_0.0316_0_0_1"
+SimDir = "DeepCrLibV1"  #"InterpSim"
+SimName = "Rectangle_Proton_0.0316_0_0_1_0.hdf5"
 WorkPath = os.getcwd()
-simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/DeepCrLibV1/"\
-      + SimName + "_0.hdf5"
+simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/"\
++ SimDir + "/" + SimName 
 BatchID = "Proton_vs_Gamma"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
@@ -99,8 +99,8 @@ EfieldMap(Pos, Depths, Nplane, np.log10(EtotC_int), "In-air", \
           Save, energy, theta, OutputPath)
 
 # Geant 
-EfieldMap(Pos, Depths, Nplane, np.log10(EtotG+ 1), "In-ice_proton",\
-          True, energy, theta, OutputPath)
+EfieldMap(Pos, Depths, Nplane, np.log10(EtotG_int+ 1), "In-ice_proton",\
+          Save, energy, theta, OutputPath)
     
 # z-component
 #EfieldMap(Pos, Depths, Nplane, np.log10(EzC_int), "Log10(Ez) CoreasHilbert", \
