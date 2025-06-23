@@ -122,6 +122,7 @@ class Shower:
         ftot = np.zeros(Nant)
         fx, fy, fz = np.zeros(Nant), np.zeros(Nant), np.zeros(Nant)
         binT = round((Traces[0][1,0] -Traces[0][0,0])*1e10)/1e10
+        
 
         for i in range(Nant):
             
@@ -134,11 +135,13 @@ class Shower:
             if(maxid>len( Traces[i][:,0])): maxid =len( Traces[i][:,0])
             
             time = np.arange(0, len(Traces[i][minid:maxid,0]))*binT
+            Traces[i][:,1:] = Traces[i][:,1:]/1e6
             
-            fx[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,1]**2)), time)/1e12
-            fy[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,2]**2)), time)/1e12
-            fz[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,3]**2)), time)/1e12
-            ftot[i] = eps0*c*(fx[i] + fy[i] + fz[i])
+            fx[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,1]**2)), time)
+            fy[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,2]**2)), time)
+            fz[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,3]**2)), time)
+            ftot[i] = (fx[i] + fy[i] + fz[i])
+            Traces[i][:,1:] = Traces[i][:,1:]*1e6
         return fx, fy, fz, ftot
     
     def interpolate_rbf(self, x, y, z, grid_resolution, bounds=None, function='cubic'):
@@ -184,7 +187,9 @@ class Shower:
                 np.sum(fx[sel]*spacing**2), np.sum(fy[sel]*spacing**2),\
                 np.sum(fz[sel]*spacing**2), np.sum(ftot[sel]*spacing**2)
             
-            Eradx, Erady, Eradz, Eradtot = (x / 1e6 for x in (Eradx, Erady, Eradz, Eradtot))
+            Eradx, Erady, Eradz, Eradtot = (x / (1.6e-19) for x in (Eradx, Erady, Eradz, Eradtot))
+            Eradx, Erady, Eradz, Eradtot = (x / (1e6) for x in (Eradx, Erady, Eradz, Eradtot))
+
             Erad_all.append(np.array([Eradx, Erady, Eradz, Eradtot, Depths[k], self.energy, self.zenith]))
 
         return np.array(Erad_all)

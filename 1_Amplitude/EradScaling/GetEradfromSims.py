@@ -37,6 +37,7 @@ SimpathAll = glob.glob(simpath + "/*")
 
 Eradair_allsims = []
 Eradice_allsims = []
+Eradtot = []
 
 for simpath in SimpathAll:
     print(simpath.split("/")[-1])
@@ -70,6 +71,7 @@ for simpath in SimpathAll:
 
     Eradair_allsims.append(Shower.GetEradFromSim(Traces_C))
     Eradice_allsims.append(Shower.GetEradFromSim(Traces_G))
+    Eradtot.append(Shower.GetRadiationEnergyGeneric(Traces_C))
  
 Eradair_allsims = np.concatenate(Eradair_allsims, axis =0)
 Eradice_allsims = np.concatenate(Eradice_allsims, axis =0)
