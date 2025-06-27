@@ -71,7 +71,7 @@ class Shower:
         Nant = self.nant
         #print(Nant)
         Etot = np.zeros(Nant)
-        Ex, Ey, Ez = np.zeros(Nant), np.zeros(Nant), np.zeros(Nant)
+        Ex, Ey, Ez, peaktime = np.zeros(Nant), np.zeros(Nant), np.zeros(Nant), np.zeros(Nant)
         
         for i in range(Nant):
             
@@ -80,8 +80,11 @@ class Shower:
             Ez[i] = max(abs(Traces[i][:,3]))
             Etot[i] = max(np.sqrt((Traces[i][:,1])**2 + \
                 (Traces[i][:,2])**2 + (Traces[i][:,3])**2)) 
+            argmax = np.argmax(np.sqrt((Traces[i][:,1])**2 + \
+                (Traces[i][:,2])**2 + (Traces[i][:,3])**2))
+            peaktime[i] = Traces[i][argmax, 0]
 
-        return Ex, Ey, Ez, Etot
+        return Ex, Ey, Ez, Etot, peaktime
     
 
     def GetIntTraces(self, Traces):

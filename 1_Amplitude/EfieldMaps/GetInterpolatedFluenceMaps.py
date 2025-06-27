@@ -55,7 +55,7 @@ Nlay, Nplane, Depths = Shower.GetDepths()
 #                                Filter
 # =============================================================================
 
-Filter = True
+Filter = False
 if(Filter):
     fs, lowcut, highcut = 5e9, 50e6, 1e9
     #Traces_C_filtered =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
@@ -99,5 +99,5 @@ InterpolatedEfieldMap(Pos, Depths, Nplane, EtotC_int +1, "In-air", \
           True, energy, theta, OutputPath)
 
 # Geant
-InterpolatedEfieldMap(Pos, Depths, Nplane, EtotG_int +1, "In-ice", \
+InterpolatedEfieldMap(Pos, Depths, Nplane, EtotG +1, "In-ice", \
           True, energy, theta, OutputPath)

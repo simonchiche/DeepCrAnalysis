@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.path import Path
 from shapely.plotting import plot_polygon
 from scipy.signal import hilbert
+import sys
 
 def cartesian_to_spherical_angles(uv):
     """
@@ -325,8 +326,9 @@ def GetDeltatDistributionfromSims(Shower, selDepth):
         tdeep[i] = tmax
 
     # Trigger conditions
+    trigger = 60
     sel_Epeak_deep = Epeak_deep > 60
-    sel_Epeak_surface = Epeak_surface > 60
+    sel_Epeak_surface = Epeak_surface > 40
     tdeep = tdeep[sel_Epeak_deep]
     tsurface = tsurface[sel_Epeak_surface]
     Pos_surface = Pos_surface[sel_Epeak_surface]
@@ -339,6 +341,11 @@ def GetDeltatDistributionfromSims(Shower, selDepth):
         dist_vec = Pos_surface[i] - Pos_deep
         dist = np.sqrt(dist_vec[:, 0]**2 + dist_vec[:, 1]**2)
         #print(min(dist), "dist")
+        sel = dist_vec[:,0] > 0
+        print(np.shape(sel), "sel")
+        #sel = sel[0,:]
+        #sys.exit(sel)
+        dist[sel] = dist[sel] + 5000
         arg_min_dist = np.argmin(dist)
 
         deltat[i] = tdeep[arg_min_dist] - tsurface[i]

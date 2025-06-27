@@ -106,9 +106,10 @@ class Shower:
             
             time = np.arange(0, len(Traces[i][minid:maxid,0]))*binT
             
-            Ex[i] = simps(abs(hilbert(Traces[i][minid:maxid,1])), time)*1e9
-            Ey[i] = simps(abs(hilbert(Traces[i][minid:maxid,2])), time)*1e9
-            Ez[i] = simps(abs(hilbert(Traces[i][minid:maxid,3])), time)*1e9
+            delta_t = max(time) - min(time)
+            Ex[i] = simps(abs(hilbert(Traces[i][minid:maxid,1])), time)/delta_t
+            Ey[i] = simps(abs(hilbert(Traces[i][minid:maxid,2])), time)/delta_t
+            Ez[i] = simps(abs(hilbert(Traces[i][minid:maxid,3])), time)/delta_t
             Etot[i] = np.sqrt(Ex[i]**2 + Ey[i]**2 + Ez[i]**2)
 
         return Ex, Ey, Ez, Etot, peakTime

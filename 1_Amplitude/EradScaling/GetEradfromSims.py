@@ -124,36 +124,29 @@ PlotEradEScalingvsDepth(Eradice_allsims, Eindex, title, OutputPath)
 Eindex = 1 #E17/E16.5
 PlotEradEScalingvsDepth(Eradice_allsims, Eindex, title, OutputPath)
 
-# Air/Ice radiation energy ratio per channel vs theta and depth
-PlotAirIceEradRatiovsTheta(Eradair_allsims, Eradice_allsims, Depths, SelE, SelZen, OutputPath)
 
-# Total Air/Ice radiation energy ratio vs theta for different energy bins at fixed depth
-SelDepth = Depths[-2]
-PlotAirIceEradRatiovsThetavsE(Eradair_allsims, Eradice_allsims, SelDepth, OutputPath)
+def PlotEradtotThetaScaling(Eradair_allsims, Eradice_allsims,  Depths, SelE, SelZen, title, OutputPath):
+    #sel = (Erad_allsims[:,6] == SelZen) & (Erad_allsims[:,5] == SelE)
+    
+    for i in range(len(Depths)):
 
-# Hpole/Vpole Erad air ratio vs theta for different energy bins
-title = "In-air"
-PlotHpoleVpoleEradRatiovsThetavsE(Eradair_allsims, SelDepth, title, OutputPath)
+        sel = (Eradair_allsims[:,4] == Depths[i]) & (Eradair_allsims[:,5] == SelE)
+        
+        arg = np.argsort(Eradair_allsims[sel][:,6])
+        plt.plot(Eradair_allsims[sel][:,6][arg], Eradair_allsims[sel][:,3][arg], label ="In-air")
+        plt.plot(Eradice_allsims[sel][:,6][arg], Eradice_allsims[sel][:,3][arg], label ="In-ice")
+        plt.yscale("log")
+        #plt.ylim(min(data)/5, max(data)*5)
+        plt.ylabel("$E_{rad} \, $[MeV]")
+        plt.xlabel("Zenith [Deg.]")
+        plt.legend()
+        selDepth = 3216- Depths[i]
+        plt.title( " $E=%.2f\,$ EeV Depth =%d m" %(SelE,selDepth), fontsize =12)
+        plt.grid()
+        plt.savefig(OutputPath + "_" + title + "_vs_zenith_E%.2f_z%d.pdf" %(SelE, Depths[i]), bbox_inches = "tight")
+        plt.show()
 
-# Hpole/Vpole Erad ice ratio vs theta for different energy bins
-title = "In-ice"
-PlotHpoleVpoleEradRatiovsThetavsE(Eradice_allsims, SelDepth, title, OutputPath)
+    return
 
-# (1) Do all the plots
-# (2) Add right label, title and save
-# (3) Adapt for new sims
-
-
-
-# (1) Get the energy scaling for all depths Loop over theta: Erad2/Erad1 vs depth for air and ice emission
-# (2) Get the air to ice emission ratio vs theta for the three energies
-# (3) Get the air to ice emission ratio vs theta at 60 and 100 meters deep
-# (4) Get the Hpol (mean of Eradx and Erady) to Vpol (Eradz) ratio vs theta for the different energy bins
-
-### Beyond ###
-## Maps
-# Plot the Efield maps for the new simulations
-## Erad
-# Get the radiation energy results for the new simulations
-
-## Frequency spectra
+title ="Air_vs_Ice_vs_Theta"
+PlotEradtotThetaScaling(Eradair_allsims, Eradice_allsims, Depths, SelE, SelZen, title, OutputPath)

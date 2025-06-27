@@ -156,8 +156,8 @@ def PlotMeanTimedelayEbin(ZenithAll, EnergyAll, meandeltat, stddeltat):
         sel = EnergyAll == Ebins[i]
         arg = np.argsort(ZenithAll[sel])
         plt.errorbar(ZenithAll[sel][arg], meandeltat[sel][arg]*1e9, yerr=stddeltat[sel][arg]*1e9, fmt='o', label=f"E={Ebins[i]} EeV")
-    plt.xlabel("Time delay [ns]")
-    #plt.ylabel("Count")
+    plt.ylabel("Time delay [ns]")
+    plt.xlabel("zenith [Deg.]")
     plt.legend()
     plt.show()
 

@@ -14,20 +14,27 @@ def PlotPeakEfield(Pos, Epeak, Nlay, energy, zenith,label):
     plt.savefig(savedir + "/" + label +"_E%.3f_th%.d.pdf" %(energy, zenith), bbox_inches = "tight")
     plt.show()
 
-def PlotDumbleBumpsMaps(Pos, isDoubleBump, Nlay, energy, zenith):
+def PlotDumbleBumpsMaps(Pos, isDoubleBump, energy, zenith):
 
     savedir = "/Users/chiche/Desktop/DoublePulseMaps"
 
     Ndouble = np.sum(isDoubleBump)
 
     sel = (Pos[:,2] == 3116)
-    plt.scatter(Pos[sel,0], Pos[sel,1], c=isDoubleBump, cmap="viridis", label ="Ndouble = %.d" %Ndouble)
+    plt.scatter(Pos[sel,0], Pos[sel,1], c=isDoubleBump[sel], cmap="viridis", label ="Ndouble = %.d" %Ndouble)
     plt.xlabel("x [m]")
     plt.xlabel("y [m]")
     plt.legend()
     plt.title(r"E = %.3f EeV, $\theta=%.d^{\circ}$, |z| =100 m" %(energy, zenith))
-    plt.savefig(savedir + "/DoublePulsesMap_E%.3f_th%.d.pdf" %(energy, zenith), bbox_inches = "tight")
+    #plt.savefig(savedir + "/DoublePulsesMap_E%.3f_th%.d.pdf" %(energy, zenith), bbox_inches = "tight")
     plt.show()
+
+    PosDoubleBumps_x = Pos[sel,0][isDoubleBump[sel] == 1]
+    PosDoubleBumps_y = Pos[sel,1][isDoubleBump[sel] == 1]
+    PosDoubleBumps_z = Pos[sel,2][isDoubleBump[sel] == 1]
+    PosDoubleBumps = np.array([PosDoubleBumps_x, PosDoubleBumps_y, PosDoubleBumps_z]).T
+    print(PosDoubleBumps.shape)
+    return  PosDoubleBumps
 
 
 def PlotTrace(Time, E_t):

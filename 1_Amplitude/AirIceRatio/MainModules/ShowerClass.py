@@ -13,6 +13,8 @@ from MainModules.HDF5reader import LoadHDF5file
 from scipy.integrate import trapz, simps
 from scipy.signal import hilbert
 from scipy.signal import butter, filtfilt
+from scipy.interpolate import Rbf
+
 
 class Shower:
     
@@ -120,6 +122,7 @@ class Shower:
         ftot = np.zeros(Nant)
         fx, fy, fz = np.zeros(Nant), np.zeros(Nant), np.zeros(Nant)
         binT = round((Traces[0][1,0] -Traces[0][0,0])*1e10)/1e10
+        
 
         for i in range(Nant):
             
@@ -132,18 +135,45 @@ class Shower:
             if(maxid>len( Traces[i][:,0])): maxid =len( Traces[i][:,0])
             
             time = np.arange(0, len(Traces[i][minid:maxid,0]))*binT
+            Traces[i][:,1:] = Traces[i][:,1:]/1e6
             
-            fx[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,1]**2)), time)*1e9
-            fy[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,2]**2)), time)*1e9
-            fz[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,3]**2)), time)*1e9
-            ftot[i] = eps0*c*(fx[i] + fy[i] + fz[i])
-        print(fy,ftot)
+            fx[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,1]**2)), time)
+            fy[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,2]**2)), time)
+            fz[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,3]**2)), time)
+            ftot[i] = (fx[i] + fy[i] + fz[i])
+            Traces[i][:,1:] = Traces[i][:,1:]*1e6
         return fx, fy, fz, ftot
+    
+    def interpolate_rbf(self, x, y, z, grid_resolution, bounds=None, function='cubic'):
+        x = np.asarray(x)
+        y = np.asarray(y)
+        z = np.asarray(z)
+
+        if bounds is None:
+            xmin, xmax = x.min(), x.max()
+            ymin, ymax = y.min(), y.max()
+        else:
+            xmin, xmax, ymin, ymax = bounds
+
+        if isinstance(grid_resolution, int):
+            nx = ny = grid_resolution
+        else:
+            nx, ny = grid_resolution
+
+        grid_x, grid_y = np.meshgrid(
+            np.linspace(xmin, xmax, nx),
+            np.linspace(ymin, ymax, ny)
+        )
+
+        rbf = Rbf(x, y, z, function=function)  # function='linear', 'multiquadric', 'gaussian', etc.
+        grid_z = rbf(grid_x, grid_y)
+
+        return grid_x, grid_y, grid_z
     
 
     def GetEradFromSim(self, Traces):
 
-        Depths = self.GetDepths()[2]
+        Nlay, Nplane, Depths = self.GetDepths()
         print("Depths", Depths)
         fx, fy, fz, ftot = self.GetFluence(Traces)
         Pos = self.pos
@@ -157,10 +187,32 @@ class Shower:
                 np.sum(fx[sel]*spacing**2), np.sum(fy[sel]*spacing**2),\
                 np.sum(fz[sel]*spacing**2), np.sum(ftot[sel]*spacing**2)
             
-            Eradx, Erady, Eradz, Eradtot = (x / 1e6 for x in (Eradx, Erady, Eradz, Eradtot))
+            Eradx, Erady, Eradz, Eradtot = (x / (1.6e-19) for x in (Eradx, Erady, Eradz, Eradtot))
+            Eradx, Erady, Eradz, Eradtot = (x / (1e6) for x in (Eradx, Erady, Eradz, Eradtot))
+
             Erad_all.append(np.array([Eradx, Erady, Eradz, Eradtot, Depths[k], self.energy, self.zenith]))
 
         return np.array(Erad_all)
+    
+    def GetRadiationEnergyGeneric(self, Traces):
+        
+        Pos = self.pos
+        Nlay, Nplane, Depths = self.GetDepths()
+        fx, fy, fz, ftot = self.GetFluence(Traces)
+
+        Erad = np.zeros(len(Depths))
+        for i in range(len(Depths)):
+            sel = (Pos[:,2] == Depths[i])
+
+            grid_x, grid_y, grid_z = \
+            self.interpolate_rbf(Pos[:,0][sel], Pos[:,1][sel], ftot[sel], grid_resolution=100)            
+
+            # First, compute the integral along one axis (e.g., x), then along the other (e.g., y)
+            integral_x = trapz(grid_z, x=grid_x[0], axis=1)  # integrate over x (axis=1)
+            total_integral = trapz(integral_x, x=grid_y[:,0])  # integrate over y (axis=0)
+            Erad[i] = total_integral
+
+        return Depths, Erad
     
 
     def CombineTraces(self):

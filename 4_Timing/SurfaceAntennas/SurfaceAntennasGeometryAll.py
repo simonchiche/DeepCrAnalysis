@@ -39,7 +39,7 @@ for simpath in SimpathAll:
     ZenithAll.append(Shower.zenith)
     XmaxDistAll.append(Shower.xmaxdist)
     # Cerenkov angle in degrees
-    theta_C = 1.2 
+    theta_C = 1.2
     # footprint aperture angle in degrees
     theta_lim = 3*theta_C  
     IceModel = 1 # Greenland ice model
@@ -112,5 +112,7 @@ PlotDeepTriggersVsZenith(EnergyAll, ZenithAll, DeepTriggerAll)
 PlotTimeDistributionAllsimsperEbin(ZenithAll, EnergyAll, dt_all_sims, selE=0.1)
 PlotMeanTimedelayEbin(ZenithAll, EnergyAll, mean_deltat, std_deltat)
 
+#np.savetxt("./Data/TimeDelay.txt", np.array([ZenithAll, EnergyAll, mean_deltat, std_deltat]))
 
 
+np.savetxt("./Data/TimeDelayDistrib.txt", dt_all_sims)

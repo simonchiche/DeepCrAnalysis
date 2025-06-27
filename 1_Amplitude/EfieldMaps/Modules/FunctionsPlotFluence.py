@@ -281,7 +281,8 @@ def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, pat
         plt.figure(figsize=(6, 5))
         plt.contourf(grid_x, grid_y, grid_z, levels=100, cmap='jet')
         #plt.scatter(Pos[:729,0], Pos[:729,1], c=np.log10(EtotC_int[:729] +1), edgecolor='white', s=100)
-        plt.colorbar(label="$\log_{10}(E)$ [$\mu Vs/m$]")
+        #plt.colorbar(label="$\log_{10}(E)$ [$\mu V/m$]")
+        plt.colorbar(label="E [$\mu V/m$]")
         plt.xlabel('x [m]')
         plt.ylabel('y [m]')
   
@@ -292,6 +293,8 @@ def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, pat
                  fontsize=12, verticalalignment='top', bbox=dict(facecolor='white', alpha=0.7))
         #plt.xlim(min(grid_x), max(grid_x))
         #plt.ylim(min(grid_x), max(grid_x))
+        plt.xlim(-300,300)
+        plt.ylim(-300,300)
         if(save):
             plt.savefig\
             (path + sim + "EfieldMap_E%.2f_th%.1f_depth%1.f.pdf" \
