@@ -91,7 +91,7 @@ for simpath in SimpathAll:
     Eice_peak = Shower.GetPeakTraces(Traces_G)
     SignalProp[energy][zenith]["Eair"].append(Eair_peak)
     SignalProp[energy][zenith]["Eice"].append(Eice_peak)
-'''
+    '''
     def GetNtriggered(E, thresold1):
 
         Ex, Ey, Ez, E_tot, Time = E[0], E[1], E[2], E[3], E[4]
@@ -99,7 +99,7 @@ for simpath in SimpathAll:
         thresold_channel = thresold1/np.sqrt(3)  # For the 3 channels
 
         Ntriggeredx_air =
-'''
+    '''
     # =============================================================================
     #                          Double pulses
     # =============================================================================

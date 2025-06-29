@@ -80,13 +80,26 @@ Eradice_allsims = np.concatenate(Eradice_allsims, axis =0)
 #                             Plots
 # =============================================================================
 
-SelDepth = 3116  # Depth in meters
 # Hpole/Vpole Erad air ratio vs theta for different energy bins
-title = "In-air"
-PlotHpoleVpoleEradRatiovsThetavsE(Eradair_allsims, SelDepth, title, OutputPath)
+SelDepth = 3116  # Depth in meters
+title = "In-ice"
+PlotHpoleVpoleEradRatiovsThetavsE(Eradair_allsims, SelDepth, title, OutputPath, Save)
 
 # Hpole/Vpole Erad ice ratio vs theta for different energy bins
 title = "In-ice"
-PlotHpoleVpoleEradRatiovsThetavsE(Eradice_allsims, SelDepth, title, OutputPath)
+PlotHpoleVpoleEradRatiovsThetavsE(Eradice_allsims, SelDepth, title, OutputPath, Save)
 
 
+
+###For the proceeding only
+
+import Modules.PlotErad as PlotErad
+import importlib
+importlib.reload(PlotErad)
+
+SelDepth = 3116  # Depth in meters
+title = "In-air"
+PlotErad.PlotHpoleVpoleEradRatiovsThetavsE(Shower, Eradair_allsims, SelDepth, title, OutputPath, Save = False)
+title = "In-ice"
+PlotErad.PlotHpoleVpoleEradRatiovsThetavsE(Shower, Eradice_allsims, SelDepth, title, OutputPath, Save = False)
+# Hpole/Vpole Erad air ratio vs theta for different energy bins

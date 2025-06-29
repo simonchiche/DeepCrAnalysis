@@ -142,10 +142,10 @@ def PlotAirIceEradRatiovsThetavsE(Eradair_allsims, Eradice_allsims, SelDepth, Ou
 
     return
 
-def PlotHpoleVpoleEradRatiovsThetavsE(Erad_allsims, SelDepth, title, OutputPath):
+def PlotHpoleVpoleEradRatiovsThetavsE(Shower, Erad_allsims, SelDepth, title, OutputPath, Save):
 
-    EnergyAll = np.unique(Erad_allsims[:,5])    
-    
+    EnergyAll = np.unique(Erad_allsims[:,5])  
+    Gdeep = Shower.glevel - SelDepth  
     for i in range(len(EnergyAll)):
         sel = (Erad_allsims[:,4] == SelDepth) & (Erad_allsims[:,5] == EnergyAll[i])
         
@@ -154,15 +154,17 @@ def PlotHpoleVpoleEradRatiovsThetavsE(Erad_allsims, SelDepth, title, OutputPath)
         EradHpoleVpoleRatio_tot = EradHpole_tot/EradVpole_tot
 
         arg = np.argsort(Erad_allsims[sel][:,6])
-        plt.plot(Erad_allsims[sel][:,6][arg], EradHpoleVpoleRatio_tot[arg], label ="$E= %.2f$" %EnergyAll[i])
-    plt.yscale("log")
+        plt.plot(Erad_allsims[sel][:,6][arg], EradHpoleVpoleRatio_tot[arg], label ="$E= %.2f$ EeV" %EnergyAll[i])
+    #plt.yscale("log")
     #plt.ylim(min(data)/5, max(data)*5)
-    plt.ylabel("$E_{rad}^{hpole}/E_{rad}^{vpole}\,$[50-1000 MHz]")
+    plt.ylabel("$E_{rad}^{Hpol}/E_{rad}^{Vpol}\,$[50-1000 MHz]")
     plt.xlabel("Zenith [Deg.]")
     plt.grid()
     plt.legend()
-    plt.title(title + " |z| =%d m" %(SelDepth))
-    plt.savefig(OutputPath + "_" + title + "_Hpole_over_Vpole_vs_E_vs_zenith_z%d.pdf" %SelDepth, bbox_inches = "tight")
+    plt.ylim(0, 2.5)
+    plt.title(title + ", Depth =%d m" %(Gdeep), fontsize =12)
+    plt.savefig(OutputPath + "_" + title + "_Hpol_over_Vpol_vs_E_vs_zenith_z%d.pdf"\
+                 %SelDepth, bbox_inches = "tight") if Save else None
     plt.show()
 
     return

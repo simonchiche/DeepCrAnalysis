@@ -163,7 +163,7 @@ plt.xlabel("zenith [Deg.]")
 plt.legend()
 plt.grid()
 plt.ylim(450, 700)
-plt.savefig(OutputPath + "_MeanTimeDelay_vs_Zenith_E%.3f.pdf" %selE, bbox_inches = "tight")
+#plt.savefig(OutputPath + "_MeanTimeDelay_vs_Zenith_E%.3f.pdf" %selE, bbox_inches = "tight")
 plt.show()
 
 # Calculate the ice mean index of refraction
@@ -175,7 +175,7 @@ for i in range(len(zdepths)):
 plt.plot(zdepths, ice_index_all, label="Ice index of refraction")
 print(np.mean(ice_index_all))
 # Derive the corresponding time delay in ns
-dt_ice_model = (100*1.6/3e8)*1e9
+dt_ice_model = (100*1.605/3e8)*1e9
 print(dt_ice_model)
 
 weights = np.ones_like(Deltat_distrib_sim_E17_5_AllZeniths) / len(Deltat_distrib_sim_E17_5_AllZeniths) * 100
@@ -185,7 +185,7 @@ plt.axvline(dt_ice_model, color='#e41a1c', linestyle='--', label='$\\bar{n} \Del
 plt.xlabel("Time delay [ns]")
 plt.ylabel("Antennas perecentage [%]")
 plt.legend()
-plt.savefig(OutputPath + "_TimeDelayDistrib_E%.3f.pdf" %selE, bbox_inches = "tight")
+#plt.savefig(OutputPath + "_TimeDelayDistrib_E%.3f.pdf" %selE, bbox_inches = "tight")
 plt.show()
 
 
