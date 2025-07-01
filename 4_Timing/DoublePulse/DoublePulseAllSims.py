@@ -52,8 +52,24 @@ pulse_flags_all = dict()
 SignalProp = defaultdict(lambda: defaultdict(dict))
 EnergyAll, ZenithAll = [], []
 PosDoubleBumpsAll = []
+NtriggerAll_x, NtriggerAll_y, NtriggerAll_z, NtriggerAll = [], [], [], []
 
 k= 0
+def GetNtriggered(Epeak_air, Epeak_ice, thresold):
+    
+    Emax = np.max([Epeak_air, Epeak_ice], axis=0)
+    Ntrigger_tot = len(Emax[Emax > thresold])
+    thresold_channel =thresold / np.sqrt(3)  # Adjusted threshold for each channel
+
+    Emax_x = np.max([Epeak_air[0], Epeak_ice[0]], axis=0)
+    Emax_y = np.max([Epeak_air[1], Epeak_ice[1]], axis=0)
+    Emax_z = np.max([Epeak_air[2], Epeak_ice[2]], axis=0)
+    Ntrigger_x = len(Emax_x[Emax_x > thresold_channel])
+    Ntrigger_y = len(Emax_y[Emax_y > thresold_channel])
+    Ntrigger_z = len(Emax_z[Emax_z > thresold_channel])
+
+    return Ntrigger_x, Ntrigger_y, Ntrigger_z, Ntrigger_tot
+
 for simpath in SimpathAll:
     print(simpath)
     Shower = CreateShowerfromHDF5(simpath)
@@ -64,9 +80,13 @@ for simpath in SimpathAll:
     energy, zenith, Nant = Shower.energy, Shower.zenith, Shower.nant
     Traces_C, Traces_G, Pos = Shower.traces_c, Shower.traces_g, Shower.pos
     Nlay, Nplane, Depths = Shower.GetDepths()
+
+    # Initialization
     SignalProp[energy][zenith] = {"Eair": [], "Eice": [], "Pos": []}
+    # We skip simulations with issues
     if(zenith == 10):
         continue
+    # We focus the study on showers at 10^17.5 eV
     if(energy<0.316):
         continue
     EnergyAll.append(energy)
@@ -77,7 +97,7 @@ for simpath in SimpathAll:
     #                                Filter
     # =============================================================================
 
-    Filter = False
+    Filter = True
     if(Filter):
         fs, lowcut, highcut = 5e9, 50e6, 1e9
         Traces_C =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
@@ -89,23 +109,23 @@ for simpath in SimpathAll:
 
     Eair_peak = Shower.GetPeakTraces(Traces_C)
     Eice_peak = Shower.GetPeakTraces(Traces_G)
+    Ntrigger_x, Ntrigger_y, Ntrigger_z, Ntrigger_tot = GetNtriggered(Eair_peak, Eice_peak, thresold=100)
+    NtriggerAll_x.append(Ntrigger_x)
+    NtriggerAll_y.append(Ntrigger_y)
+    NtriggerAll_z.append(Ntrigger_z)
+    NtriggerAll.append(Ntrigger_tot)
+
     SignalProp[energy][zenith]["Eair"].append(Eair_peak)
     SignalProp[energy][zenith]["Eice"].append(Eice_peak)
-    '''
-    def GetNtriggered(E, thresold1):
+    
 
-        Ex, Ey, Ez, E_tot, Time = E[0], E[1], E[2], E[3], E[4]
-
-        thresold_channel = thresold1/np.sqrt(3)  # For the 3 channels
-
-        Ntriggeredx_air =
-    '''
+    
     # =============================================================================
     #                          Double pulses
     # =============================================================================
     
     pulse_flags_all[k]= \
-    GetDoubleBumps(Shower, Eair_peak, Eice_peak, thresold1=100, thresold2=60, Plot = False)
+    GetDoubleBumps(Shower, Eair_peak, Eice_peak, thresold1=100/np.sqrt(3), thresold2=60/np.sqrt(3), Plot = False)
     #isAirSinglePulse, isIceSinglePulse, isDoublePulse, Deltat = \
     #    (pulse_flags[key] for key in ["isAirSinglePulse", "isIceSinglePulse", "isDoublePulse", "Deltat"])
     DoublePulseFlags = pulse_flags_all[k]["isDoublePulse"]["tot"]
@@ -117,14 +137,51 @@ for simpath in SimpathAll:
     k = k + 1
     #plt.scatter(PosDoubleBumps[:,0], PosDoubleBumps[:,1])
 
+pos_dp_flat = np.concatenate(PosDoubleBumpsAll)
+x_dp = pos_dp_flat[:, 0]
+y_dp = pos_dp_flat[:, 1]
+
+xmin, xmax =-350,350
+ymin, ymax = -350, 350
+xx, yy = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
+positions = np.vstack([xx.ravel(), yy.ravel()])
+
+# KDE
+from scipy.stats import gaussian_kde
+values = np.vstack([x_dp, y_dp])
+kde = gaussian_kde(values, bw_method=0.3)  # bw_method à ajuster selon la densité
+density = kde(positions).reshape(xx.shape)
+
+# Plot
+plt.figure(figsize=(6, 5))
+density_normalized = density / np.max(density)
+plt.imshow(density_normalized.T, origin='lower', cmap="hot",
+           extent=[xmin, xmax, ymin, ymax], aspect='equal', vmin=0, vmax=1)
+plt.colorbar(label="Double pulses density")
+plt.xlabel("x [m]")
+plt.ylabel("y [m]")
+plt.title("E = 0.316 EeV, Depth = 100 m", fontsize=12)
+#plt.title(rf"Double pulse density map at $\theta = {zenith}^\circ$")
+#plt.scatter(x_all, y_all, c="white", s=5, alpha=0.3)  # All antennas in background
+plt.scatter(x_dp, y_dp, c="yellow", s=15, label="Double pulse", edgecolor="black")
+plt.legend()
+plt.savefig(OutputPath + "DoublePulseDensityMap.pdf", bbox_inches="tight")
+plt.show()
 
 
 
-Ndouble_x, Ndouble_y, Ndouble_z = np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll))
+
+
+Ndouble_x, Ndouble_y, Ndouble_z, Ndouble_tot = np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll))
 Nsingleair_x, Nsingleair_y, Nsingleair_z = np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll))
 Nsingleice_x, Nsingleice_y, Nsingleice_z = np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll))
+NtriggerAll = np.array(NtriggerAll)
+Ntrigger_All_x = np.array(NtriggerAll_x)
+Ntrigger_All_y = np.array(NtriggerAll_y)
+Ntrigger_All_z = np.array(NtriggerAll_z)
 
 i = 0
+sel = (Pos[:,2] == 3116)  # Select the 100m deep layer
 for k in range(len(EnergyAll)):
     if(ZenithAll[k] == 10):
         continue
@@ -132,17 +189,18 @@ for k in range(len(EnergyAll)):
     isAirSinglePulse, isIceSinglePulse, isDoublePulse, Deltat = \
         (pulse_flags_all[i][key] for key in ["isAirSinglePulse", "isIceSinglePulse", "isDoublePulse", "Deltat"])
         
-    Nsingleair_x[i] = np.sum(isAirSinglePulse["x"])
-    Nsingleair_y[i] = np.sum(isAirSinglePulse["y"])
-    Nsingleair_z[i] = np.sum(isAirSinglePulse["z"])
+    Nsingleair_x[i] = np.sum(np.array(isAirSinglePulse["x"])[sel])
+    Nsingleair_y[i] = np.sum(np.array(isAirSinglePulse["y"])[sel])
+    Nsingleair_z[i] = np.sum(np.array(isAirSinglePulse["z"])[sel])
 
-    Nsingleice_x[i] = np.sum(isIceSinglePulse["x"])
-    Nsingleice_y[i] = np.sum(isIceSinglePulse["y"])
-    Nsingleice_z[i] = np.sum(isIceSinglePulse["z"])
+    Nsingleice_x[i] = np.sum(np.array(isIceSinglePulse["x"])[sel])
+    Nsingleice_y[i] = np.sum(np.array(isIceSinglePulse["y"])[sel])
+    Nsingleice_z[i] = np.sum(np.array(isIceSinglePulse["z"])[sel])
 
-    Ndouble_x[i] = np.sum(isDoublePulse["x"])
-    Ndouble_y[i] = np.sum(isDoublePulse["y"])
-    Ndouble_z[i] = np.sum(isDoublePulse["z"])
+    Ndouble_x[i] = np.sum(np.array(isDoublePulse["x"])[sel])
+    Ndouble_y[i] = np.sum(np.array(isDoublePulse["y"])[sel])
+    Ndouble_z[i] = np.sum(np.array(isDoublePulse["z"])[sel])
+    Ndouble_tot[i] = np.sum(np.array(isDoublePulse["tot"])[sel])
 
     i = i + 1
 
@@ -154,27 +212,33 @@ DoubleRate_x =  Ndouble_x/Ntriggeredx
 DoubleRate_y =  Ndouble_y/Ntriggeredy
 DoubleRate_z =  Ndouble_z/Ntriggeredz
 
+DoubleRateTot = Ndouble_tot/NtriggerAll
 
-
-plt.scatter(ZenithAll, DoubleRate_x, label ="x")
-plt.scatter(ZenithAll, DoubleRate_y, label ="y")
-plt.scatter(ZenithAll, DoubleRate_z, label="z")
+plt.scatter(ZenithAll, Ndouble_tot, label ="tot")
 plt.xlabel("zenith [Deg.]")
-plt.ylabel("$N_{double}/N_{triggered}$")
+plt.ylabel("$N_{double}$")
 #plt.title("$E=10^{17.5} eV$, $th1 = 600 \, \mu Vs/m$, $th2 = 400 \, \mu Vs/m$")
 plt.legend()
 #plt.savefig("/Users/chiche/Desktop/DoubleRate_E0.316_vs_zen.pdf")
 plt.show()
 
-plt.scatter(ZenithAll, Ndouble_x, label ="x")
-plt.scatter(ZenithAll, Ndouble_y, label ="y")
-plt.scatter(ZenithAll, Ndouble_z, label="z")
+
+plt.scatter(ZenithAll, NtriggerAll, label ="tot")
 plt.xlabel("zenith [Deg.]")
 plt.ylabel("$N_{double}$")
-plt.title("$E=10^{17.5} eV$, $th1 = 600 \, \mu Vs/m$, $th2 = 400 \, \mu Vs/m$")
+#plt.title("$E=10^{17.5} eV$, $th1 = 600 \, \mu Vs/m$, $th2 = 400 \, \mu Vs/m$")
 plt.legend()
-#plt.savefig("/Users/chiche/Desktop/Ndouble_E0.316_vs_zen.pdf")
+#plt.savefig("/Users/chiche/Desktop/DoubleRate_E0.316_vs_zen.pdf")
 plt.show()
+
+plt.scatter(ZenithAll, DoubleRateTot, label ="tot")
+plt.xlabel("zenith [Deg.]")
+plt.ylabel("$N_{double}$")
+#plt.title("$E=10^{17.5} eV$, $th1 = 600 \, \mu Vs/m$, $th2 = 400 \, \mu Vs/m$")
+plt.legend()
+#plt.savefig("/Users/chiche/Desktop/DoubleRate_E0.316_vs_zen.pdf")
+plt.show()
+
 
 plt.scatter(ZenithAll, Nsingleair_x, label ="x")
 plt.scatter(ZenithAll, Nsingleair_y, label ="y")
@@ -195,6 +259,36 @@ plt.title("$E=10^{17.5} eV$, $th1 = 200 \, \mu Vs/m$, $th2 = 100 \, \mu Vs/m$")
 plt.legend()
 plt.savefig("/Users/chiche/Desktop/Ntrigice_E0.316_vs_zen_high_thresold.pdf")
 plt.show()
+
+colors = ["#0072B2", "#E69F00", "#009E73"]  # Blue, Orange, Green (colorblind-safe)
+linestyles = ["-", "--", "-."]
+
+arg = np.argsort(ZenithAll)
+plt.plot(np.array(ZenithAll)[arg], Ndouble_x[arg]/Ntrigger_All_x[arg], label ="x", color=colors[0], linestyle=linestyles[0], linewidth=2, marker='o', markersize=5)
+plt.plot(np.array(ZenithAll)[arg], Ndouble_y[arg]/Ntrigger_All_y[arg], label ="y", color=colors[1], linestyle=linestyles[1], linewidth=2, marker='o', markersize=5)
+plt.plot(np.array(ZenithAll)[arg], Ndouble_z[arg]/Ntrigger_All_z[arg], label="z", color=colors[2], linestyle=linestyles[2], linewidth=2, marker='o', markersize=5)
+plt.xlabel("Zenith [Deg.]")
+plt.ylabel(r"$N_{\mathrm{double}}/N_{\mathrm{trigger}}$")
+plt.title("$E=10^{17.5}\,$eV, Thresolds $= 100, 60 \, \mu V/m$", fontsize=12)
+plt.legend()
+plt.grid(True, which='both', linestyle=':', linewidth=0.5)
+plt.savefig(OutputPath + "DoubleRateAllchannels.pdf", bbox_inches="tight")
+plt.show()
+
+
+plt.scatter(ZenithAll, DoubleRate_x, label ="x")
+plt.scatter(ZenithAll, DoubleRate_y, label ="y")
+plt.scatter(ZenithAll, DoubleRate_z, label="z")
+plt.xlabel("zenith [Deg.]")
+plt.ylabel("$N_{double}/N_{triggered}$")
+#plt.title("$E=10^{17.5} eV$, $th1 = 600 \, \mu Vs/m$, $th2 = 400 \, \mu Vs/m$")
+plt.legend()
+#plt.savefig("/Users/chiche/Desktop/DoubleRate_E0.316_vs_zen.pdf")
+plt.show()
+
+
+
+
 
 bin_edges = np.linspace(0, 2000, 41) 
 

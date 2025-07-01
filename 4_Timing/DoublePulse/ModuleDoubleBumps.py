@@ -73,6 +73,7 @@ def GetDoubleBumps(Shower, Eall_c, Eall_g, thresold1, thresold2, Plot = False):
 
     Pos = Shower.pos
     Nantlay, Nplane, Depths = Shower.GetDepths()
+    subpos = Pos[Pos[:, 2] == Depths[4]]
 
     pulse_flags = {
         "isAirSinglePulse": {"x": [], "y": [], "z": [], "tot": []},
@@ -82,6 +83,7 @@ def GetDoubleBumps(Shower, Eall_c, Eall_g, thresold1, thresold2, Plot = False):
     }
     keys = ["x", "y", "z", "tot"]
     for i in range(len(Pos)):
+        #if(Pos[i, 2] == Depths[4]):
         ClassBumps(Eall_c, Eall_g, thresold1, thresold2, pulse_flags, i)
 
     return pulse_flags

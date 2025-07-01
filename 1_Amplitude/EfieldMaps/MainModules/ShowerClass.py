@@ -100,16 +100,17 @@ class Shower:
             peak_id = np.argmax(Etot_all)
             peakTime[i] = Traces[i][peak_id,0]
             minid = peak_id -extent
-            maxid = peak_id + extent
+            maxid = peak_id + extent -1
             if(minid<0): minid = 0
-            if(maxid>len( Traces[i][:,0])): maxid =len( Traces[i][:,0])
+            if(maxid>len( Traces[i][:,0])): maxid =len( Traces[i][:,0])-1
             
             time = np.arange(0, len(Traces[i][minid:maxid,0]))*binT
             
-            delta_t = max(time) - min(time)
-            Ex[i] = simps(abs(hilbert(Traces[i][minid:maxid,1])), time)/delta_t
-            Ey[i] = simps(abs(hilbert(Traces[i][minid:maxid,2])), time)/delta_t
-            Ez[i] = simps(abs(hilbert(Traces[i][minid:maxid,3])), time)/delta_t
+            delta_t =Traces[i][minid,0] - Traces[i][maxid,0]
+            #print(delta_t)
+            Ex[i] = simps(abs(hilbert(Traces[i][minid:maxid,1])), time)#/delta_t
+            Ey[i] = simps(abs(hilbert(Traces[i][minid:maxid,2])), time)#/delta_t
+            Ez[i] = simps(abs(hilbert(Traces[i][minid:maxid,3])), time)#/delta_t
             Etot[i] = np.sqrt(Ex[i]**2 + Ey[i]**2 + Ez[i]**2)
 
         return Ex, Ey, Ez, Etot, peakTime

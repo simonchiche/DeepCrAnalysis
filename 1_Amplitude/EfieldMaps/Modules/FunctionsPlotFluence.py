@@ -19,7 +19,7 @@ def EfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, path):
         sel = (Pos[:,2] == Depths[i])
         s = 10 + 20 * (E[sel] - np.min(E)) / (np.max(E) - np.min(E))
         plt.scatter(Pos[sel,0], Pos[sel,1], \
-                    c= E[sel], cmap = "jet", s=s, edgecolors='k', linewidth=0.2, vmin = 0, vmax = 3)
+                    c= E[sel], cmap = "jet", s=s, edgecolors='k', linewidth=0.2)
         cbar = plt.colorbar()
         plt.xlabel("x [m]")
         plt.ylabel("y [m]")
@@ -286,7 +286,9 @@ def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, pat
         plt.xlabel('x [m]')
         plt.ylabel('y [m]')
   
-        plt.title(sim + " map (E =$%.2f\,$EeV, $\\theta=%.1f^{\circ}$)" %(energy, theta), size =14)
+        #plt.title(sim + " map (E =$%.2f\,$EeV, $\\theta=%.1f^{\circ}$)" %(energy, theta), size =12)
+        plt.title(sim + " map (E =$10^{16.5}\,$eV, $\\theta=%.1f^{\circ}$)" %(theta), size =12)
+
         depth =Depths[0]- Depths[i]
         #plt.legend(["Depth = %.f m" %(depth)], loc ="upper right")
         plt.text(0.05, 0.95, f"Depth = {depth:.0f} m", transform=plt.gca().transAxes,

@@ -18,9 +18,10 @@ def PlotDumbleBumpsMaps(Pos, isDoubleBump, energy, zenith):
 
     savedir = "/Users/chiche/Desktop/DoublePulseMaps"
 
-    Ndouble = np.sum(isDoubleBump)
+    
 
     sel = (Pos[:,2] == 3116)
+    Ndouble = np.sum(isDoubleBump[sel])
     plt.scatter(Pos[sel,0], Pos[sel,1], c=isDoubleBump[sel], cmap="viridis", label ="Ndouble = %.d" %Ndouble)
     plt.xlabel("x [m]")
     plt.xlabel("y [m]")

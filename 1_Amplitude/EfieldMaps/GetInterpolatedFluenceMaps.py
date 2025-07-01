@@ -32,7 +32,7 @@ from scipy.optimize import curve_fit
 
 #region Path definition
 SimDir =  "DeepCrLibV1"  #"InterpSim" #"GammaShower"
-SimName = "Rectangle_Proton_0.316_0_0_1_0.hdf5"
+SimName = "Rectangle_Proton_0.0316_0_0_1_0.hdf5"
 WorkPath = os.getcwd()
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/"\
 + SimDir + "/" + SimName 
@@ -95,7 +95,7 @@ ExG_int, EyG_int, EzG_int, EtotG_int, peakTime = Shower.GetIntTraces(Traces_G)
 # =============================================================================
 
 # Coreas
-InterpolatedEfieldMap(Pos, Depths, Nplane, EtotC_int +1, "In-air", \
+InterpolatedEfieldMap(Pos, Depths, Nplane, EtotC_int*150 +1, "In-air", \
           True, energy, theta, OutputPath)
 
 # Geant

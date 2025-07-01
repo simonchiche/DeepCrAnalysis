@@ -174,9 +174,9 @@ def interpolate_rbf(x, y, z, grid_resolution=100, bounds=None, function='cubic')
     return grid_x, grid_y, grid_z
 
 
-fs = 5e8
+fs = 5e9
 lowcut = 10e6  # Lower bound of the frequency band in Hz (50 MHz)
-highcut = 200e6  # Upper bound of the frequency band in Hz (2000 MHz)
+highcut = 1e9  # Upper bound of the frequency band in Hz (2000 MHz)
 
 Eg_f = np.zeros(len(Traces_G))
 filtered_signal = []
@@ -220,7 +220,7 @@ for i in range(Nlay):
             %(energy, theta, depth), bbox_inches = "tight")
     plt.show()
 
-
+Save = True
 
 #Eg_f[Eg_f > 400] = np.max(Eg_f)
 Nlay = len(Depths)
@@ -229,7 +229,7 @@ for i in range(Nlay):
     #
     # s = 10 + 20 * (E[sel] - np.min(E)) / (np.max(E) - np.min(E))
     grid_x, grid_y, grid_z = \
-        interpolate_rbf(Pos[:,0][sel], Pos[:,1][sel], np.log10(E[sel]+1))
+        interpolate_rbf(Pos[:,0][sel], Pos[:,1][sel], E[sel]+1)
     
     plt.figure(figsize=(6, 5))
     plt.contourf(grid_x, grid_y, grid_z, levels=100, cmap='jet')
@@ -239,8 +239,9 @@ for i in range(Nlay):
     plt.xlabel('x [m]')
     plt.ylabel('y [m]')
     depth =Depths[0]- Depths[i]
-    plt.title("(E =$%.2f\,$EeV, $\\theta=%.1f^{\circ}$)" %(energy, theta), size =12)
-
+    plt.title("In-ice map (E =$10^{16.5}\,$eV, $\\theta=%.1f^{\circ}$)" %(theta), size =12)
+    plt.text(0.05, 0.95, f"Depth = 100 m", transform=plt.gca().transAxes,
+                 fontsize=12, verticalalignment='top', bbox=dict(facecolor='white', alpha=0.7))
     if(Save):
         plt.savefig\
         ("/Users/chiche/Desktop/" + "EfieldMap_E%.2f_th%.1f_depth%1.f.pdf" \
