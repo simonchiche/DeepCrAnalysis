@@ -127,4 +127,3 @@ PlotAmplitudeDistribution(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5, bin_edge
 bin_edges = np.linspace(20, 6000, 50) 
 PlotAmplitudeDistribution(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, bin_edges, labels, True, OutputPath, "In-ice", "log")
 
-print(OutputPath)

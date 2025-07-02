@@ -138,7 +138,7 @@ def PlotAirIceEradRatiovsThetavsE(Eradair_allsims, Eradice_allsims, SelDepth, Ou
     plt.xlabel("Zenith [Deg.]")
     plt.legend()
     #plt.title("$|z| =%d$ m" %(SelDepth))
-    plt.title("Depth = $100\,$m", fontsize=12)
+    plt.title("Depth = $%.d\,$m" %SelDepth, fontsize=12)
     plt.grid()
     plt.savefig(OutputPath + "air_ice_ratio_vs_theta_vsE_z%d.pdf" %SelDepth, bbox_inches = "tight")
     plt.show()

@@ -22,7 +22,7 @@ import scipy
 from scipy.interpolate import griddata
 from datetime import datetime
 from scipy.optimize import curve_fit
-from Modules.PlotErad import PlotEradThetaScaling, PlotEradDepthScaling, PlotEradEnergyScaling, PlotEradEScalingvsDepth,PlotAirIceEradRatiovsTheta, PlotAirIceEradRatiovsThetavsE, PlotHpoleVpoleEradRatiovsThetavsE
+from Modules.PlotErad import PlotEradThetaScaling, PlotEradDepthScaling, PlotEradEnergyScaling, PlotEradEScalingvsDepth,PlotAirIceEradRatiovsTheta, PlotAirIceEradRatiovsThetavsE, PlotHpoleVpoleEradRatiovsThetavsE, PlotEradtotThetaScaling
 #endregion
 
 #region Path definition
@@ -124,29 +124,6 @@ PlotEradEScalingvsDepth(Eradice_allsims, Eindex, title, OutputPath)
 Eindex = 1 #E17/E16.5
 PlotEradEScalingvsDepth(Eradice_allsims, Eindex, title, OutputPath)
 
-
-def PlotEradtotThetaScaling(Eradair_allsims, Eradice_allsims,  Depths, SelE, SelZen, title, OutputPath):
-    #sel = (Erad_allsims[:,6] == SelZen) & (Erad_allsims[:,5] == SelE)
-    
-    for i in range(len(Depths)):
-
-        sel = (Eradair_allsims[:,4] == Depths[i]) & (Eradair_allsims[:,5] == SelE)
-        
-        arg = np.argsort(Eradair_allsims[sel][:,6])
-        plt.plot(Eradair_allsims[sel][:,6][arg], Eradair_allsims[sel][:,3][arg], label ="In-air")
-        plt.plot(Eradice_allsims[sel][:,6][arg], Eradice_allsims[sel][:,3][arg], label ="In-ice")
-        plt.yscale("log")
-        #plt.ylim(min(data)/5, max(data)*5)
-        plt.ylabel("$E_{rad} \, $[MeV]")
-        plt.xlabel("Zenith [Deg.]")
-        plt.legend()
-        selDepth = 3216- Depths[i]
-        plt.title( " $E=%.2f\,$ EeV Depth =%d m" %(SelE,selDepth), fontsize =12)
-        plt.grid()
-        plt.savefig(OutputPath + "_" + title + "_vs_zenith_E%.2f_z%d.pdf" %(SelE, Depths[i]), bbox_inches = "tight")
-        plt.show()
-
-    return
 
 title ="Air_vs_Ice_vs_Theta"
 PlotEradtotThetaScaling(Eradair_allsims, Eradice_allsims, Depths, SelE, SelZen, title, OutputPath)

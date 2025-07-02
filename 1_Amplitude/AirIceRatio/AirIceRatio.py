@@ -81,22 +81,11 @@ Eradice_allsims = np.concatenate(Eradice_allsims, axis =0)
 # =============================================================================
 
 
-
-
 SelE = 0.316
 SelZen = 0.0
 SelDepth = 3116
 
 # Air/Ice radiation energy ratio per channel vs theta and depth
 PlotAirIceEradRatiovsTheta(Eradair_allsims, Eradice_allsims, Depths, SelE, SelZen, OutputPath)
-
-import Modules.PlotErad as PlotErad
-import importlib
-importlib.reload(PlotErad)
-
-
-# Total Air/Ice radiation energy ratio vs theta for different energy bins at fixed depth
-SelDepth = Depths[-2]
-PlotErad.PlotAirIceEradRatiovsThetavsE(Eradair_allsims, Eradice_allsims, SelDepth, OutputPath)
-
+PlotAirIceEradRatiovsThetavsE(Eradair_allsims, Eradice_allsims, SelDepth, OutputPath)
 

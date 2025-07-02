@@ -30,6 +30,7 @@ from datetime import datetime
 from scipy.optimize import curve_fit
 from scipy.signal import butter, filtfilt
 from Modules.ModuleSimExtent import GetRadioExtent, GetMaxLDF, GetCaracExtent
+from Modules.ModulePlotLDFs import PlotAllAirLdfs, PlotAllIceLdfs
 ##from Modules.Fluence.FunctionsRadiationEnergy import GetFluence, GetRadiationEnergy
 #endregion
 
@@ -134,41 +135,13 @@ for simpath in SimpathAll:
         lst.append(val)
 
 
-
 posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceLDFAll, EnergyAll, ZenithAll = \
 map(np.array, [posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceLDFAll, EnergyAll, ZenithAll])
 
-selE = np.where(EnergyAll == 0.316)
-print(selE)
-
-posx_MaxAirLDF_sel = posx_MaxAirLDFAll[selE]
-posx_MaxIceLDF_sel = posx_MaxIceLDFAll[selE]
-Ex_MaxAirLDF_sel = Ex_MaxAirLDFAll[selE]
-Ex_MaxIceLDF_sel = Ex_MaxIceLDFAll[selE]
+selE = 0.316
+selDepth = 100
+PlotAllAirLdfs(posx_MaxAirLDFAll, Ex_MaxAirLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Air", OutputPath, Save=False)
+PlotAllIceLdfs(posx_MaxIceLDFAll, Ex_MaxIceLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Ice", OutputPath, Save=False)
 
 
-for i in range(len(posx_MaxAirLDF_sel)):
-
-    plt.plot(posx_MaxAirLDF_sel[i][:, 0], Ex_MaxAirLDF_sel[i], "-", label="$\\theta = %.d^{\circ}$" %(ZenithAll[selE][i]), linewidth=2.5)
-
-plt.xlabel("Position [m]")
-plt.ylabel("$E_{tot}^{peak}$ [$\mu$V/m]")
-plt.title("In-air, E=%.2f EeV, Depth =$100\,m$" % (EnergyAll[selE][0],))
-plt.legend()
-plt.grid()
-plt.savefig(OutputPath + "LDF_Air_E%.2f_Detph100.pdf" % (EnergyAll[selE][0]), bbox_inches="tight")
-plt.show()
-
-for i in range(len(posx_MaxIceLDF_sel)):
-
-    plt.plot(posx_MaxIceLDF_sel[i][:, 0], Ex_MaxIceLDF_sel[i], "-", label="$\\theta = %.d^{\circ}$" %(ZenithAll[selE][i]), linewidth=2.5)
-
-plt.xlabel("Position [m]")
-plt.ylabel("$E_{tot}^{peak}$ [$\mu$V/m]")
-plt.title("In-ice, E=%.2f EeV, Depth =$100\,m$" % (EnergyAll[selE][0],))
-plt.legend()
-plt.grid()
-plt.xlim(-400, 400)
-plt.savefig(OutputPath + "LDF_Ice_E%.2f_Detph100.pdf" % (EnergyAll[selE][0]), bbox_inches="tight")
-plt.show()
 

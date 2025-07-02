@@ -95,9 +95,10 @@ ExG_int, EyG_int, EzG_int, EtotG_int, peakTime = Shower.GetIntTraces(Traces_G)
 # =============================================================================
 
 # Coreas
-InterpolatedEfieldMap(Pos, Depths, Nplane, EtotC_int*150 +1, "In-air", \
-          True, energy, theta, OutputPath)
+InterpolatedEfieldMap(Pos, Depths, Nplane, EtotC_int, "In-air", \
+          False, energy, theta, OutputPath)
 
 # Geant
-InterpolatedEfieldMap(Pos, Depths, Nplane, EtotG +1, "In-ice", \
-          True, energy, theta, OutputPath)
+InterpolatedEfieldMap(Pos, Depths, Nplane, EtotG, "In-ice", \
+          False, energy, theta, OutputPath)
+
