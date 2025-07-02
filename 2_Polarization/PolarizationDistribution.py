@@ -90,8 +90,8 @@ for simpath in SimpathAll:
     HVratioAir = (np.array(ExC_int) + np.array(EyC_int))/(2*np.array(EzC_int))
     HVratioIce = (np.array(ExG_int) + np.array(EyG_int))/(2*np.array(EzG_int))
 
-    HVratioAir=HVratioAir[~np.isnan]
-    HVratioIce=HVratioIce[~np.isnan]
+    HVratioAir[~np.isnan(HVratioAir)]
+    HVratioIce[~np.isnan(HVratioIce)]
     for lst, val in zip([HVratioAirAll, HVratioIceAll, ExAirAll, EyAirAll, EzAirAll,  ExIceAll, EyIceAll, EzIceAll, EnergyAll, ZenithAll, PosAll],
                         [HVratioAir, HVratioIce, ExC_int, EyC_int, EzC_int, ExG_int, EyG_int, EzG_int, energy, theta, Pos]):
         lst.append(val)
@@ -112,7 +112,7 @@ for i in range(len(ZenithBins)):
     bin_edges = np.linspace(0, 10, 80) 
 
     plt.hist(HVratiozen_air, bin_edges, alpha=0.6, edgecolor='black')
-    plt.xlabel('Hpole/Vpole')
+    plt.xlabel('Hpol/Vpol')
     plt.ylabel('Nant')
     #plt.xlim(0,2000)
     plt.legend()
@@ -121,11 +121,11 @@ for i in range(len(ZenithBins)):
     plt.axvline(x=1, color='red', linestyle='--', linewidth=2)
     #plt.title("In-air emission")
     plt.title(r"In-air, $\theta =%.d^{\circ}$" %ZenithBins[i])
-    plt.savefig("/Users/chiche/Desktop/HVratio/InAirFilteredHVratio_zen%.d.pdf" %ZenithBins[i], bbox_inches="tight")
+    plt.savefig(OutputPath + "InAirFilteredHVratio_zen%.d.pdf" %ZenithBins[i], bbox_inches="tight") if Save else None
     plt.show()
 
     plt.hist(HVratiozen_ice, bin_edges, alpha=0.6, edgecolor='black')
-    plt.xlabel('Hpole/Vpole')
+    plt.xlabel('Hpol/Vpol')
     plt.ylabel('Nant')
     #plt.xlim(0,2000)
     plt.legend()
@@ -134,7 +134,7 @@ for i in range(len(ZenithBins)):
     plt.axvline(x=1, color='red', linestyle='--', linewidth=2)
     #plt.title("In-air emission")
     plt.title(r"In-ice, $\theta =%.d^{\circ}$" %ZenithBins[i])
-    plt.savefig("/Users/chiche/Desktop/HVratio/InIceFilteredHVratio_zen%.d.pdf" %ZenithBins[i], bbox_inches="tight")
+    plt.savefig(OutputPath + "InIceFilteredHVratio_zen%.d.pdf" %ZenithBins[i], bbox_inches="tight") if Save else None
     plt.show()
     
 
@@ -173,7 +173,7 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.axvline(x=1, color='red', linestyle='--', linewidth=2)
 plt.title("In-air emission")
 #plt.title(r"In-air, $\theta =0^{\circ}$, $E=10^{17.5} eV$")
-plt.savefig("/Users/chiche/Desktop/InAirFilteredHVratio.pdf", bbox_inches="tight")
+plt.savefig(OutputPath + "InAirFilteredHVratio.pdf", bbox_inches="tight") if Save else None
 plt.show()
 
 plt.hist(EtotIceAll16_5, bin_edges, alpha=0.6, edgecolor='black', label=labels[0])
@@ -188,11 +188,12 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.axvline(x=1, color='red', linestyle='--', linewidth=2)
 plt.title("In-ice emission")
 #plt.title(r"In-air, $\theta =0^{\circ}$, $E=10^{17.5} eV$")
-plt.savefig("/Users/chiche/Desktop/InIceFilteredHVratio.pdf", bbox_inches="tight")
+plt.savefig(OutputPath + "InIceFilteredHVratio.pdf", bbox_inches="tight") if Save else None
 plt.show()
 
 PlotAmplitudeDistribution(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5, bin_edges, labels)
 
 bin_edges = np.linspace(0, 10, 60) 
 PlotAmplitudeDistribution(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, bin_edges, labels, "log")
+
 
