@@ -127,3 +127,4 @@ PlotEradEScalingvsDepth(Eradice_allsims, Eindex, title, OutputPath)
 
 title ="Air_vs_Ice_vs_Theta"
 PlotEradtotThetaScaling(Eradair_allsims, Eradice_allsims, Depths, SelE, SelZen, title, OutputPath)
+

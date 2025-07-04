@@ -6,6 +6,7 @@ import os
 #from Modules.Fluence.FunctionsGetFluence import LoadTraces
 from ModulePlotDumbleBumps import PlotTrace, PlotDoubleBumpTrace
 import sys
+from scipy.stats import gaussian_kde
 
 def LoadSimulation(SimDataPath):
 
@@ -87,3 +88,85 @@ def GetDoubleBumps(Shower, Eall_c, Eall_g, thresold1, thresold2, Plot = False):
         ClassBumps(Eall_c, Eall_g, thresold1, thresold2, pulse_flags, i)
 
     return pulse_flags
+
+def GetNtriggered(Epeak_air, Epeak_ice, thresold):
+    
+    Emax = np.max([Epeak_air, Epeak_ice], axis=0)
+    Ntrigger_tot = len(Emax[Emax > thresold])
+    thresold_channel =thresold / np.sqrt(3)  # Adjusted threshold for each channel
+
+    Emax_x = np.max([Epeak_air[0], Epeak_ice[0]], axis=0)
+    Emax_y = np.max([Epeak_air[1], Epeak_ice[1]], axis=0)
+    Emax_z = np.max([Epeak_air[2], Epeak_ice[2]], axis=0)
+    Ntrigger_x = len(Emax_x[Emax_x > thresold_channel])
+    Ntrigger_y = len(Emax_y[Emax_y > thresold_channel])
+    Ntrigger_z = len(Emax_z[Emax_z > thresold_channel])
+
+    return Ntrigger_x, Ntrigger_y, Ntrigger_z, Ntrigger_tot
+
+def GetDoublePulsesMap(PosDoubleBumpsAll):
+        # KDE
+    from scipy.stats import gaussian_kde
+    pos_dp_flat = np.concatenate(PosDoubleBumpsAll)
+    x_dp = pos_dp_flat[:, 0]
+    y_dp = pos_dp_flat[:, 1]
+
+    xmin, xmax =-350,350
+    ymin, ymax = -350, 350
+    xx, yy = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
+    positions = np.vstack([xx.ravel(), yy.ravel()])
+
+
+    values = np.vstack([x_dp, y_dp])
+    kde = gaussian_kde(values, bw_method=0.3)  # bw_method à ajuster selon la densité
+    density = kde(positions).reshape(xx.shape)
+
+    # Plot
+    plt.figure(figsize=(6, 5))
+    density_normalized = density / np.max(density)
+    plt.imshow(density_normalized.T, origin='lower', cmap="hot",
+            extent=[xmin, xmax, ymin, ymax], aspect='equal', vmin=0, vmax=1)
+    plt.colorbar(label="Double pulses density")
+    plt.xlabel("x [m]")
+    plt.ylabel("y [m]")
+    plt.title("E = 0.316 EeV, Depth = 100 m", fontsize=12)
+    #plt.title(rf"Double pulse density map at $\theta = {zenith}^\circ$")
+    #plt.scatter(x_all, y_all, c="white", s=5, alpha=0.3)  # All antennas in background
+    plt.scatter(x_dp, y_dp, c="yellow", s=15, label="Double pulse", edgecolor="black")
+    plt.legend()
+    #plt.savefig(OutputPath + "DoublePulseDensityMap.pdf", bbox_inches="tight")
+    plt.show()
+
+
+def GetPulseFlagsData(EnergyAll, ZenithAll, Pos, pulse_flags_all, SelDepth):
+
+
+    Ndouble_x, Ndouble_y, Ndouble_z, Ndouble_tot = np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll))
+    Nsingleair_x, Nsingleair_y, Nsingleair_z = np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll))
+    Nsingleice_x, Nsingleice_y, Nsingleice_z = np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll)), np.zeros(len(EnergyAll))
+
+    i = 0
+    sel = (Pos[:,2] == SelDepth)  # Select the 100m deep layer
+    for k in range(len(EnergyAll)):
+        if(ZenithAll[k] == 10):
+            continue
+        
+        isAirSinglePulse, isIceSinglePulse, isDoublePulse, Deltat = \
+            (pulse_flags_all[i][key] for key in ["isAirSinglePulse", "isIceSinglePulse", "isDoublePulse", "Deltat"])
+            
+        Nsingleair_x[i] = np.sum(np.array(isAirSinglePulse["x"])[sel])
+        Nsingleair_y[i] = np.sum(np.array(isAirSinglePulse["y"])[sel])
+        Nsingleair_z[i] = np.sum(np.array(isAirSinglePulse["z"])[sel])
+
+        Nsingleice_x[i] = np.sum(np.array(isIceSinglePulse["x"])[sel])
+        Nsingleice_y[i] = np.sum(np.array(isIceSinglePulse["y"])[sel])
+        Nsingleice_z[i] = np.sum(np.array(isIceSinglePulse["z"])[sel])
+
+        Ndouble_x[i] = np.sum(np.array(isDoublePulse["x"])[sel])
+        Ndouble_y[i] = np.sum(np.array(isDoublePulse["y"])[sel])
+        Ndouble_z[i] = np.sum(np.array(isDoublePulse["z"])[sel])
+        Ndouble_tot[i] = np.sum(np.array(isDoublePulse["tot"])[sel])
+
+        i = i + 1
+    
+    return Nsingleair_x, Nsingleair_y, Nsingleair_z, Nsingleice_x, Nsingleice_y, Nsingleice_z,  Ndouble_x, Ndouble_y, Ndouble_z, Ndouble_tot

@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def PlotAmplitudeDistribution(Etot1, Etot2, Etot3, bin_edges, labels, scale = "linear"):
+def PlotAmplitudeDistribution(Etot1, Etot2, Etot3, bin_edges, scale = "linear"):
 
+    labels=('$10^{16.5}$ eV', '$10^{17}$ eV', '$10^{17.5}$ eV')
 
     plt.hist(Etot1, bin_edges, alpha=0.6, edgecolor='black', label=labels[0])
     plt.hist(Etot2, bin_edges, alpha=0.6, edgecolor='black', label=labels[1])

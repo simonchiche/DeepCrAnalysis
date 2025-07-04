@@ -65,3 +65,76 @@ def PlotTimeDelay(DeltaT):
     plt.xlabel("Antenna ID")
     #plt.savefig("Deltat_E%.3f_th%.d.pdf" %(energy, zenith), bbox_inches = "tight")
     plt.show()
+
+
+def PlotNAirtrigger(ZenithAll, Nsingleair_x, Nsingleair_y, Nsingleair_z, threshold1, threshold2, selE):
+    plt.scatter(ZenithAll, Nsingleair_x, label ="x")
+    plt.scatter(ZenithAll, Nsingleair_y, label ="y")
+    plt.scatter(ZenithAll, Nsingleair_z, label="z")
+    plt.xlabel("zenith [Deg.]")
+    plt.ylabel("$N_{trigger}^{air}$")
+    plt.title("$E=%.2f$ EeV, $th1 = %.d \, \mu $V/m, $th2 = %.d \, \mu $V/m" %(selE, threshold1, threshold2),  fontsize =13)
+    plt.legend()
+    #plt.savefig("/Users/chiche/Desktop/Ntrigair_E0.316_vs_zen_high_thresold.pdf")
+    plt.show()
+
+
+
+def PlotNIcetrigger(ZenithAll, Nsingleice_x, Nsingleice_y, Nsingleice_z, threshold1, threshold2, selE):
+    plt.scatter(ZenithAll, Nsingleice_x, label ="x")
+    plt.scatter(ZenithAll, Nsingleice_y, label ="y")
+    plt.scatter(ZenithAll, Nsingleice_z, label="z")
+    plt.xlabel("zenith [Deg.]")
+    plt.ylabel("$N_{trigger}^{ice}$")
+    plt.title("$E=%.2f\,$ EeV, $th1 = %.d \, \mu $V/m, $th2 = %.d \, \mu$V/m" %(selE, threshold1, threshold2), fontsize =13)
+    plt.legend()
+    #plt.savefig("/Users/chiche/Desktop/Ntrigice_E0.316_vs_zen_high_thresold.pdf")
+    plt.show()
+
+
+def PlotNtriggAll(ZenithAll, NtriggerAll):
+    plt.scatter(ZenithAll, NtriggerAll, label ="tot")
+    plt.xlabel("zenith [Deg.]")
+    plt.ylabel("$N_{double}$")
+    #plt.title("$E=10^{17.5} eV$, $th1 = 600 \, \mu Vs/m$, $th2 = 400 \, \mu Vs/m$")
+    plt.legend()
+    #plt.savefig("/Users/chiche/Desktop/DoubleRate_E0.316_vs_zen.pdf")
+    plt.show()
+
+def PlotNdoubleTot(ZenithAll, Ndouble_tot):
+    plt.scatter(ZenithAll, Ndouble_tot, label ="tot")
+    plt.xlabel("zenith [Deg.]")
+    plt.ylabel("$N_{double}$")
+    #plt.title("$E=10^{17.5} eV$, $th1 = 600 \, \mu Vs/m$, $th2 = 400 \, \mu Vs/m$")
+    plt.legend()
+    #plt.savefig("/Users/chiche/Desktop/DoubleRate_E0.316_vs_zen.pdf")
+    plt.show()
+
+def PlotDoubleRateTot(ZenithAll, Ndouble_tot, NtriggerAll):
+    DoubleRateTot = Ndouble_tot/NtriggerAll
+
+    plt.scatter(ZenithAll, DoubleRateTot, label ="tot")
+    plt.xlabel("zenith [Deg.]")
+    plt.ylabel("$N_{double}$")
+    #plt.title("$E=10^{17.5} eV$, $th1 = 600 \, \mu Vs/m$, $th2 = 400 \, \mu Vs/m$")
+    plt.legend()
+    #plt.savefig("/Users/chiche/Desktop/DoubleRate_E0.316_vs_zen.pdf")
+    plt.show()
+
+
+def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z):
+
+    colors = ["#0072B2", "#E69F00", "#009E73"]  # Blue, Orange, Green (colorblind-safe)
+    linestyles = ["-", "--", "-."]
+
+    arg = np.argsort(ZenithAll)
+    plt.plot(np.array(ZenithAll)[arg], Ndouble_x[arg]/Ntrigger_All_x[arg], label ="x", color=colors[0], linestyle=linestyles[0], linewidth=2, marker='o', markersize=5)
+    plt.plot(np.array(ZenithAll)[arg], Ndouble_y[arg]/Ntrigger_All_y[arg], label ="y", color=colors[1], linestyle=linestyles[1], linewidth=2, marker='o', markersize=5)
+    plt.plot(np.array(ZenithAll)[arg], Ndouble_z[arg]/Ntrigger_All_z[arg], label="z", color=colors[2], linestyle=linestyles[2], linewidth=2, marker='o', markersize=5)
+    plt.xlabel("Zenith [Deg.]")
+    plt.ylabel(r"$N_{\mathrm{double}}/N_{\mathrm{trigger}}$")
+    plt.title("$E=10^{17.5}\,$eV, Thresolds $= 100, 60 \, \mu V/m$", fontsize=12)
+    plt.legend()
+    plt.grid(True, which='both', linestyle=':', linewidth=0.5)
+    #plt.savefig(OutputPath + "DoubleRateAllchannels.pdf", bbox_inches="tight")
+    plt.show()

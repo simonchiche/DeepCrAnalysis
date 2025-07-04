@@ -105,8 +105,8 @@ for i in range(len(Ebins)):
     sel2  = EnergyAll == Ebins[i]
     arg = np.argsort(ZenithAll_analytic[sel])
     arg2 = np.argsort(ZenithAll[sel2])
-    plt.errorbar(ZenithAll[sel2][arg2], mean_deltat[sel2][arg2]*1e9, yerr=std_deltat[sel2][arg2]*1e9, fmt='o', label=f"E={Ebins[i]} EeV")
-    plt.errorbar(ZenithAll[sel][arg], mean_deltat_analytic[sel][arg]*1e9, yerr=std_deltat_analytic[sel][arg]*1e9, fmt='o', label=f"E={Ebins[i]} EeV")
+    plt.errorbar(ZenithAll[sel2][arg2], mean_deltat[sel2][arg2]*1e9, yerr=std_deltat[sel2][arg2]*1e9, fmt='o', label="Simulations")
+    plt.errorbar(ZenithAll[sel][arg], mean_deltat_analytic[sel][arg]*1e9, yerr=std_deltat_analytic[sel][arg]*1e9, fmt='o', label="Analytic")
     plt.ylabel("Time delay [ns]")
     plt.xlabel("zenith [Deg.]")
     plt.legend()
@@ -145,8 +145,13 @@ plt.hist(Deltat_distrib_sim_E17_5_AllZeniths, bins=10, label='Simulated', edgeco
 Deltat_distrib_analytic_E17_5_AllZeniths = [item for sublist in dtflat17_5_analytic for item in sublist]
 
 bins = np.linspace(350, 750, 30 + 1)/1e9
-plt.hist(Deltat_distrib_sim_E17_5_AllZeniths, label='Simulated', edgecolor='black', alpha=0.7, bins=bins, density=True)
-plt.hist(Deltat_distrib_analytic_E17_5_AllZeniths, label='Simulated', edgecolor='black', alpha=0.7, bins=bins, density=True)
+plt.hist(Deltat_distrib_sim_E17_5_AllZeniths, edgecolor='black', alpha=0.7, bins=bins, density=True, label ="simulation")
+plt.hist(Deltat_distrib_analytic_E17_5_AllZeniths, edgecolor='black', alpha=0.7, bins=bins, density=True,  label ="analytic")
+plt.xlabel("Time [s]")
+plt.ylabel("Counts")
+plt.legend()
+plt.show()
+
 
 
 
@@ -181,7 +186,7 @@ print(dt_ice_model)
 weights = np.ones_like(Deltat_distrib_sim_E17_5_AllZeniths) / len(Deltat_distrib_sim_E17_5_AllZeniths) * 100
 bins = np.linspace(350, 750, 30 + 1)
 plt.hist(np.array(Deltat_distrib_sim_E17_5_AllZeniths)*1e9,weights=weights, label='$\Delta t$', edgecolor='black', alpha=0.7, bins=bins, color='#377eb8')
-plt.axvline(dt_ice_model, color='#e41a1c', linestyle='--', label='$\\bar{n} \Delta x/c$', linewidth=2)
+#plt.axvline(dt_ice_model, color='#e41a1c', linestyle='--', label='$\\bar{n} \Delta x/c$', linewidth=2)
 plt.xlabel("Time delay [ns]")
 plt.ylabel("Antennas perecentage [%]")
 plt.legend()
