@@ -19,7 +19,7 @@ def EfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, path):
         sel = (Pos[:,2] == Depths[i])
         s = 10 + 20 * (E[sel] - np.min(E)) / (np.max(E) - np.min(E))
         plt.scatter(Pos[sel,0], Pos[sel,1], \
-                    c= E[sel], cmap = "jet", s=s, edgecolors='k', linewidth=0.2)
+                    c= E[sel], cmap = "jet", s=s, edgecolors='k', linewidth=0.2, vmin=0.0, vmax=3.5)
         cbar = plt.colorbar()
         plt.xlabel("x [m]")
         plt.ylabel("y [m]")
@@ -295,9 +295,8 @@ def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, pat
                  fontsize=12, verticalalignment='top', bbox=dict(facecolor='white', alpha=0.7))
         #plt.xlim(min(grid_x), max(grid_x))
         #plt.ylim(min(grid_x), max(grid_x))
-        plt.xlim(-250,350)
-        plt.ylim(-250,350)
-        #plt.ylim(-300,300)
+        plt.xlim(-300,300)
+        plt.ylim(-300,300)
         if(save):
             plt.savefig\
             (path + sim + "EfieldMap_E%.2f_th%.1f_depth%1.f.pdf" \

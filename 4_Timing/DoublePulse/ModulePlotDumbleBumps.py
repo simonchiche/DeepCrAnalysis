@@ -37,6 +37,48 @@ def PlotDumbleBumpsMaps(Pos, isDoubleBump, energy, zenith):
     print(PosDoubleBumps.shape)
     return  PosDoubleBumps
 
+def PlotDumbleBumpsMapsHighRes(Pos, isDoubleBump, energy, zenith, OutputPath):
+
+    savedir = "/Users/chiche/Desktop/DoublePulseMaps"
+
+    sel = (Pos[:,2] == 3116)
+
+    colors = np.where(isDoubleBump[sel], 'gold', 'indigo')
+
+
+
+    plt.figure(figsize=(6, 5))
+    scatter = plt.scatter(Pos[sel,0],Pos[sel,1], c=colors, edgecolor='black', s=80, alpha=0.9, linewidth=0.5)
+
+    # Axis and labels
+    plt.xlabel("y [m]")
+    plt.ylabel("x [m]")
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.gca().set_aspect('equal')
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor='gold', edgecolor='black', label='Double pulse'),
+        Patch(facecolor='indigo', edgecolor='black', label='No double pulse'),
+        ]
+    plt.legend(
+        handles=legend_elements,
+        loc='upper right',
+        fontsize=10,
+        frameon=True,
+        framealpha=0.9
+    )
+
+    # Title
+    plt.title(r"E = %.3f EeV, $\theta=%.d^{\circ}$, Depth =100 m" %(energy, zenith), fontsize =13)
+    plt.tight_layout()
+    plt.grid(False)
+    plt.savefig(OutputPath + "DoublePulsesMap_E%.3f_th%.d.pdf" %(energy, zenith), bbox_inches = "tight")
+    plt.show()
+
+    return  
+
+
 
 def PlotTrace(Time, E_t):
         plt.plot(Time*1e9, E_t[i])

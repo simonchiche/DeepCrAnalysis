@@ -92,11 +92,12 @@ class Shower:
         Etot, peakTime = np.zeros(Nant), np.zeros(Nant)
         Ex, Ey, Ez = np.zeros(Nant), np.zeros(Nant), np.zeros(Nant)
         binT = round((Traces[0][1,0] -Traces[0][0,0])*1e10)/1e10
+        print(binT)
         for i in range(Nant):
             
             #Etot_all = np.sqrt(Traces[i][:,1]**2 + Traces[i][:,2]**2 + Traces[i][:,3]**2)
             Etot_all = abs(hilbert(np.sqrt(Traces[i][:,1]**2 + Traces[i][:,2]**2 + Traces[i][:,3]**2)))
-            extent = 10000
+            extent = 2000
             peak_id = np.argmax(Etot_all)
             peakTime[i] = Traces[i][peak_id,0]
             minid = peak_id -extent

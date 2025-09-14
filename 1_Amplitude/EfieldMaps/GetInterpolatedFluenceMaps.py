@@ -31,12 +31,12 @@ from scipy.optimize import curve_fit
 #endregion
 
 #region Path definition
-SimDir =  "DeepCrLibV1"  #"InterpSim" #"GammaShower"
-SimName = "Rectangle_Proton_0.0316_0_0_1_0.hdf5"
+SimDir =  "DeepCrLibV1" #"FullDenseDeepCr" #"DeepCrLibV1"  #"InterpSim" #"GammaShower"
+SimName = "Rectangle_Proton_0.0316_47_0_1_0.hdf5"
 WorkPath = os.getcwd()
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/"\
 + SimDir + "/" + SimName 
-BatchID = "Log10_Interp"
+BatchID = "SparseSim"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
 Save = False
@@ -57,7 +57,7 @@ Nlay, Nplane, Depths = Shower.GetDepths()
 
 Filter = False
 if(Filter):
-    fs, lowcut, highcut = 5e9, 50e6, 1e9
+    fs, lowcut, highcut = 5e9, 50e6, 1e8
     #Traces_C_filtered =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
     #Traces_G_filered =Shower.filter_all_traces(Traces_G, fs, lowcut, highcut)
 
@@ -94,11 +94,15 @@ ExG_int, EyG_int, EzG_int, EtotG_int, peakTime = Shower.GetIntTraces(Traces_G)
 #                         Compute Fluence
 # =============================================================================
 
+x_pos  = Pos[Pos[:,2]==3216][:,0]
+y_pos  = Pos[Pos[:,2]==3216][:,1]
+
+plt.scatter(x_pos, y_pos)
 # Coreas
 InterpolatedEfieldMap(Pos, Depths, Nplane, EtotC_int, "In-air", \
-          False, energy, theta, OutputPath)
+          True, energy, theta, OutputPath)
 
 # Geant
-InterpolatedEfieldMap(Pos, Depths, Nplane, EtotG, "In-ice", \
-          False, energy, theta, OutputPath)
+InterpolatedEfieldMap(Pos, Depths, Nplane,EtotG_int, "In-ice", \
+          True, energy, theta, OutputPath)
 

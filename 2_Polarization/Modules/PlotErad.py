@@ -142,14 +142,14 @@ def PlotAirIceEradRatiovsThetavsE(Eradair_allsims, Eradice_allsims, SelDepth, Ou
 
     return
 
-def PlotHpoleVpoleEradRatiovsThetavsE(Shower, Erad_allsims, SelDepth, title, OutputPath, Save):
+def PlotHpolVpolEradRatiovsThetavsE(Shower, Erad_allsims, SelDepth, title, OutputPath, Save):
 
     EnergyAll = np.unique(Erad_allsims[:,5])  
     Gdeep = Shower.glevel - SelDepth  
     for i in range(len(EnergyAll)):
         sel = (Erad_allsims[:,4] == SelDepth) & (Erad_allsims[:,5] == EnergyAll[i])
         
-        EradHpole_tot = (Erad_allsims[sel][:,0] + Erad_allsims[sel][:,1])/2.0
+        EradHpole_tot = (Erad_allsims[sel][:,0] + Erad_allsims[sel][:,1])
         EradVpole_tot = Erad_allsims[sel][:,2]
         EradHpoleVpoleRatio_tot = EradHpole_tot/EradVpole_tot
 
@@ -161,7 +161,39 @@ def PlotHpoleVpoleEradRatiovsThetavsE(Shower, Erad_allsims, SelDepth, title, Out
     plt.xlabel("Zenith [Deg.]")
     plt.grid()
     plt.legend()
-    plt.ylim(0, 2.5)
+    plt.ylim(1, 4)
+    plt.title(title + ", Depth =%d m" %(Gdeep), fontsize =12)
+    plt.savefig(OutputPath + "_" + title + "_Hpol_over_Vpol_vs_E_vs_zenith_z%d.pdf"\
+                 %SelDepth, bbox_inches = "tight") if Save else None
+    plt.show()
+
+    return
+
+def PlotMeanHpolVpolEradRatiovsThetavsE(Shower, Erad_allsims, SelDepth, title, OutputPath, Save):
+
+    EnergyAll = np.unique(Erad_allsims[:,5])  
+    Gdeep = Shower.glevel - SelDepth
+    HVratioAll = dict()
+    for i in range(len(EnergyAll)):
+        sel = (Erad_allsims[:,4] == SelDepth) & (Erad_allsims[:,5] == EnergyAll[i])
+        
+        EradHpol_tot = (Erad_allsims[sel][:,0] + Erad_allsims[sel][:,1])
+        EradVpol_tot = Erad_allsims[sel][:,2]
+        EradHpoleVpoleRatio_tot = EradHpol_tot/EradVpol_tot
+
+        arg = np.argsort(Erad_allsims[sel][:,6])
+        HVratioAll[i] = EradHpoleVpoleRatio_tot[arg]
+        #plt.plot(Erad_allsims[sel][:,6][arg], EradHpoleVpoleRatio_tot[arg], label ="$E= %.2f$ EeV" %EnergyAll[i])
+    HVratioAllArr = np.vstack([HVratioAll[0], HVratioAll[1], HVratioAll[2]])
+    HVratiomean, HVratiostd =  np.mean(HVratioAllArr, axis=0), np.std(HVratioAllArr, axis=0)
+    #plt.yscale("log")
+    #plt.ylim(min(data)/5, max(data)*5)
+    plt.errorbar(Erad_allsims[sel][:,6][arg], HVratiomean, yerr = HVratiostd)
+    plt.ylabel("$E_{rad}^{Hpol}/E_{rad}^{Vpol}\,$[50-1000 MHz]")
+    plt.xlabel("Zenith [Deg.]")
+    plt.grid()
+    plt.legend()
+    #plt.ylim(1, 4)
     plt.title(title + ", Depth =%d m" %(Gdeep), fontsize =12)
     plt.savefig(OutputPath + "_" + title + "_Hpol_over_Vpol_vs_E_vs_zenith_z%d.pdf"\
                  %SelDepth, bbox_inches = "tight") if Save else None
