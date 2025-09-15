@@ -276,6 +276,11 @@ def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, pat
         sel = (Pos[:,2] == Depths[i])
         #
         # s = 10 + 20 * (E[sel] - np.min(E)) / (np.max(E) - np.min(E))
+        argxmax = np.argmax(E[sel])
+        xmax = abs(Pos[:,0][sel][argxmax])
+        if(xmax<50): xmax = 50
+
+
         grid_x, grid_y, grid_z = \
          interpolate_rbf(Pos[:,0][sel], Pos[:,1][sel], E[sel])
         
@@ -288,7 +293,7 @@ def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, pat
         plt.ylabel('y [m]')
   
         #plt.title(sim + " map (E =$%.2f\,$EeV, $\\theta=%.1f^{\circ}$)" %(energy, theta), size =12)
-        plt.title(sim + " map (E =$10^{16.5}\,$eV, $\\theta=%.1f^{\circ}$)" %(theta), size =12)
+        plt.title(sim + " map (E =$%.1f\,$eV, $\\theta=%.1f^{\circ}$)" %(energy, theta), size =12)
 
         depth =Depths[0]- Depths[i]
         #plt.legend(["Depth = %.f m" %(depth)], loc ="upper right")
@@ -296,9 +301,11 @@ def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, pat
                  fontsize=12, verticalalignment='top', bbox=dict(facecolor='white', alpha=0.7))
         #plt.xlim(min(grid_x), max(grid_x))
         #plt.ylim(min(grid_x), max(grid_x))
-        plt.xlim(-250,350)
-        plt.ylim(-250,350)
+        #plt.xlim(-250,350)
+        #plt.ylim(-250,350)
         #plt.ylim(-300,300)
+        plt.xlim(-5*xmax, 5*xmax)
+        plt.ylim(-5*xmax, 5*xmax)
         if(save):
             plt.savefig\
             (path + sim + "EfieldMap_E%.2f_th%.1f_depth%1.f.pdf" \
