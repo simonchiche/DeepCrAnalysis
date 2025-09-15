@@ -91,7 +91,7 @@ class Shower:
         Nant = self.nant
         Etot, peakTime = np.zeros(Nant), np.zeros(Nant)
         Ex, Ey, Ez = np.zeros(Nant), np.zeros(Nant), np.zeros(Nant)
-        binT = round((Traces[0][1,0] -Traces[0][0,0])*1e10)/10
+        binT = round((Traces[0][1,0] -Traces[0][0,0])*1e10)/10 # time conversion from s to ns
         print(binT)
         for i in range(Nant):
             

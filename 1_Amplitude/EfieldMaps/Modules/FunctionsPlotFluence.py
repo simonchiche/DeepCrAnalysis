@@ -23,7 +23,8 @@ def EfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, path):
         cbar = plt.colorbar()
         plt.xlabel("x [m]")
         plt.ylabel("y [m]")
-        cbar.set_label("$\log_{10}(E)$ [$\mu V/m$]")
+        #cbar.set_label("$\log_{10}(E)$ [$\mu V/m$]")
+        cbar.set_label("$\log_{10}(E)$ [$\mu V ns/m$]")
         depth =Depths[0]- Depths[i]
         #plt.xlim(-200,200)
         #plt.ylim(-200,200)

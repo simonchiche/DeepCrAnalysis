@@ -31,15 +31,15 @@ from scipy.optimize import curve_fit
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLibV1"  #"InterpSim"
-SimName = "Rectangle_Proton_0.0316_0_0_1_0.hdf5"
+SimDir = "FullDenseDeepCr" #"DeepCrLibV1"  #"InterpSim"
+SimName = "Polar_Proton_0.316_50_0_1.hdf5" #"Rectangle_Proton_0.0316_0_0_1_0.hdf5"
 WorkPath = os.getcwd()
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/"\
 + SimDir + "/" + SimName 
-BatchID = "Proton_vs_Gamma"
+BatchID = "DenseDeepCr"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
-Save = False
+Save = True
 Shower = CreateShowerfromHDF5(simpath)
 
 # =============================================================================
@@ -55,7 +55,7 @@ Nlay, Nplane, Depths = Shower.GetDepths()
 #                                Filter
 # =============================================================================
 
-Filter = False
+Filter = True
 if(Filter):
     fs, lowcut, highcut = 5e9, 50e6, 1e9
     #Traces_C_filtered =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
@@ -99,7 +99,7 @@ EfieldMap(Pos, Depths, Nplane, np.log10(EtotC_int), "In-air", \
           Save, energy, theta, OutputPath)
 
 # Geant 
-EfieldMap(Pos, Depths, Nplane, np.log10(EtotG_int+ 1), "In-ice_proton",\
+EfieldMap(Pos, Depths, Nplane, np.log10(EtotG_int+ 1), "In-ice",\
           Save, energy, theta, OutputPath)
     
 # z-component
