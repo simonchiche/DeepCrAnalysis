@@ -26,12 +26,12 @@ from Modules.PlotErad import PlotEradThetaScaling, PlotEradDepthScaling, PlotEra
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLibV1"  #"InterpSim"
+SimDir = "FullDenseDeepCr" #"DeepCrLibV1"  #"InterpSim"
 WorkPath = os.getcwd()
 BatchID = "Erad_filtered"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
-Save = False
+Save = True
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/" + SimDir
 SimpathAll = glob.glob(simpath + "/*")
 
@@ -69,8 +69,9 @@ for simpath in SimpathAll:
     #                         Radiation energy
     # =============================================================================
 
-    Eradair_allsims.append(Shower.GetEradFromSim(Traces_C))
-    Eradice_allsims.append(Shower.GetEradFromSim(Traces_G))
+    #sys.exit(Shower.GetRadiationEnergyGeneric(Traces_C))
+    Eradair_allsims.append(Shower.GetRadiationEnergyGeneric(Traces_C))
+    Eradice_allsims.append(Shower.GetRadiationEnergyGeneric(Traces_G))
     Eradtot.append(Shower.GetRadiationEnergyGeneric(Traces_C))
  
 Eradair_allsims = np.concatenate(Eradair_allsims, axis =0)
@@ -81,12 +82,12 @@ Eradice_allsims = np.concatenate(Eradice_allsims, axis =0)
 # =============================================================================
 
 # In-air radiation energy vs depth
-SelZen = 0
+SelZen = 50
 title = "In-air"
 PlotEradDepthScaling(Eradair_allsims, SelZen, title, OutputPath)
 
 # In-ice radiation energy vs depth
-SelZen = 0
+SelZen = 50
 title = "In-ice"
 PlotEradDepthScaling(Eradice_allsims, SelZen, title, OutputPath)
 

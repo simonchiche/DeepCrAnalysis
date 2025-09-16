@@ -40,6 +40,7 @@ def GetMaxLDF(Pos, Etot, Depth,channel):
     mask = Pos[:, k] == best_x
     best_positions = Pos[mask]
     best_amplitudes = Etot[mask]
+    #print(len(mask), "mask")
     
     return best_positions, best_amplitudes
 

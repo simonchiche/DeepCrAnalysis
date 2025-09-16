@@ -35,15 +35,15 @@ from Modules.ModulePlotLDFs import PlotAllAirLdfs, PlotAllIceLdfs
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLibV1"  #"InterpSim"
-SimName = "Rectangle_Proton_0.316_0_0_1"
+SimDir = "FullDenseDeepCr" #"DeepCrLibV1"  #"InterpSim"
+SimName = "Polar_Proton_0.316_0_0_1.hdf5" #"Rectangle_Proton_0.316_0_0_1"
 WorkPath = os.getcwd()
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/" + SimDir 
 SimpathAll = glob.glob(simpath + "/*")
-BatchID = "AllSims"
+BatchID = "LDFAllSims"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
-Save = False
+Save = True
 
 posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceLDFAll, EnergyAll, ZenithAll = \
      ([] for _ in range(6))
@@ -106,27 +106,27 @@ for simpath in SimpathAll:
     Lextenty_ice, Lmaxy_ice = GetCaracExtent(posx_MaxIceLDF[:,1], Ey_MaxIceLDF)
 
     # 60m-deep antennas results
-    posx60_MaxAirLDF, Ex60_MaxAirLDF = GetMaxLDF(Pos, EtotC_int, Depths[2], "x") 
-    posx60_MaxIceLDF, Ex60_MaxIceLDF = GetMaxLDF(Pos, EtotG_int, Depths[2], "x") 
+    posx60_MaxAirLDF, Ex60_MaxAirLDF = GetMaxLDF(Pos, EtotC_int, Depths[1], "x") 
+    posx60_MaxIceLDF, Ex60_MaxIceLDF = GetMaxLDF(Pos, EtotG_int, Depths[1], "x") 
     Lextentx60_air, Lmaxx60_air = GetCaracExtent(posx60_MaxAirLDF[:,0], Ex60_MaxAirLDF)
     Lextentx60_ice, Lmaxx60_ice = GetCaracExtent(posx60_MaxIceLDF[:,0], Ex60_MaxIceLDF)
 
 
-    posy60_MaxAirLDF, Ey60_MaxAirLDF = GetMaxLDF(Pos, EtotC_int, Depths[2], "y") 
-    posy60_MaxIceLDF, Ey60_MaxIceLDF = GetMaxLDF(Pos, EtotG_int, Depths[2], "y") 
+    posy60_MaxAirLDF, Ey60_MaxAirLDF = GetMaxLDF(Pos, EtotC_int, Depths[1], "y") 
+    posy60_MaxIceLDF, Ey60_MaxIceLDF = GetMaxLDF(Pos, EtotG_int, Depths[1], "y") 
     Lextenty60_air, Lmaxy60_air = GetCaracExtent(posy60_MaxAirLDF[:,1], Ey60_MaxAirLDF)
     Lextenty60_ice, Lmaxy60_ice = GetCaracExtent(posy60_MaxIceLDF[:,1], Ey60_MaxIceLDF)
 
 
     # 100m-deep antennas results
-    posx100_MaxAirLDF, Ex100_MaxAirLDF = GetMaxLDF(Pos, EtotC_int, Depths[4], "x") 
-    posx100_MaxIceLDF, Ex100_MaxIceLDF = GetMaxLDF(Pos, EtotG_int, Depths[4], "x") 
+    posx100_MaxAirLDF, Ex100_MaxAirLDF = GetMaxLDF(Pos, EtotC_int, Depths[2], "x") 
+    posx100_MaxIceLDF, Ex100_MaxIceLDF = GetMaxLDF(Pos, EtotG_int, Depths[2], "x") 
     Lextentx100_air, Lmaxx100_air = GetCaracExtent(posx100_MaxAirLDF[:,0], Ex100_MaxAirLDF)
     Lextentx100_ice, Lmaxx100_ice = GetCaracExtent(posx100_MaxIceLDF[:,0], Ex100_MaxIceLDF)
 
 
-    posy100_MaxAirLDF, Ey100_MaxAirLDF = GetMaxLDF(Pos, EtotC_int, Depths[4], "y") 
-    posy100_MaxIceLDF, Ey100_MaxIceLDF = GetMaxLDF(Pos, EtotG_int, Depths[4], "y") 
+    posy100_MaxAirLDF, Ey100_MaxAirLDF = GetMaxLDF(Pos, EtotC_int, Depths[2], "y") 
+    posy100_MaxIceLDF, Ey100_MaxIceLDF = GetMaxLDF(Pos, EtotG_int, Depths[2], "y") 
     Lextenty100_air, Lmaxy100_air = GetCaracExtent(posy100_MaxAirLDF[:,1], Ey100_MaxAirLDF)
     Lextenty100_ice, Lmaxy100_ice = GetCaracExtent(posy100_MaxIceLDF[:,1], Ey100_MaxIceLDF)
 

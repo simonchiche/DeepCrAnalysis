@@ -54,7 +54,7 @@ def PlotEradEnergyScaling(Erad_allsims, SelDepth, title, OutputPath):
         plt.plot(Erad_allsims[sel][:,5][arg], Erad_allsims[sel][:,3][arg],\
                  label ="$\\theta =%.d^{\circ}$" %ZenithAll[i])
     plt.xlabel("Energy [EeV]")
-    plt.ylabel("$E_{rad} \, [eV]")
+    plt.ylabel("$E_{rad} \,$[eV]")
     plt.legend()
     plt.title(title + " $|z|=%.d$" %SelDepth)
     plt.savefig(OutputPath + "_" + title + "_vs_E_|z|%.d.pdf" %SelDepth, bbox_inches = "tight")

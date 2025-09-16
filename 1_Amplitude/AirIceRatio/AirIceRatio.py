@@ -26,7 +26,7 @@ from Modules.PlotErad import PlotEradThetaScaling, PlotEradDepthScaling, PlotEra
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLibV1"  #"InterpSim"
+SimDir = "FullDenseDeepCr" #"DeepCrLibV1"  #"InterpSim"
 WorkPath = os.getcwd()
 BatchID = "Erad_filtered"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
@@ -47,7 +47,7 @@ for simpath in SimpathAll:
     # =============================================================================
 
     energy, theta, Nant = Shower.energy, Shower.zenith, Shower.nant
-    if(theta==10.0): continue
+    #if(theta==10.0): continue
     Traces_C, Traces_G, Pos = Shower.traces_c, Shower.traces_g, Shower.pos
     Nlay, Nplane, Depths = Shower.GetDepths()
     #Traces_tot = Shower.CombineTraces()
