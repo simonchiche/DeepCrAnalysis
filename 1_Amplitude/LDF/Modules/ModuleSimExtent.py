@@ -44,6 +44,48 @@ def GetMaxLDF(Pos, Etot, Depth,channel):
     
     return best_positions, best_amplitudes
 
+def GetMaxLDFGeneric(Pos, Etot, Depth,channel):
+
+    if(channel == "x"): k= 0
+    if(channel == "y"): k= 1
+    # Returns the antenna postiions and signl amplitude along the line
+    # Extract unique x positions (horizontal positions)
+    sel = (Pos[:,2] == Depth)
+    Pos = Pos[sel]
+    Etot = Etot[sel]
+
+    min_ax = np.min(Pos[:, k])
+    max_ax = np.max(Pos[:, k])
+    delta_ax = 5
+    ax_bins = np.arange(min_ax, max_ax + delta_ax, delta_ax)
+
+
+    best_arg = np.argmax([np.sum(Etot[(Pos[:, k] >= ax_bins[i]) & (Pos[:, k] < ax_bins[i+1])]) for i in range(len(ax_bins)-1)])
+    mask = (Pos[:, k] >= ax_bins[best_arg]) & (Pos[:, k] < ax_bins[best_arg+1])
+    best_positions = Pos[mask]
+    best_amplitudes = Etot[mask]        
+
+    
+    return best_positions, best_amplitudes
+
+def GetMaxLDFx(Pos, Etot, Depth,channel):
+
+
+    # Returns the antenna postiions and signl amplitude along the line
+    # Extract unique x positions (horizontal positions)
+    sel = (Pos[:,2] == Depth)
+    Pos = Pos[sel]
+    Etot = Etot[sel]
+
+    min_y = np.min(abs(Pos[:, 1]))
+    delta_ax = 1
+    print(min_y)
+    mask = (Pos[:, 1] >= min_y - delta_ax ) & (Pos[:, 1] < min_y + delta_ax) 
+    best_positions = Pos[mask]
+    best_amplitudes = Etot[mask]        
+    
+    return best_positions, best_amplitudes
+
 def GetRadioExtent(Nlay, Nplane, Pos, Etot_int):
     
 # Boucle sur le nombre de layers. Pour chaque layer on trouve la zone ou on a 99% de l'énergie

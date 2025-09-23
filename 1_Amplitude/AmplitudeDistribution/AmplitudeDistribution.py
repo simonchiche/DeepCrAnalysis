@@ -33,9 +33,9 @@ from Modules.ModuleGetAmplitudeDistrib import GetAmplitudeDistribution
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLibV1"  #"InterpSim"
+SimDir = "FullDenseDeepCr" #"DeepCrLibV1"  #"InterpSim"
 WorkPath = os.getcwd()
-BatchID = "LogscaleTrigger"
+BatchID = "AmplitudeDistrib_filtered"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 print("OutputPath: ", OutputPath)
 #endregion
@@ -62,7 +62,7 @@ for simpath in SimpathAll:
     #                                Filter
     # =============================================================================
 
-    Filter = False
+    Filter = True
     if(Filter):
         fs, lowcut, highcut = 5e9, 50e6, 1e9
         #Traces_C_filtered =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
@@ -105,6 +105,9 @@ EtotAirAll16_5 = \
 
 EtotAirAll17 = \
     GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[1], 3116)
+
+plt.hist(EtotAirAll17)
+plt.yscale("log")
 
 EtotAirAll17_5 = \
     GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[2], 3116)

@@ -194,7 +194,7 @@ class Shower:
 
         return np.array(Erad_all)
     
-    def GetRadiationEnergyGeneric(self, Traces):
+    def GetRadiationEnergyGenericOld(self, Traces):
         
         Pos = self.pos
         Nlay, Nplane, Depths = self.GetDepths()
@@ -213,6 +213,44 @@ class Shower:
             Erad[i] = total_integral
 
         return Depths, Erad
+    
+    def GetRadiationEnergyGeneric(self, Traces):
+        
+        Pos = self.pos
+        Nlay, Nplane, Depths = self.GetDepths()
+        fx, fy, fz, ftot = self.GetFluence(Traces)
+
+        Erad = []#np.zeros(len(Depths))
+        for i in range(len(Depths)):
+            sel = (Pos[:,2] == Depths[i])
+
+            grid_x, grid_y, f_int = \
+            self.interpolate_rbf(Pos[:,0][sel], Pos[:,1][sel], ftot[sel], grid_resolution=100)            
+            # First, compute the integral along one axis (e.g., x), then along the other (e.g., y)
+            integral_x = trapz(f_int, x=grid_x[0], axis=1)  # integrate over x (axis=1)
+            Eradtot = trapz(integral_x, x=grid_y[:,0])  # integrate over y (axis=0)
+
+            grid_x, grid_y, f_int = \
+            self.interpolate_rbf(Pos[:,0][sel], Pos[:,1][sel], fx[sel], grid_resolution=100)            
+            # First, compute the integral along one axis (e.g., x), then along the other (e.g., y)
+            integral_x = trapz(f_int, x=grid_x[0], axis=1)  # integrate over x (axis=1)
+            Eradx = trapz(integral_x, x=grid_y[:,0])  # integrate over y (axis=0)
+
+            grid_x, grid_y, f_int = \
+            self.interpolate_rbf(Pos[:,0][sel], Pos[:,1][sel], fy[sel], grid_resolution=100)            
+            # First, compute the integral along one axis (e.g., x), then along the other (e.g., y)
+            integral_x = trapz(f_int, x=grid_x[0], axis=1)  # integrate over x (axis=1)
+            Erady = trapz(integral_x, x=grid_y[:,0])  # integrate over y (axis=0)
+
+            grid_x, grid_y, f_int = \
+            self.interpolate_rbf(Pos[:,0][sel], Pos[:,1][sel], fz[sel], grid_resolution=100)            
+            # First, compute the integral along one axis (e.g., x), then along the other (e.g., y)
+            integral_x = trapz(f_int, x=grid_x[0], axis=1)  # integrate over x (axis=1)
+            Eradz = trapz(integral_x, x=grid_y[:,0])  # integrate over y (axis=0)
+
+            Erad.append(np.array([Eradx, Erady, Eradz, Eradtot, Depths[i], self.energy, self.zenith]))
+
+        return Erad
     
 
     def CombineTraces(self):

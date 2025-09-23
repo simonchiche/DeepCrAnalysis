@@ -26,7 +26,7 @@ from Modules.PlotErad import PlotEradThetaScaling, PlotEradDepthScaling, PlotEra
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLibV1"  #"InterpSim"
+SimDir = "FullDenseDeepCr" #"DeepCrLibV1"  #"InterpSim"
 WorkPath = os.getcwd()
 BatchID = "Erad_filtered"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
@@ -106,7 +106,7 @@ def PlotMeanHpolVpolEradRatiovsThetavsE(Shower, Erad_allsims, SelDepth, title, O
         arg = np.argsort(Erad_allsims[sel][:,6])
         HVratioAll[i] = EradHpoleVpoleRatio_tot[arg]
         #plt.plot(Erad_allsims[sel][:,6][arg], EradHpoleVpoleRatio_tot[arg], label ="$E= %.2f$ EeV" %EnergyAll[i])
-    HVratioAllArr = np.vstack([HVratioAll[0], HVratioAll[1], HVratioAll[2]])
+    HVratioAllArr = np.vstack(HVratioAll) #np.vstack([HVratioAll[0], HVratioAll[1], HVratioAll[2]])
     HVratiomean, HVratiostd =  np.mean(HVratioAllArr, axis=0), np.std(HVratioAllArr, axis=0)
     #plt.yscale("log")
     #plt.ylim(min(data)/5, max(data)*5)
@@ -142,7 +142,7 @@ def PlotMeanHpolVpolEradRatiovsThetavsE(Shower, Erad_allsims, SelDepth, title, O
         arg = np.argsort(Erad_allsims[sel][:,6])
         HVratioAll[i] = EradHpoleVpoleRatio_tot[arg]
         #plt.plot(Erad_allsims[sel][:,6][arg], EradHpoleVpoleRatio_tot[arg], label ="$E= %.2f$ EeV" %EnergyAll[i])
-    HVratioAllArr = np.vstack([HVratioAll[0], HVratioAll[1], HVratioAll[2]])
+    HVratioAllArr = np.vstack([HVratioAll]) #np.vstack([HVratioAll[0], HVratioAll[1], HVratioAll[2]])
     HVratiomean, HVratiostd =  np.mean(HVratioAllArr, axis=0), np.std(HVratioAllArr, axis=0)
     #plt.yscale("log")
     #plt.ylim(min(data)/5, max(data)*5)
