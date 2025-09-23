@@ -96,7 +96,7 @@ for simpath in SimpathAll:
     # Surface antennas results
     posx_MaxAirLDF, Ex_MaxAirLDF = GetMaxLDFx(Pos, EtotC_int, Depths[0], "x") 
     posx_MaxIceLDF, Ex_MaxIceLDF = GetMaxLDFx(Pos, EtotG_int, Depths[0], "x") 
-    plt.scatter(posx_MaxIceLDF[:,0], Ex_MaxIceLDF, label="Ice")
+
 
     # 60m-deep antennas results
     posx60_MaxAirLDF, Ex60_MaxAirLDF = GetMaxLDFx(Pos, EtotC_int, Depths[1], "x") 
@@ -106,6 +106,8 @@ for simpath in SimpathAll:
     # 100m-deep antennas results
     posx100_MaxAirLDF, Ex100_MaxAirLDF = GetMaxLDFx(Pos, EtotC_int, Depths[2], "x") 
     posx100_MaxIceLDF, Ex100_MaxIceLDF = GetMaxLDFx(Pos, EtotG_int, Depths[2], "x") 
+   
+
 
     for lst, val in zip([posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceLDFAll, EnergyAll, ZenithAll],
                         [posx100_MaxAirLDF, posx100_MaxIceLDF, Ex100_MaxAirLDF, Ex100_MaxIceLDF, energy, theta]):
