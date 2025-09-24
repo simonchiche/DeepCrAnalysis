@@ -28,7 +28,7 @@ from scipy.interpolate import griddata
 from datetime import datetime
 from scipy.optimize import curve_fit
 from Modules.ModulePlotAmplitudeDistrib import PlotAmplitudeDistribution
-from Modules.ModuleGetAmplitudeDistrib import GetAmplitudeDistribution
+from Modules.ModuleGetAmplitudeDistrib import GetAmplitudeDistribution, GetAmplitudeDistributionZenBin
 ##from Modules.Fluence.FunctionsRadiationEnergy import GetFluence, GetRadiationEnergy
 #endregion
 
@@ -99,34 +99,69 @@ EtotAirAll, EtotIceAll, EnergyAll, ZenithAll, PosAll =\
 
 
 EnergyBins = np.sort(np.unique(EnergyAll))
+ZenithBins = np.sort(np.unique(ZenithAll))
+
+zenithbins = [0, 34, 50]
+EtotAirAll16_5_zen, EtotAirAll17_5_zen = {}, {}
+for zen in zenithbins:
+    EtotAirAll16_5_zen[zen] = \
+        GetAmplitudeDistributionZenBin(EtotAirAll, EnergyAll, ZenithAll, PosAll, EnergyBins[0], zen, 3116)
+    EtotAirAll17_5_zen[zen] = \
+        GetAmplitudeDistributionZenBin(EtotAirAll, EnergyAll, ZenithAll, PosAll, EnergyBins[1], zen, 3116)
+
 
 EtotAirAll16_5 = \
     GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[0], 3116)
 
-EtotAirAll17 = \
+#EtotAirAll17 = \
+#    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[1], 3116)
+
+#EtotAirAll17_5 = \
+#    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[2], 3116)
+EtotAirAll17_5 = \
     GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[1], 3116)
 
-plt.hist(EtotAirAll17)
-plt.yscale("log")
-
-EtotAirAll17_5 = \
-    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[2], 3116)
 
 EtotIceAll16_5 = \
     GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[0], 3116)
 
-EtotIceAll17 = \
+#EtotIceAll17 = \
+#    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[1], 3116)
+
+#EtotIceAll17_5 = \
+#    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[2], 3116)
+EtotIceAll17_5 = \
     GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[1], 3116)
 
-EtotIceAll17_5 = \
-    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[2], 3116)
 
 ### Plots
-
 labels=('$10^{16.5}$ eV', '$10^{17}$ eV', '$10^{17.5}$ eV')
-bin_edges = np.linspace(20,6000, 50) 
-PlotAmplitudeDistribution(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5, bin_edges, labels, True, OutputPath, "In-air", "log")
+
+#bin_edges = np.linspace(20,6000, 50) 
+#PlotAmplitudeDistribution(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5, bin_edges, labels, True, OutputPath, "In-air", "log")
+
+#bin_edges = np.linspace(20, 6000, 50) 
+#PlotAmplitudeDistribution(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, bin_edges, labels, True, OutputPath, "In-ice", "log")
+
+def PlotAmplitudeDistribution(Etot1, Etot3, bin_edges, labels, Save, OutputPath, pretitle, scale = "linear"):
+
+
+    plt.hist(Etot1, bin_edges, alpha=0.6, edgecolor='black', label=labels[0])
+    plt.hist(Etot3 , bin_edges, alpha=0.6, edgecolor='black', label=labels[2])
+    plt.xlabel('$E_{tot}^{peak}\, [\mu V /m]$')
+    plt.ylabel('Nant')
+    #plt.xlim(0,2000)
+    plt.legend()
+    if(scale=="log"): plt.yscale("log")
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    #plt.title(r"In-air, $\theta =0^{\circ}$, $E=10^{17.5} eV$")]
+    OutputPath = OutputPath + pretitle
+    #plt.xscale("log")
+    plt.title(f"{pretitle} emission")
+    plt.tight_layout()
+    if(Save):
+        plt.savefig(OutputPath + "FilteredPulseDistrib.pdf", bbox_inches="tight") 
+    plt.show()
 
 bin_edges = np.linspace(20, 6000, 50) 
-PlotAmplitudeDistribution(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, bin_edges, labels, True, OutputPath, "In-ice", "log")
-
+PlotAmplitudeDistribution(EtotAirAll16_5, EtotAirAll17_5, bin_edges, labels, True, OutputPath, "In-air", "lin")
