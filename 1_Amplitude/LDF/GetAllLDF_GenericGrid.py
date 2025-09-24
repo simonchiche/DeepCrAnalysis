@@ -61,6 +61,19 @@ for simpath in SimpathAll:
     #Traces_tot = Shower.CombineTraces()
 
     # =============================================================================
+    #                                Filter
+    # =============================================================================
+
+    Filter = True
+    if(Filter):
+        fs, lowcut, highcut = 5e9, 50e6, 1e9
+        #Traces_C_filtered =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
+        #Traces_G_filered =Shower.filter_all_traces(Traces_G, fs, lowcut, highcut)
+
+        Traces_C =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
+        Traces_G =Shower.filter_all_traces(Traces_G, fs, lowcut, highcut)
+
+    # =============================================================================
     #                           Get peak amplitude
     # =============================================================================
 
@@ -106,6 +119,16 @@ for simpath in SimpathAll:
     # 100m-deep antennas results
     posx100_MaxAirLDF, Ex100_MaxAirLDF = GetMaxLDFx(Pos, EtotC_int, Depths[2], "x") 
     posx100_MaxIceLDF, Ex100_MaxIceLDF = GetMaxLDFx(Pos, EtotG_int, Depths[2], "x") 
+
+    arg= np.argsort(posx100_MaxIceLDF[:, 0])
+    posx100_MaxIceLDF = posx100_MaxIceLDF[arg]
+    Ex100_MaxIceLDF = Ex100_MaxIceLDF[arg]
+    plt.plot(posx100_MaxIceLDF[:, 0], Ex100_MaxIceLDF, "-o")
+    plt.xlabel("Position [m]")
+    plt.ylabel("$E_{tot}^{int}$ [$\mu$V/m]")
+    plt.title("Ice, E=%.2f EeV, Depth =$%d\,m$" %(energy, Depths[2]))
+    plt.grid()           
+    plt.show()
    
 
 
@@ -119,6 +142,7 @@ map(np.array, [posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceL
 
 selE = 0.316
 selDepth = 100
+
 
 PlotAllAirLdfsGeneric(posx_MaxAirLDFAll, Ex_MaxAirLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Air", OutputPath, Save=True)
 PlotAllIceLdfsGeneric(posx_MaxIceLDFAll, Ex_MaxIceLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Ice", OutputPath, Save=True)

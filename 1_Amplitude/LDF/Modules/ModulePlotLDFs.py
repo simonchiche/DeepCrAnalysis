@@ -40,7 +40,7 @@ def PlotAllAirLdfsGeneric(posx_MaxLDF_All, Ex_MaxAirLDF_All, ZenithAll, EnergyAl
     plt.title("In-air, E=%.2f EeV, Depth =$%d\,m$" %(selE, selDepth))
     plt.legend()
     plt.grid()
-    
+    plt.xlim(-1000, 1000)
     plt.savefig(OutputPath + "LDF_" + title + "_E%.2f_Detph%d.pdf" %(selE, selDepth), bbox_inches="tight") if Save else None
     plt.show()
 

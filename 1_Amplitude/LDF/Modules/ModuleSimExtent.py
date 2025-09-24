@@ -78,9 +78,9 @@ def GetMaxLDFx(Pos, Etot, Depth,channel):
     Etot = Etot[sel]
 
     min_y = np.min(abs(Pos[:, 1]))
-    delta_ax = 1
+    delta_ax = 5
     print(min_y)
-    mask = (Pos[:, 1] >= min_y - delta_ax ) & (Pos[:, 1] < min_y + delta_ax) 
+    mask = (Pos[:, 1] >= (min_y - delta_ax) ) & (Pos[:, 1] < (min_y + delta_ax)) 
     best_positions = Pos[mask]
     best_amplitudes = Etot[mask]        
     
