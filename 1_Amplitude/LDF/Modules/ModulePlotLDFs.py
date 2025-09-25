@@ -52,6 +52,9 @@ def PlotAllIceLdfs(posx_MaxLDF_All, Ex_MaxAirLDF_All, ZenithAll, EnergyAll, selE
 
     print(selE, selDepth)
     for i in range(len(posx_MaxLDF_sel)):
+        maskDepth = posx_MaxLDF_sel[i][:,2] == (3216.0 - selDepth)
+        posx_MaxLDF_sel[i] = posx_MaxLDF_sel[i][maskDepth]
+        Ex_MaxLDF_sel[i] = Ex_MaxLDF_sel[i][maskDepth]
         
 
         plt.plot(posx_MaxLDF_sel[i][:, 0], Ex_MaxLDF_sel[i], "-", label="$\\theta = %.d^{\circ}$" %(ZenithAll[maskE][i]), linewidth=2.5)

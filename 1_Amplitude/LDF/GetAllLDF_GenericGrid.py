@@ -127,7 +127,8 @@ for simpath in SimpathAll:
     plt.xlabel("Position [m]")
     plt.ylabel("$E_{tot}^{int}$ [$\mu$V/m]")
     plt.title("Ice, E=%.2f EeV, Depth =$%d\,m$" %(energy, Depths[2]))
-    plt.grid()           
+    plt.grid()
+    plt.savefig(OutputPath + "Ice_LDF_%.3f_EeV_Depth%d_zen%.d.pdf" %(energy, Depths[2], theta), bbox_inches='tight')           
     plt.show()
    
 
@@ -143,7 +144,7 @@ map(np.array, [posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceL
 selE = 0.316
 selDepth = 100
 
-
 PlotAllAirLdfsGeneric(posx_MaxAirLDFAll, Ex_MaxAirLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Air", OutputPath, Save=True)
 PlotAllIceLdfsGeneric(posx_MaxIceLDFAll, Ex_MaxIceLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Ice", OutputPath, Save=True)
+
 
