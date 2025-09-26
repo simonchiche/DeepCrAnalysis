@@ -80,83 +80,19 @@ Eradice_allsims = np.concatenate(Eradice_allsims, axis =0)
 # =============================================================================
 
 # Hpole/Vpole Erad air ratio vs theta for different energy bins
+Save = True
 SelDepth = 3116  # Depth in meters
-title = "In-Air"
+title = "In-air"
 PlotHpolVpolEradRatiovsThetavsE(Shower, Eradair_allsims, SelDepth, title, OutputPath, Save)
 
 # Hpole/Vpole Erad ice ratio vs theta for different energy bins
+SelDepth = 3116
 title = "In-ice"
-PlotHpolVpolEradRatiovsThetavsE(Shower, Eradice_allsims, SelDepth, title, OutputPath, Save)
+PlotHpolVpolEradRatiovsThetavsE(Shower, Eradice_allsims, SelDepth, title, OutputPath, Save, 1.0, 4.0)
 
-
-
-def PlotMeanHpolVpolEradRatiovsThetavsE(Shower, Erad_allsims, SelDepth, title, OutputPath, Save):
-
-    EnergyAll = np.unique(Erad_allsims[:,5])  
-    Gdeep = Shower.glevel - SelDepth
-    HVratioAll = dict()
-    for i in range(len(EnergyAll)):
-        sel = (Erad_allsims[:,4] == SelDepth) & (Erad_allsims[:,5] == EnergyAll[i])
-        
-        EradHpol_tot = (Erad_allsims[sel][:,0] + Erad_allsims[sel][:,1])
-        EradVpol_tot = Erad_allsims[sel][:,2]
-        EradHpoleVpoleRatio_tot = EradHpol_tot/EradVpol_tot
-
-        arg = np.argsort(Erad_allsims[sel][:,6])
-        HVratioAll[i] = EradHpoleVpoleRatio_tot[arg]
-        #plt.plot(Erad_allsims[sel][:,6][arg], EradHpoleVpoleRatio_tot[arg], label ="$E= %.2f$ EeV" %EnergyAll[i])
-    HVratioAllArr = np.vstack(HVratioAll) #np.vstack([HVratioAll[0], HVratioAll[1], HVratioAll[2]])
-    HVratiomean, HVratiostd =  np.mean(HVratioAllArr, axis=0), np.std(HVratioAllArr, axis=0)
-    #plt.yscale("log")
-    #plt.ylim(min(data)/5, max(data)*5)
-    plt.errorbar(Erad_allsims[sel][:,6][arg], HVratiomean, yerr = HVratiostd, label ="in-air", marker ="o", color = "#D62728")
-    plt.ylabel("$E_{rad}^{Hpol}/E_{rad}^{Vpol}\,$[50-1000 MHz]")
-    plt.xlabel("Zenith [Deg.]")
-    plt.grid()
-    plt.legend()
-    #plt.ylim(1, 4)
-    plt.title(title + ", Depth =%d m" %(Gdeep), fontsize =13)
-    plt.savefig(OutputPath + "_" + title + "mean_Hpol_over_Vpol_vs_E_vs_zenith_z%d.pdf"\
-                 %SelDepth, bbox_inches = "tight") if Save else None
-    plt.show()
-
-    return
 
 title = "In-air"
 PlotMeanHpolVpolEradRatiovsThetavsE(Shower, Eradair_allsims, SelDepth, title, OutputPath, Save=True)
 
-
-def PlotMeanHpolVpolEradRatiovsThetavsE(Shower, Erad_allsims, SelDepth, title, OutputPath, Save):
-
-    EnergyAll = np.unique(Erad_allsims[:,5])  
-    Gdeep = Shower.glevel - SelDepth
-    HVratioAll = dict()
-    for i in range(len(EnergyAll)):
-        sel = (Erad_allsims[:,4] == SelDepth) & (Erad_allsims[:,5] == EnergyAll[i])
-        
-        EradHpol_tot = (Erad_allsims[sel][:,0] + Erad_allsims[sel][:,1])
-        EradVpol_tot = Erad_allsims[sel][:,2]
-        EradHpoleVpoleRatio_tot = EradHpol_tot/EradVpol_tot
-
-        arg = np.argsort(Erad_allsims[sel][:,6])
-        HVratioAll[i] = EradHpoleVpoleRatio_tot[arg]
-        #plt.plot(Erad_allsims[sel][:,6][arg], EradHpoleVpoleRatio_tot[arg], label ="$E= %.2f$ EeV" %EnergyAll[i])
-    HVratioAllArr = np.vstack([HVratioAll]) #np.vstack([HVratioAll[0], HVratioAll[1], HVratioAll[2]])
-    HVratiomean, HVratiostd =  np.mean(HVratioAllArr, axis=0), np.std(HVratioAllArr, axis=0)
-    #plt.yscale("log")
-    #plt.ylim(min(data)/5, max(data)*5)
-    plt.errorbar(Erad_allsims[sel][:,6][arg], HVratiomean, yerr = HVratiostd, label ="in-ice", marker ="o", color = "#4F81BD")
-    plt.ylabel("$E_{rad}^{Hpol}/E_{rad}^{Vpol}\,$[50-1000 MHz]")
-    plt.xlabel("Zenith [Deg.]")
-    plt.grid()
-    plt.legend()
-    plt.ylim(1, 4)
-    plt.title(title + ", Depth =%d m" %(Gdeep), fontsize =13)
-    plt.savefig(OutputPath + "_" + title + "mean_Hpol_over_Vpol_vs_E_vs_zenith_z%d.pdf"\
-                 %SelDepth, bbox_inches = "tight") if Save else None
-    plt.show()
-
-    return
-
 title = "In-ice"
-PlotMeanHpolVpolEradRatiovsThetavsE(Shower, Eradice_allsims, SelDepth, title, OutputPath, Save= True)
+PlotMeanHpolVpolEradRatiovsThetavsE(Shower, Eradice_allsims, SelDepth, title, OutputPath, Save= True,  ylowlim=1.0, yhighlim=4.0)

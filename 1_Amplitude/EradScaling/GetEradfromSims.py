@@ -82,12 +82,12 @@ Eradice_allsims = np.concatenate(Eradice_allsims, axis =0)
 # =============================================================================
 
 # In-air radiation energy vs depth
-SelZen = 50
+SelZen = 0
 title = "In-air"
 PlotEradDepthScaling(Eradair_allsims, SelZen, title, OutputPath)
 
 # In-ice radiation energy vs depth
-SelZen = 50
+SelZen = 0
 title = "In-ice"
 PlotEradDepthScaling(Eradice_allsims, SelZen, title, OutputPath)
 
@@ -97,7 +97,7 @@ title = "In-air"
 PlotEradThetaScaling(Eradair_allsims, Depths, SelE, SelZen, title, OutputPath)
 
 # In-ice radiation energy vs zenith angle
-SelE = 0.316
+SelE = 0.0316
 title = "In-ice"
 PlotEradThetaScaling(Eradice_allsims, Depths, SelE, SelZen, title, OutputPath)
 
@@ -115,8 +115,14 @@ PlotEradEnergyScaling(Eradice_allsims, SelDepth, title, OutputPath)
 title = "In-air"
 Eindex = 2 #E17.5/E17
 PlotEradEScalingvsDepth(Eradair_allsims, Eindex, title, OutputPath)
+title = "In-air"
 Eindex = 1 #E17/E16.5
 PlotEradEScalingvsDepth(Eradair_allsims, Eindex, title, OutputPath)
+
+title = "In-ice"
+Eindex = 1 #E17/E16.5
+PlotEradEScalingvsDepth(Eradice_allsims, Eindex, title, OutputPath)
+
 
 # In-ice Energy scaling as a function of depth
 title = "In-ice"
@@ -125,7 +131,7 @@ PlotEradEScalingvsDepth(Eradice_allsims, Eindex, title, OutputPath)
 Eindex = 1 #E17/E16.5
 PlotEradEScalingvsDepth(Eradice_allsims, Eindex, title, OutputPath)
 
-
+SelE = 0.316
 title ="Air_vs_Ice_vs_Theta"
 PlotEradtotThetaScaling(Eradair_allsims, Eradice_allsims, Depths, SelE, SelZen, title, OutputPath)
 
