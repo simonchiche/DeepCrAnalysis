@@ -101,13 +101,46 @@ EtotAirAll, EtotIceAll, EnergyAll, ZenithAll, PosAll =\
 EnergyBins = np.sort(np.unique(EnergyAll))
 ZenithBins = np.sort(np.unique(ZenithAll))
 
-zenithbins = [0, 34, 50]
+zenithbins = [0, 50]
 EtotAirAll16_5_zen, EtotAirAll17_5_zen = {}, {}
+EtotIceAll16_5_zen, EtotIceAll17_5_zen = {}, {}
 for zen in zenithbins:
     EtotAirAll16_5_zen[zen] = \
         GetAmplitudeDistributionZenBin(EtotAirAll, EnergyAll, ZenithAll, PosAll, EnergyBins[0], zen, 3116)
     EtotAirAll17_5_zen[zen] = \
         GetAmplitudeDistributionZenBin(EtotAirAll, EnergyAll, ZenithAll, PosAll, EnergyBins[1], zen, 3116)
+    EtotIceAll16_5_zen[zen] = \
+        GetAmplitudeDistributionZenBin(EtotIceAll, EnergyAll, ZenithAll, PosAll, EnergyBins[0], zen, 3116)
+    EtotIceAll17_5_zen[zen] = \
+        GetAmplitudeDistributionZenBin(EtotIceAll, EnergyAll, ZenithAll, PosAll, EnergyBins[1], zen, 3116)
+
+zenithbins = [0, 50]
+
+for i in zenithbins:
+    plt.hist(EtotAirAll17_5_zen[i], bins=np.linspace(20, 6000, 50), alpha=0.6, edgecolor='black', label='In-air')
+    plt.hist(EtotIceAll17_5_zen[i], bins=np.linspace(20, 6000, 50), alpha=0.6, edgecolor='black', label=f'In-ice')
+    plt.xlabel('$E_{tot}^{peak}\, [\mu V /m]$')
+    plt.ylabel('Nant')
+    plt.legend()
+    plt.yscale("log")
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.title(r"In-air, $E=10^{17.5} eV$, $\theta = %d^{\circ}$" % i)
+    plt.savefig(OutputPath + f"AmplitudeDistribution_In_air_In_ice_E17_5_zen{i}_log.pdf", bbox_inches="tight")
+    plt.show()
+
+zenithbins = [0, 50]
+
+for i in zenithbins:
+    plt.hist(EtotAirAll16_5_zen[i], bins=np.linspace(20, 700, 50), alpha=0.6, edgecolor='black', label='In-air')
+    plt.hist(EtotIceAll16_5_zen[i], bins=np.linspace(20, 700, 50), alpha=0.6, edgecolor='black', label=f'In-ice')
+    plt.xlabel('$E_{tot}^{peak}\, [\mu V /m]$')
+    plt.ylabel('Nant')
+    plt.legend()
+    plt.yscale("log")
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.title(r"In-air, $E=10^{16.5} eV$, $\theta = %d^{\circ}$" % i)
+    plt.savefig(OutputPath + f"AmplitudeDistribution_In_air_In_ice_E16_5_zen{i}_log.pdf", bbox_inches="tight")
+    plt.show()
 
 
 EtotAirAll16_5 = \
@@ -143,7 +176,7 @@ labels=('$10^{16.5}$ eV', '$10^{17}$ eV', '$10^{17.5}$ eV')
 #bin_edges = np.linspace(20, 6000, 50) 
 #PlotAmplitudeDistribution(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, bin_edges, labels, True, OutputPath, "In-ice", "log")
 
-def PlotAmplitudeDistribution(Etot1, Etot3, bin_edges, labels, Save, OutputPath, pretitle, scale = "linear"):
+def PlotAmplitudeDistribution(Etot1, Etot3, bin_edges, labels, Save, OutputPath, pretitle, savename, scale = "linear"):
 
 
     plt.hist(Etot1, bin_edges, alpha=0.6, edgecolor='black', label=labels[0])
@@ -160,8 +193,19 @@ def PlotAmplitudeDistribution(Etot1, Etot3, bin_edges, labels, Save, OutputPath,
     plt.title(f"{pretitle} emission")
     plt.tight_layout()
     if(Save):
-        plt.savefig(OutputPath + "FilteredPulseDistrib.pdf", bbox_inches="tight") 
+        plt.savefig(OutputPath + savename + ".pdf", bbox_inches="tight") 
     plt.show()
 
 bin_edges = np.linspace(20, 6000, 50) 
-PlotAmplitudeDistribution(EtotAirAll16_5, EtotAirAll17_5, bin_edges, labels, True, OutputPath, "In-air", "lin")
+savename = "_In_air_E16_5_E17_5_log"
+PlotAmplitudeDistribution(EtotAirAll16_5, EtotAirAll17_5, bin_edges, labels, True, OutputPath, "In-air", savename, "log")
+
+
+bin_edges = np.linspace(20, 6000, 50) 
+savename = "_In_ice_E16_5_E17_5_log"
+PlotAmplitudeDistribution(EtotIceAll16_5, EtotIceAll17_5, bin_edges, labels, True, OutputPath, "In-ice", savename, "log")
+
+
+
+bin_edges = np.linspace(20, 6000, 50) 
+PlotAmplitudeDistribution(EtotAirAll17_5, EtotIceAll17_5, bin_edges, labels, True, OutputPath, "In-air", "lin")
