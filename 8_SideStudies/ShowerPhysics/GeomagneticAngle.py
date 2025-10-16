@@ -40,7 +40,7 @@ Eradtot = []
 
 sin_alpha_all = []
 theta_all = []
-for simpath in SimpathAll:
+for simpath in SimpathAll[:1]:
     print(simpath.split("/")[-1])
     Shower = CreateShowerfromHDF5(simpath)
     uv = Shower.showerdirection()
@@ -63,5 +63,5 @@ plt.scatter(theta_all, sin_alpha_all, marker='x', color="teal", label='$sin{\\al
 plt.xlabel("Zenith [Deg.]")
 plt.ylabel("$sin{\\alpha}$")
 plt.grid()
-plt.savefig(OutputPath + "_sin_alpha_vs_theta.pdf", bbox_inches = "tight") if Save else None
+#plt.savefig(OutputPath + "_sin_alpha_vs_theta.pdf", bbox_inches = "tight") if Save else None
 plt.show()
