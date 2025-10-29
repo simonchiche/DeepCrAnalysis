@@ -957,9 +957,11 @@ def CerenkovStretch(RefShower, TargetShower, GroundPlane = True):
     
 def CreateShowerfromHDF5(HDF5filepath):
 
+
     Primary, E0, zenith, azimuth, Bgeo, glevel, XmaxParam, Pos, Nant, Traces_C, Traces_G = LoadHDF5file(HDF5filepath)
     
-    _Shower = Shower(Primary, E0, zenith, azimuth, 1e5, Nant, Bgeo, glevel, XmaxParam,
+    _Shower = Shower(Primary, E0, zenith, azimuth, 1e6, Nant, Bgeo, glevel, XmaxParam,
                         Pos, Traces_C, Traces_G)
+    
 
     return _Shower  

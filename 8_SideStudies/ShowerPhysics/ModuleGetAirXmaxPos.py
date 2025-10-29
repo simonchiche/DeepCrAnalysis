@@ -158,7 +158,7 @@ def showerdirection(zenith, azimuth):
     
     return uv
 
-def getXmaxPosition(Xmax_primary, azimuth, zenith, glevel, injection, showerDistance, mode = "Distance"):
+def getXmaxPosition(azimuth, zenith, glevel, injection, showerDistance, Xmax_primary =0):
 
     # Xmax_primary in g/cm2
     # zenith in cosmic ray convention in degrees
@@ -168,7 +168,7 @@ def getXmaxPosition(Xmax_primary, azimuth, zenith, glevel, injection, showerDist
 
     
     uv = showerdirection(zenith, azimuth)
-    if(mode == "Depth"):
+    if(Xmax_primary != 0):
         showerDistance = getGroundXmaxDistance(Xmax_primary, zenith, glevel, injection)
     print(showerDistance)
     XmaxPosition = -uv*showerDistance 
@@ -176,10 +176,10 @@ def getXmaxPosition(Xmax_primary, azimuth, zenith, glevel, injection, showerDist
             
     return XmaxPosition
 
-Xmax =  680.25
-Azimuth = 0
-Zenith = 43
-injection = 1e6
-glevel = 3216
-Dxmax = 3108
-getXmaxPosition(Xmax, Azimuth, Zenith, glevel, injection, Dxmax)
+#Xmax =  680.25
+#Azimuth = 0
+#Zenith = 43
+#injection = 1e6
+#glevel = 3216
+#Dxmax = 3108
+#getXmaxPosition(Azimuth, Zenith, glevel, injection, Dxmax)
