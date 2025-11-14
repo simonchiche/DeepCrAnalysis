@@ -33,13 +33,11 @@ from collections import defaultdict
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLibV1"  #"InterpSim"
-SimName = "Rectangle_Proton_0.316_0_0_1_0.hdf5"
+SimDir = "FullDenseDeepCr" #"DeepCrLibV1"  #"InterpSim"
 WorkPath = os.getcwd()
-simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/"\
-+ SimDir + "/" + SimName 
+simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/" + SimDir
 
-BatchID = "Linear"
+BatchID = "DoublePulse"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
 Save = False
@@ -55,6 +53,9 @@ PosDoubleBumpsAll = []
 NtriggerAll_x, NtriggerAll_y, NtriggerAll_z, NtriggerAll = [], [], [], []
 k= 0
 
+threshold1 =100
+threshold2 = 40
+
 for simpath in SimpathAll:
     print(simpath)
     Shower = CreateShowerfromHDF5(simpath)
@@ -69,8 +70,7 @@ for simpath in SimpathAll:
     # Initialization
     SignalProp[energy][zenith] = {"Eair": [], "Eice": [], "Pos": []}
     # We skip simulations with issues
-    if(zenith == 10):
-        continue
+
     # We focus the study on showers at 10^17.5 eV
     if(energy<0.316):
         continue
@@ -97,7 +97,7 @@ for simpath in SimpathAll:
     Eice_peak = Shower.GetPeakTraces(Traces_G)
     # Extracting the numbers of trigger for each channel
     Ntrigger_x, Ntrigger_y, Ntrigger_z, Ntrigger_tot = \
-        GetNtriggered(Eair_peak, Eice_peak, thresold=100)
+        GetNtriggered(Eair_peak, Eice_peak, thresold=threshold1)
     NtriggerAll_x.append(Ntrigger_x)
     NtriggerAll_y.append(Ntrigger_y)
     NtriggerAll_z.append(Ntrigger_z)
@@ -112,14 +112,15 @@ for simpath in SimpathAll:
 
     # Finding the double pulse events
     pulse_flags_all[k]= \
-    GetDoubleBumps(Shower, Eair_peak, Eice_peak, thresold1=100/np.sqrt(3), thresold2=60/np.sqrt(3), Plot = False)
+    GetDoubleBumps(Shower, Eair_peak, Eice_peak, thresold1=threshold1, thresold2=threshold2, Plot = False)
     DoublePulseFlags = pulse_flags_all[k]["isDoublePulse"]["tot"]
 
     # Double Bump maps
     PosDoubleBumps = PlotDumbleBumpsMaps(Pos, np.array(DoublePulseFlags), energy, zenith)
     PlotDumbleBumpsMapsHighRes(Pos, np.array(DoublePulseFlags), energy, zenith, OutputPath)
-    if(zenith == 43):
+    if(zenith == 50):
         PosDoubleBumpsAll.append(PosDoubleBumps)
+    #PosDoubleBumpsAll.append(PosDoubleBumps)
     k = k + 1
     
 Nsingleair_x, Nsingleair_y, Nsingleair_z, Nsingleice_x, Nsingleice_y, Nsingleice_z,  Ndouble_x, Ndouble_y, Ndouble_z, Ndouble_tot = \
@@ -134,15 +135,13 @@ Ntrigger_All_y = np.array(NtriggerAll_y)
 Ntrigger_All_z = np.array(NtriggerAll_z)
 
 
-threshold1 =100
-threshold2 = 60
 selE = 0.316
 PlotNAirtrigger(ZenithAll, Nsingleair_x, Nsingleair_y, Nsingleair_z, threshold1, threshold2, selE)
 PlotNIcetrigger(ZenithAll, Nsingleice_x, Nsingleice_y, Nsingleice_z, threshold1, threshold2, selE)
 PlotNtriggAll(ZenithAll, NtriggerAll)
 PlotNdoubleTot(ZenithAll, Ndouble_tot)
 PlotDoubleRateTot(ZenithAll, Ndouble_tot, NtriggerAll)
-PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z)
+PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, threshold1, threshold2)
 
 
 
@@ -188,9 +187,9 @@ plt.show()
 
 
 
+# Ntrigger for each emission vs zenith and depth
 
 
-'''
 Nsingleairlayers_x, Nsingleairlayers_y, Nsingleairlayers_z = dict(), dict(), dict()  
 Nsingleicelayers_x, Nsingleicelayers_y, Nsingleicelayers_z = dict(), dict(), dict()  
 Ndoublelayers_x, Ndoublelayers_y, Ndoublelayers_z = dict(), dict(), dict()  
@@ -267,7 +266,6 @@ for k in range(len(Depths)):
     plt.ylabel("$N_{double}/N_{triggered}$")
     plt.title("$E=10^{17.5} eV$, $th1 = 600 \, \mu Vs/m$, $th2 = 400 \, \mu Vs/m$")
     plt.legend()
-    plt.savefig("/Users/chiche/Desktop/DoubleRate_E0.316_Depth%.d_vs_zen.pdf" %Depths[k], bbox_inches = "tight")
+    #plt.savefig("/Users/chiche/Desktop/DoubleRate_E0.316_Depth%.d_vs_zen.pdf" %Depths[k], bbox_inches = "tight")
     plt.show()
 
-'''

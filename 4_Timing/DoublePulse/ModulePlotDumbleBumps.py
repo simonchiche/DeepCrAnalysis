@@ -164,7 +164,7 @@ def PlotDoubleRateTot(ZenithAll, Ndouble_tot, NtriggerAll):
     plt.show()
 
 
-def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z):
+def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, th1, th2):
 
     colors = ["#0072B2", "#E69F00", "#009E73"]  # Blue, Orange, Green (colorblind-safe)
     linestyles = ["-", "--", "-."]
@@ -175,7 +175,7 @@ def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntri
     plt.plot(np.array(ZenithAll)[arg], Ndouble_z[arg]/Ntrigger_All_z[arg], label="z", color=colors[2], linestyle=linestyles[2], linewidth=2, marker='o', markersize=5)
     plt.xlabel("Zenith [Deg.]")
     plt.ylabel(r"$N_{\mathrm{double}}/N_{\mathrm{trigger}}$")
-    plt.title("$E=10^{17.5}\,$eV, Thresolds $= 100, 60 \, \mu V/m$", fontsize=12)
+    plt.title("$E=10^{17.5}\,$eV, Thresolds $= %.d, %.d \, \mu V/m$" %(th1, th2), fontsize=12)
     plt.legend()
     plt.grid(True, which='both', linestyle=':', linewidth=0.5)
     #plt.savefig(OutputPath + "DoubleRateAllchannels.pdf", bbox_inches="tight")
