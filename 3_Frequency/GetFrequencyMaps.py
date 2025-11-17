@@ -87,7 +87,17 @@ for i in range(len(radius_bins)-1):
     print(f"Radius bin: {radius_bins[i]} - {radius_bins[i+1]} m, N_antennas: {len(Trace_G_Surface_bin)}")
     if len(Trace_G_Surface_bin) > 0:
         PlotAllSpectra(Trace_G_Surface_bin)
-        PlotAllSignals(Trace_G_Surface_bin)
+        #PlotAllSignals(Trace_G_Surface_bin)
+
+radius_bins = np.linspace(0, 740, 50)
+for i in range(len(radius_bins)-1):
+    mask_rad = (radius >= radius_bins[i]) & (radius < radius_bins[i+1])
+    Trace_C_Surface_bin = {k: v for (k, v), m in zip(Trace_C_Surface.items(), mask_rad) if m}
+    Trace_C_Surface_bin = {j: v for j, v in enumerate(Trace_C_Surface_bin.values())}
+    print(f"Radius bin: {radius_bins[i]} - {radius_bins[i+1]} m, N_antennas: {len(Trace_G_Surface_bin)}")
+    if len(Trace_C_Surface_bin) > 0:
+        PlotAllSpectra(Trace_C_Surface_bin)
+        #PlotAllSignals(Trace_C_Surface_bin)
 #################
 
 Trigger = False

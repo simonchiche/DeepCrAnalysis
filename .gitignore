@@ -8,3 +8,4 @@ Environments/
 # Fichiers à ignorer
 
 *.hdf5
+*.txt
