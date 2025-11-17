@@ -33,12 +33,12 @@ from scipy.signal import butter, filtfilt
 #endregion
 
 #region Path definition
-SimDir = "DeepCrLibV1"  #"InterpSim"
-SimName = "Rectangle_Proton_0.316_50_0_1_0.hdf5"
+SimDir = "FullDenseDeepCr" #"DeepCrLibV1"  #"InterpSim"
+SimName = "Polar_Proton_0.316_34_0_1.hdf5"
 WorkPath = os.getcwd()
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/" \
 + SimDir + "/" + SimName 
-BatchID = "Linear"
+BatchID = "TracesExample"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
 Save = False
@@ -77,16 +77,86 @@ ExG_int, EyG_int, EzG_int, EtotG_int, peaktime = Shower.GetIntTraces(Traces_G)
 # Geant
 #PlotMaxTraces(Traces_G, EtotG, 1)
 #Coreas
-PlotMaxTraces(Traces_C, EtotC, 5)
+#PlotMaxTraces(Traces_C, EtotC, 5)
 
 #PlotMaxTraces(Traces_C, EzC_int, 5)   
 
 # Plot all traces above a given threshold
-PlotAllTraces(Nant, Traces_C, 100, 5)
+#PlotAllTraces(Nant, Traces_C, 100, 5)
 
 ##PlotGivenTrace(Traces_C, 310, "y")
 
 ##PlotAllChannels(Traces_C, 1068)
 ##PlotAllChannels(Traces_G, 1068)
 
-PlotSurfaceEz(Nant, 3216, Pos, Traces_C, 1e-5)
+#PlotSurfaceEz(Nant, 3216, Pos, Traces_C, 1e-5)
+
+
+# =============================================================================
+#                        Traces at different radial distances
+# =============================================================================
+
+
+# We extract traces at a depth of 100 meters
+y = abs(Pos[:,1])
+x = Pos[:,0]
+sel = (Pos[:,2]==min(Depths)) & (y<=10) & (x>=0)
+
+Traces_C100 = {i: Traces_C[i] for i in Traces_C if sel[i]}
+Traces_C100 = {i: val for i, val in enumerate(Traces_C100.values())}
+Traces_G100 = {i: Traces_G[i] for i in Traces_G if sel[i]}
+Traces_G100 = {i: val for i, val in enumerate(Traces_G100.values())}
+
+Pos100 = Pos[sel]
+radial_dist = np.sqrt(Pos100[:,0]**2 + Pos100[:,1]**2)
+
+r1, r2, r3, r4, r5 = 5, 25, 45, 65, 85
+arg1 = np.argmin(np.abs(radial_dist - r1))
+arg2 = np.argmin(np.abs(radial_dist - r2))
+arg3 = np.argmin(np.abs(radial_dist - r3))
+arg4 = np.argmin(np.abs(radial_dist - r4))
+arg5 = np.argmin(np.abs(radial_dist - r5))
+
+plt.plot(Traces_C100[arg1][:,0]*1e9, -Traces_C100[arg1][:,2], label="%.d m" %(r1))
+plt.plot(Traces_C100[arg2][:,0]*1e9, -Traces_C100[arg2][:,2], label="%.d m" %(r2))
+plt.plot(Traces_C100[arg3][:,0]*1e9, -Traces_C100[arg3][:,2], label="%.d m" %(r3))
+plt.plot(Traces_C100[arg4][:,0]*1e9, -Traces_C100[arg4][:,2], label="%.d m" %(r4))
+plt.plot(Traces_C100[arg5][:,0]*1e9, -Traces_C100[arg5][:,2], label="%.d m" %(r5))
+plt.xlabel("Time [ns]")
+plt.ylabel("Efield [$\mu \, V/m$]")
+plt.legend()
+plt.xlim(480, 700)
+plt.title("In-air, Depth = 100 m", fontsize=14)
+plt.savefig(OutputPath + "vs_r_InAir_Depth100m.pdf", bbox_inches='tight')
+plt.show()
+
+print(radial_dist[arg1], radial_dist[arg2], radial_dist[arg3], radial_dist[arg4], radial_dist[arg5])
+
+r1, r2, r3, r4, r5 = 125, 135, 145, 155, 175
+arg1 = np.argmin(np.abs(radial_dist - r1))
+arg2 = np.argmin(np.abs(radial_dist - r2))
+arg3 = np.argmin(np.abs(radial_dist - r3))
+arg4 = np.argmin(np.abs(radial_dist - r4))
+arg5 = np.argmin(np.abs(radial_dist - r5))
+
+plt.plot(Traces_G100[arg1][:,0]*1e9, abs(Traces_G100[arg1][:,2]), label="%.d m" %(r1))
+plt.plot(Traces_G100[arg2][:,0]*1e9, abs(Traces_G100[arg2][:,2]), label="%.d m" %(r2))
+plt.plot(Traces_G100[arg3][:,0]*1e9, abs(Traces_G100[arg3][:,2]), label="%.d m" %(r3))
+plt.plot(Traces_G100[arg4][:,0]*1e9, abs(Traces_G100[arg4][:,2]), label="%.d m" %(r4))
+plt.plot(Traces_G100[arg5][:,0]*1e9, abs(Traces_G100[arg5][:,2]), label="%.d m" %(r5))
+plt.xlabel("Time [ns]")
+plt.ylabel("Efield [$\mu \, V/m$]")
+plt.legend()
+plt.xlim(800, 1100)
+plt.title("In-ice, Depth = 100 m", fontsize=14)
+plt.savefig(OutputPath + "vs_r_InIce_Depth100m.pdf", bbox_inches='tight')
+plt.show()
+
+
+sel = (Pos[:,2]==max(Depths)) 
+GridPos = Pos[sel]
+plt.scatter(GridPos[:,0], GridPos[:,1], s=1)
+plt.xlabel("x [m]")
+plt.ylabel("y [m]")
+plt.savefig(OutputPath + "AntennaGrid.pdf", bbox_inches='tight')
+plt.show()
