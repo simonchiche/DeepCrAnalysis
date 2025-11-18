@@ -17,6 +17,7 @@ import sys
 import pickle
 from MainModules.ShowerClass import CreateShowerfromHDF5
 from  MainModules.PlotConfig import MatplotlibConfig
+from ModulePlotXmax import plot_Xmax_pos, PlotXmaxHeightvsZenith, PlotXmaxGrammage, GenerateXmaxIceData, PlotXmaxDistribution, PlotSlantXmaxIce, PlotXmaxIceDepth, PlotIceXmaxDistribution
 ##from Modules.SimParam.GetLayoutScaling import GetDepthScaling, GetEnergyScaling
 from scipy.interpolate import interp1d
 import scipy
@@ -67,90 +68,39 @@ for simpath in SimpathAll:
 EnergyAll, ZenithAll, XmaxPosAll, XmaxAll = \
     np.array(EnergyAll), np.array(ZenithAll), np.array(XmaxPosAll), np.array(XmaxAll)
 
-Ebins = np.unique(EnergyAll)
+# =============================================================================
+#                             Air Xmax
+# =============================================================================
 
-maskE = EnergyAll == Ebins[1]
+plot_Xmax_pos(EnergyAll, XmaxPosAll, OutputPath)
 
-for i in range(len(Ebins)):
-    maskE = EnergyAll == Ebins[i]
-# Xmax Position for different zenith
-    plt.scatter(XmaxPosAll[:,0][maskE], XmaxPosAll[:,2][maskE], label = f"E = {Ebins[i]} EeV")
-    plt.xlabel("x [m]")
-    plt.ylabel("Xmax height [m]")
-    plt.legend()
-    plt.grid()
-    plt.ylim(2000, max(XmaxPosAll[:,2])+200)
-    plt.axhspan(2000, 3216, color='skyblue', alpha=0.3) 
-plt.savefig(OutputPath + "XmaxAirPositions.pdf", bbox_inches = 'tight')
-plt.show()
+PlotXmaxHeightvsZenith(EnergyAll, ZenithAll, XmaxPosAll, OutputPath)
 
-for i in range(len(Ebins)):
-    maskE = EnergyAll == Ebins[i]
-    plt.scatter(ZenithAll[maskE], XmaxPosAll[:,2][maskE],  label = f"E = {Ebins[i]} EeV")
-    plt.xlabel("Zenith [Deg.]")
-    plt.ylabel("Xmax height [m]")
-    plt.legend()
-    plt.ylim(2000, max(XmaxPosAll[:,2])+200)
-    plt.axhspan(2000, 3216, color='skyblue', alpha=0.3) 
-    plt.grid()
-plt.savefig(OutputPath + "XmaxAirHeightvsZenith.pdf", bbox_inches = 'tight')
-plt.show()
 
-for i in range(len(Ebins)):
-    maskE = EnergyAll == Ebins[i]
-    plt.scatter(ZenithAll[maskE], XmaxAll[maskE],  label = f"E = {Ebins[i]} EeV")
-    plt.xlabel("Zenith [Deg.]")
-    plt.ylabel(r"Xmax Depth [$\mathrm{g/cm^2}$]")
-    plt.legend()
-    plt.grid()
-plt.savefig(OutputPath + "XmaxAirDepth.pdf", bbox_inches = 'tight')
-plt.show()
+PlotXmaxHeightvsZenith(EnergyAll, ZenithAll, XmaxPosAll, OutputPath)
 
-#### ICE XMAX
+PlotXmaxGrammage(EnergyAll, ZenithAll, XmaxAll, OutputPath)
+
+
+PlotXmaxDistribution(EnergyAll, XmaxAll, OutputPath)
+
+# =============================================================================
+#                             Ice Xmax
+# =============================================================================
+
+### Create Ice Xmax Data
+DataPath = "./XmaxIce/*.long"
+GenerateXmaxIceData(DataPath)
 
 XmaxIceData = np.loadtxt("./XmaxIce/XmaxIceData.txt")
 XmaxIceAll, EiceAll, ZenIceAll =\
       XmaxIceData[:,0], XmaxIceData[:,1], XmaxIceData[:,2]
 
-Ebins = np.unique(EiceAll)
-mask = EiceAll == Ebins[0]
 
-for i in range(len(Ebins)):
-    mask = EiceAll == Ebins[i]
-    
-    # Slant Xmax vs zenith
-    plt.plot(ZenIceAll[mask], XmaxIceAll[mask], 'o', label = f"E = {Ebins[i]} EeV")
-    plt.xlabel("Zenith [Deg.]")
-    plt.ylabel("Slant ice Xmax [m]")
-    plt.legend()
-    plt.grid()
-plt.savefig(OutputPath + "XmaxIceSlantvsZenith.pdf", bbox_inches = 'tight')
-plt.show()
+PlotIceXmaxDistribution(EiceAll, XmaxIceAll, OutputPath)
 
-for i in range(len(Ebins)):
-    mask = EiceAll == Ebins[i]
-    
-    # Xmax depth vs zenith
-    plt.plot(ZenIceAll[mask], XmaxIceAll[mask]*np.cos(ZenIceAll[mask]*np.pi/180.0), 'o', label = f"E = {Ebins[i]} EeV")
-    plt.xlabel("Zenith [Deg.]")
-    plt.ylabel("Xmax Depth [m]")
-    plt.legend()
-    plt.grid()
-plt.savefig(OutputPath + "XmaxIceDepthvsZenith.pdf", bbox_inches = 'tight')
-plt.show()
+PlotSlantXmaxIce(EiceAll, ZenIceAll, XmaxIceAll, OutputPath)
+
+PlotXmaxIceDepth(EiceAll, ZenIceAll, XmaxIceAll, OutputPath)
 
 
-
-
-#Data = glob.glob("./XmaxIce/*.long")
-#XmaxIceAll = []
-#EiceAll = []
-#ZenIceAll = []
-#for i in range(len(Data)):
-#    XmaxIce = np.loadtxt(Data[i])
-#    XmaxIceAll.append(XmaxIce)
-#    EiceAll.append(float(Data[i].split("/")[-1].split("_")[1]))
-#    ZenIceAll.append(float(Data[i].split("/")[-1].split("_")[2][:-4]))
-#
-#XmaxIceData = np.array([XmaxIceAll, EiceAll, ZenIceAll]).T
-#np.savetxt("./XmaxIce/XmaxIceData.txt", XmaxIceData)
