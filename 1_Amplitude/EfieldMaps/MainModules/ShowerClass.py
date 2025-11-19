@@ -135,13 +135,15 @@ class Shower:
             maxid = peak_id + extent
             if(minid<0): minid = 0
             if(maxid>len( Traces[i][:,0])): maxid =len( Traces[i][:,0])
+            time = np.arange(0, len(Traces[i][minid:maxid,0]))*binT # time in seconds
             
-            time = np.arange(0, len(Traces[i][minid:maxid,0]))*binT
-            
-            fx[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,1]**2)), time)/1e12
+            fx[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,1]**2)), time)/1e12 # conversion to SI since the efield is squared and is in µV/m
             fy[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,2]**2)), time)/1e12
             fz[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,3]**2)), time)/1e12
-            ftot[i] = eps0*c*(fx[i] + fy[i] + fz[i])
+            fx[i] = eps0*c*simps(Traces[i][minid:maxid,1]**2, time)/1e12
+            fy[i] = eps0*c*simps(Traces[i][minid:maxid,2]**2, time)/1e12
+            fz[i] = eps0*c*simps(Traces[i][minid:maxid,3]**2, time)/1e12
+            ftot[i] = (fx[i] + fy[i] + fz[i])
         return fx, fy, fz, ftot
     
     def interpolate_rbf(self, x, y, z, grid_resolution, bounds=None, function='cubic'):

@@ -242,7 +242,7 @@ def interpolate_2d(x, y, z,
 
     return grid_x, grid_y, grid_z
 
-def interpolate_rbf(x, y, z, grid_resolution=100, bounds=None, function='cubic'):
+def interpolate_rbf(x, y, z, grid_resolution=100, bounds=None, function='linear'):
     x = np.asarray(x)
     y = np.asarray(y)
     z = np.asarray(z)
@@ -269,7 +269,7 @@ def interpolate_rbf(x, y, z, grid_resolution=100, bounds=None, function='cubic')
     return grid_x, grid_y, grid_z
 
 
-def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, path):
+def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, path, unit, scalelim):
     
     Nlay = len(Depths)
     for i in range(Nlay):
@@ -288,7 +288,7 @@ def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, pat
         plt.contourf(grid_x, grid_y, grid_z, levels=100, cmap='jet')
         #plt.scatter(Pos[:729,0], Pos[:729,1], c=np.log10(EtotC_int[:729] +1), edgecolor='white', s=100)
         #plt.colorbar(label="$\log_{10}(E)$ [$\mu V/m$]")
-        plt.colorbar(label="E [$\mu V/m$]")
+        plt.colorbar(label=unit)
         plt.xlabel('x [m]')
         plt.ylabel('y [m]')
   
@@ -304,11 +304,54 @@ def InterpolatedEfieldMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, pat
         #plt.xlim(-250,350)
         #plt.ylim(-250,350)
         #plt.ylim(-300,300)
-        plt.xlim(-5*xmax, 5*xmax)
-        plt.ylim(-5*xmax, 5*xmax)
+        plt.xlim(-scalelim*xmax, scalelim*xmax)
+        plt.ylim(-scalelim*xmax, scalelim*xmax)
         if(save):
             plt.savefig\
             (path + sim + "EfieldMap_E%.2f_th%.1f_depth%1.f.pdf" \
              %(energy, theta, depth), bbox_inches = "tight")
         plt.show()
         
+
+def InterpolatedfluencedMap(Pos, Depths, Nplanes, E, sim, save, energy, theta, path, scalelim):
+    
+    Nlay = len(Depths)
+    for i in range(Nlay):
+        sel = (Pos[:,2] == Depths[i])
+        #
+        # s = 10 + 20 * (E[sel] - np.min(E)) / (np.max(E) - np.min(E))
+        argxmax = np.argmax(E[sel])
+        xmax = abs(Pos[:,0][sel][argxmax])
+        if(xmax<50): xmax = 50
+
+
+        grid_x, grid_y, grid_z = \
+         interpolate_rbf(Pos[:,0][sel], Pos[:,1][sel], E[sel])
+        
+        plt.figure(figsize=(6, 5))
+        plt.contourf(grid_x, grid_y, grid_z, levels=100, cmap='jet')
+        #plt.scatter(Pos[:729,0], Pos[:729,1], c=np.log10(EtotC_int[:729] +1), edgecolor='white', s=100)
+        #plt.colorbar(label="$\log_{10}(E)$ [$\mu V/m$]")
+        plt.colorbar(label="fluence [$\mathrm{e}V/\mathrm{m}^{2}$]")
+        plt.xlabel('x [m]')
+        plt.ylabel('y [m]')
+  
+        #plt.title(sim + " map (E =$%.2f\,$EeV, $\\theta=%.1f^{\circ}$)" %(energy, theta), size =12)
+        plt.title(sim + " map (E =$%.1f\,$eV, $\\theta=%.1f^{\circ}$)" %(energy, theta), size =14)
+
+        depth =Depths[0]- Depths[i]
+        #plt.legend(["Depth = %.f m" %(depth)], loc ="upper right")
+        plt.text(0.05, 0.95, f"Depth = {depth:.0f} m", transform=plt.gca().transAxes,
+                 fontsize=12, verticalalignment='top', bbox=dict(facecolor='white', alpha=0.7))
+        #plt.xlim(min(grid_x), max(grid_x))
+        #plt.ylim(min(grid_x), max(grid_x))
+        #plt.xlim(-250,350)
+        #plt.ylim(-250,350)
+        #plt.ylim(-300,300)
+        plt.xlim(-scalelim*xmax, scalelim*xmax)
+        plt.ylim(-scalelim*xmax, scalelim*xmax)
+        if(save):
+            plt.savefig\
+            (path + sim + "fluenceMap_E%.2f_th%.1f_depth%1.f.pdf" \
+             %(energy, theta, depth), bbox_inches = "tight")
+        plt.show()

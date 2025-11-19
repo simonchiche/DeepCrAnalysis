@@ -21,7 +21,7 @@ from  MainModules.PlotConfig import MatplotlibConfig
 from scipy.interpolate import interp1d
 import scipy
 ##from Modules.Fluence.FunctionsGetFluence import  Norm, LoadTraces, GetPeakTraces, Traces_cgs_to_si, GetDepths, CorrectScaling, CombineTraces, CorrectLength, GetIntTraces, GetIntTracesSum, GetRadioExtent
-from Modules.FunctionsPlotFluence import EfieldMap, PlotLDF, PlotTraces, plot_polarisation, PlotMaxTraces, PlotAllTraces, PlotLayer, PlotGivenTrace, PlotAllChannels, PlotSurfaceEz, RemoveCoreAntennas, InterpolatedEfieldMap
+from Modules.FunctionsPlotFluence import EfieldMap, PlotLDF, PlotTraces, plot_polarisation, PlotMaxTraces, PlotAllTraces, PlotLayer, PlotGivenTrace, PlotAllChannels, PlotSurfaceEz, RemoveCoreAntennas, InterpolatedEfieldMap, InterpolatedfluencedMap
 ##from CleanCoreasTraces import CleanCoreasTraces
 ##from Modules.SimParam.PlotRadioSimExtent import PlotFillingFactor, PlotRadioSimExtent, PlotAirIceExtent
 from scipy.interpolate import griddata
@@ -91,14 +91,34 @@ ExG_int, EyG_int, EzG_int, EtotG_int, peakTime = Shower.GetIntTraces(Traces_G)
 #endregion
 
 # =============================================================================
-#                         Compute Fluence
+#                         Compute Efield maps
 # =============================================================================
 
 # Coreas
 InterpolatedEfieldMap(Pos, Depths, Nplane, EtotC_int, "In-air", \
-          Save, energy, theta, OutputPath)
+          Save, energy, theta, OutputPath, unit="E [$\mu$V·ns / m]", scalelim=2)
 
 # Geant
 InterpolatedEfieldMap(Pos, Depths, Nplane,EtotG_int, "In-ice", \
-          Save, energy, theta, OutputPath)
+          Save, energy, theta, OutputPath, unit="E [$\mu$V·ns / m]", scalelim=5)
 
+
+# =============================================================================
+#                         Compute Fluence
+# =============================================================================
+
+fx_c, fy_c, fz_c, ftot_c = Shower.GetFluence(Traces_C)
+fx_g, fy_g, fz_g, ftot_g = Shower.GetFluence(Traces_G)
+
+# Conversion to eV
+e=1.6e-19
+ftot_c, ftot_g= ftot_c/e, ftot_g/e
+
+
+# Coreas
+InterpolatedfluencedMap(Pos, Depths, Nplane,ftot_c, "In-air", \
+          Save, energy, theta, OutputPath,scalelim=5)
+
+# Geant
+InterpolatedfluencedMap(Pos, Depths, Nplane,ftot_g, "In-ice", \
+          Save, energy, theta, OutputPath, scalelim=5)

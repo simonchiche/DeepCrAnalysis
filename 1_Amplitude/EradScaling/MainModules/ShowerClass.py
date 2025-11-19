@@ -137,9 +137,14 @@ class Shower:
             time = np.arange(0, len(Traces[i][minid:maxid,0]))*binT
             Traces[i][:,1:] = Traces[i][:,1:]/1e6
             
-            fx[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,1]**2)), time)
-            fy[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,2]**2)), time)
-            fz[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,3]**2)), time)
+            #fx[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,1]**2)), time)
+            #fy[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,2]**2)), time)
+            #fz[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,3]**2)), time)
+            sys.exit()
+            fx[i] = eps0*c*simps(Traces[i][minid:maxid,1]**2, time)
+            fy[i] = eps0*c*simps(Traces[i][minid:maxid,2]**2, time)
+            fz[i] = eps0*c*simps(Traces[i][minid:maxid,3]**2, time)
+
             ftot[i] = (fx[i] + fy[i] + fz[i])
             Traces[i][:,1:] = Traces[i][:,1:]*1e6
         return fx, fy, fz, ftot
