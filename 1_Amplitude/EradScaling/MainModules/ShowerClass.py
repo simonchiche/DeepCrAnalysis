@@ -121,7 +121,7 @@ class Shower:
         Nant = self.nant
         ftot = np.zeros(Nant)
         fx, fy, fz = np.zeros(Nant), np.zeros(Nant), np.zeros(Nant)
-        binT = round((Traces[0][1,0] -Traces[0][0,0])*1e10)/1e10
+        binT = round((Traces[0][1,0] -Traces[0][0,0])*1e10)/1e10 # time in seconds
         
 
         for i in range(Nant):
@@ -135,18 +135,18 @@ class Shower:
             if(maxid>len( Traces[i][:,0])): maxid =len( Traces[i][:,0])
             
             time = np.arange(0, len(Traces[i][minid:maxid,0]))*binT
-            Traces[i][:,1:] = Traces[i][:,1:]/1e6
+            #Traces[i][:,1:] = Traces[i][:,1:]/1e6
             
             #fx[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,1]**2)), time)
             #fy[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,2]**2)), time)
             #fz[i] = eps0*c*simps(abs(hilbert(Traces[i][minid:maxid,3]**2)), time)
-            sys.exit()
-            fx[i] = eps0*c*simps(Traces[i][minid:maxid,1]**2, time)
-            fy[i] = eps0*c*simps(Traces[i][minid:maxid,2]**2, time)
-            fz[i] = eps0*c*simps(Traces[i][minid:maxid,3]**2, time)
+            #sys.exit()
+            fx[i] = eps0*c*simps(Traces[i][minid:maxid,1]**2, time)/1e12 #conversion in J/m^2 since Efield is in µV/m and squared
+            fy[i] = eps0*c*simps(Traces[i][minid:maxid,2]**2, time)/1e12
+            fz[i] = eps0*c*simps(Traces[i][minid:maxid,3]**2, time)/1e12
 
             ftot[i] = (fx[i] + fy[i] + fz[i])
-            Traces[i][:,1:] = Traces[i][:,1:]*1e6
+            #Traces[i][:,1:] = Traces[i][:,1:]*1e6
         return fx, fy, fz, ftot
     
     def interpolate_rbf(self, x, y, z, grid_resolution, bounds=None, function='cubic'):
@@ -232,6 +232,9 @@ class Shower:
             # First, compute the integral along one axis (e.g., x), then along the other (e.g., y)
             integral_x = trapz(f_int, x=grid_x[0], axis=1)  # integrate over x (axis=1)
             Eradz = trapz(integral_x, x=grid_y[:,0])  # integrate over y (axis=0)
+
+            Eradx, Erady, Eradz, Eradtot = (x / (1.6e-19) for x in (Eradx, Erady, Eradz, Eradtot)) # From J to eV
+            Eradx, Erady, Eradz, Eradtot = (x / (1e6) for x in (Eradx, Erady, Eradz, Eradtot)) # From eV to MeV
 
             Erad.append(np.array([Eradx, Erady, Eradz, Eradtot, Depths[i], self.energy, self.zenith]))
 

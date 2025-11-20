@@ -69,81 +69,6 @@ for simpath in SimpathAll:
 EnergyAll, ZenithAll, XmaxPosAll, XmaxAll = \
     np.array(EnergyAll), np.array(ZenithAll), np.array(XmaxPosAll), np.array(XmaxAll)
 
-Ebins = np.unique(EnergyAll)
-
-maskE = EnergyAll == Ebins[1]
-
-for i in range(len(Ebins)):
-    maskE = EnergyAll == Ebins[i]
-# Xmax Position for different zenith
-    plt.scatter(XmaxPosAll[:,0][maskE], XmaxPosAll[:,2][maskE], label = f"E = {Ebins[i]} EeV")
-    plt.xlabel("x [m]")
-    plt.ylabel("Xmax height [m]")
-    plt.legend()
-    plt.grid()
-    plt.ylim(2000, max(XmaxPosAll[:,2])+200)
-    plt.axhspan(2000, 3216, color='skyblue', alpha=0.3) 
-#plt.savefig(OutputPath + "XmaxAirPositions.pdf", bbox_inches = 'tight')
-plt.show()
-
-for i in range(len(Ebins)):
-    maskE = EnergyAll == Ebins[i]
-    plt.scatter(ZenithAll[maskE], XmaxPosAll[:,2][maskE],  label = f"E = {Ebins[i]} EeV")
-    plt.xlabel("Zenith [Deg.]")
-    plt.ylabel("Xmax height [m]")
-    plt.legend()
-    plt.ylim(2000, max(XmaxPosAll[:,2])+200)
-    plt.axhspan(2000, 3216, color='skyblue', alpha=0.3) 
-    plt.grid()
-#plt.savefig(OutputPath + "XmaxAirHeightvsZenith.pdf", bbox_inches = 'tight')
-plt.show()
-
-for i in range(len(Ebins)):
-    maskE = EnergyAll == Ebins[i]
-    plt.scatter(ZenithAll[maskE], XmaxAll[maskE],  label = f"E = {Ebins[i]} EeV")
-    plt.xlabel("Zenith [Deg.]")
-    plt.ylabel(r"Xmax Depth [$\mathrm{g/cm^2}$]")
-    plt.legend()
-    plt.grid()
-#plt.savefig(OutputPath + "XmaxAirDepth.pdf", bbox_inches = 'tight')
-plt.show()
-
-#### ICE XMAX
-
-XmaxIceData = np.loadtxt("./XmaxIce/XmaxIceData.txt")
-XmaxIceAll, EiceAll, ZenIceAll =\
-      XmaxIceData[:,0], XmaxIceData[:,1], XmaxIceData[:,2]
-
-Ebins = np.unique(EiceAll)
-mask = EiceAll == Ebins[0]
-
-for i in range(len(Ebins)):
-    mask = EiceAll == Ebins[i]
-    
-    # Slant Xmax vs zenith
-    plt.plot(ZenIceAll[mask], XmaxIceAll[mask], 'o', label = f"E = {Ebins[i]} EeV")
-    plt.xlabel("Zenith [Deg.]")
-    plt.ylabel("Slant ice Xmax [m]")
-    plt.legend()
-    plt.grid()
-#plt.savefig(OutputPath + "XmaxIceSlantvsZenith.pdf", bbox_inches = 'tight')
-plt.show()
-
-for i in range(len(Ebins)):
-    mask = EiceAll == Ebins[i]
-    
-    # Xmax depth vs zenith
-    plt.plot(ZenIceAll[mask], XmaxIceAll[mask]*np.cos(ZenIceAll[mask]*np.pi/180.0), 'o', label = f"E = {Ebins[i]} EeV")
-    plt.xlabel("Zenith [Deg.]")
-    plt.ylabel("Xmax Depth [m]")
-    plt.legend()
-    plt.grid()
-#plt.savefig(OutputPath + "XmaxIceDepthvsZenith.pdf", bbox_inches = 'tight')
-plt.show()
-
-plt.scatter(EnergyAll, XmaxDistAll)
-plt.show()
-sys.exit()
 
 
 
@@ -195,9 +120,9 @@ EnergyAll = np.array(EnergyAll)
 
 plt.scatter(EnergyAll, XmaxDistAll)
 
-Epart16_5=  Etot[EnergyAllpart==Ebins[0]]/Ebins[0]
-Epart17=  Etot[EnergyAllpart==Ebins[1]]/Ebins[1]
-Epart17_5=  Etot[EnergyAllpart==Ebins[2]]/Ebins[2]
+Epart16_5=  Etot[EnergyAllpart==Ebins[0]]/(Ebins[0]*1e9)
+Epart17=  Etot[EnergyAllpart==Ebins[1]]/(Ebins[1]*1e9)
+Epart17_5=  Etot[EnergyAllpart==Ebins[2]]/(Ebins[2]*1e9)
 Zenith16_5 = ZenithAllpart[EnergyAllpart==Ebins[0]]
 Zenith17 = ZenithAllpart[EnergyAllpart==Ebins[1]]
 Zenith17_5 = ZenithAllpart[EnergyAllpart==Ebins[2]]
@@ -238,7 +163,36 @@ plt.scatter(Zenith17, Epart17)
 plt.scatter(Zenith17_5, Epart17_5)
 plt.show()
 
-plt.scatter(XmaxDist16_5, Epart16_5)
-plt.scatter(XmaxDist17, Epart17)
-plt.scatter(XmaxDist17_5, Epart17_5)
+plt.scatter(XmaxDist16_5, Epart16_5, label='E=$10^{16.5}$ eV', marker='s',s=30)
+plt.scatter(XmaxDist17, Epart17, label='E=$10^{17}$ eV', marker='*',s=50)
+plt.scatter(XmaxDist17_5, Epart17_5, label='E=$10^{17.5}$ eV', marker='^', s=30)
+plt.ylabel('$E_{\mathrm{part}}^{\mathrm{ground}}/E_{\mathrm{primary}}$')
+plt.xlabel('Air Xmax Distance from core [m]')
+plt.grid(alpha=0.3)
+plt.legend()
+plt.show()
+
+from scipy.optimize import curve_fit
+def ModelFunc(x, A, b):
+    return A*np.exp(-x/b)
+
+Epartallbins = np.concatenate([Epart16_5, Epart17, Epart17_5])
+XmaxDistallbins = np.concatenate([XmaxDist16_5, XmaxDist17, XmaxDist17_5])
+args = np.argsort(XmaxDistallbins)
+XmaxDistallbins = XmaxDistallbins[args]
+Epartallbins = Epartallbins[args]
+
+popt, pcov = curve_fit(ModelFunc, XmaxDistallbins, Epartallbins, p0=[0.5, 5000])
+
+
+
+plt.scatter(XmaxDist16_5, Epart16_5, label='E=$10^{16.5}$ eV', marker='s',s=30)
+plt.scatter(XmaxDist17, Epart17, label='E=$10^{17}$ eV', marker='*',s=50)
+plt.scatter(XmaxDist17_5, Epart17_5, label='E=$10^{17.5}$ eV', marker='^', s=30)
+plt.plot(XmaxDistallbins, ModelFunc(XmaxDistallbins, *popt), color='black', label = r'$A exp(-x/\lambda)$') #: A=%.3f, $\lambda$=%.1f m'%(popt[0], popt[1]))
+plt.ylabel('$E_{\mathrm{part}}^{\mathrm{ground}}/E_{\mathrm{primary}}$')
+plt.xlabel('Air Xmax Distance from core [m]')
+plt.grid(alpha=0.3)
+plt.legend()
+plt.savefig(OutputPath + f'GroundParticleEnergy_vs_XmaxDist_fit.pdf')
 plt.show()
