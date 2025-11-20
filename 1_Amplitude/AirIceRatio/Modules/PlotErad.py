@@ -126,7 +126,7 @@ def PlotAirIceEradRatiovsThetavsE(Eradair_allsims, Eradice_allsims, SelDepth, Ou
         EradAirIceRatio_tot = Eradair_allsims[sel][:,3]/ Eradice_allsims[sel][:,3]
 
         arg = np.argsort(Eradair_allsims[sel][:,6])
-        plt.plot(Eradair_allsims[sel][:,6][arg], EradAirIceRatio_tot[arg], label ="E= $%.2f$ EeV" %EnergyAll[i])
+        plt.plot(Eradair_allsims[sel][:,6][arg], EradAirIceRatio_tot[arg])#, label ="E= $%.2f$ EeV" %EnergyAll[i])
         #plt.plot(Eradair_allsims[sel][:,6][arg], EradAirIceRatio_x[arg], label ="$E^{rad, air}_x/E^{rad, ice}_x$")
         #plt.plot(Eradair_allsims[sel][:,6][arg], EradAirIceRatio_y[arg], label ="$E^{rad, air}_y/E^{rad, ice}_y$")
         #plt.plot(Eradair_allsims[sel][:,6][arg], EradAirIceRatio_z[arg], label ="$E^{rad, air}_z/E^{rad, ice}_z$")
@@ -136,11 +136,11 @@ def PlotAirIceEradRatiovsThetavsE(Eradair_allsims, Eradice_allsims, SelDepth, Ou
     #plt.ylim(min(data)/5, max(data)*5)
     plt.ylabel("$E_{rad}^{air}/E_{rad}^{ice}\,$[50-1000 MHz]")
     plt.xlabel("Zenith [Deg.]")
-    plt.legend()
+    plt.legend(["$E=10^{16.5}\,$ eV", "$E=10^{17.0}\,$ eV", "$E=10^{17.5}\,$ eV"])
     #plt.title("$|z| =%d$ m" %(SelDepth))
-    plt.title("Depth = $%.d\,$m" %SelDepth, fontsize=12)
+    plt.title("Depth =100 m", fontsize=14)
     plt.grid()
-    plt.savefig(OutputPath + "air_ice_ratio_vs_theta_vsE_z%d.pdf" %SelDepth, bbox_inches = "tight")
+    #plt.savefig(OutputPath + "air_ice_ratio_vs_theta_vsE_z%d.pdf" %SelDepth, bbox_inches = "tight")
     plt.show()
 
     return
