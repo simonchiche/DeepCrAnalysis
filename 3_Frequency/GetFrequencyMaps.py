@@ -21,7 +21,7 @@ from  MainModules.PlotConfig import MatplotlibConfig
 from scipy.interpolate import interp1d
 import scipy
 ##from Modules.Fluence.FunctionsGetFluence import  Norm, LoadTraces, GetPeakTraces, Traces_cgs_to_si, GetDepths, CorrectScaling, CombineTraces, CorrectLength, GetIntTraces, GetIntTracesSum, GetRadioExtent
-from Modules.ModuleFrequencySpectrum import compute_spectrum, PlotAllSpectra, PlotFrequencyHeatmap, PlotAllSignals, GetPeakTraces
+from Modules.ModuleFrequencySpectrum import compute_spectrum, PlotAllSpectra, PlotFrequencyHeatmap, PlotAllSignals, GetPeakTraces, PlotAllSpectra_rbin
 ##from CleanCoreasTraces import CleanCoreasTraces
 ##from Modules.SimParam.PlotRadioSimExtent import PlotFillingFactor, PlotRadioSimExtent, PlotAirIceExtent
 from scipy.interpolate import griddata
@@ -64,108 +64,78 @@ if(Filter):
     Traces_C =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
     Traces_G =Shower.filter_all_traces(Traces_G, fs, lowcut, highcut)
 
-SurfacePos = Pos[Pos[:,2]==Depths[2]]
-selsurface = Pos[:,2]==Depths[2]
-Trace_C_Surface = {k: v for (k, v), m in zip(Traces_C.items(), selsurface) if m}
-Trace_C_Surface = {i: v for i, v in enumerate(Trace_C_Surface.values())}
-Trace_G_Surface = {k: v for (k, v), m in zip(Traces_G.items(), selsurface) if m}
-Trace_G_Surface = {i: v for i, v in enumerate(Trace_G_Surface.values())}
+DeepPos = Pos[Pos[:,2]==Depths[2]]
+selDeep = Pos[:,2]==Depths[2]
+Trace_C_Deep = {k: v for (k, v), m in zip(Traces_C.items(), selDeep) if m}
+Trace_C_Deep = {i: v for i, v in enumerate(Trace_C_Deep.values())}
+Trace_G_Deep = {k: v for (k, v), m in zip(Traces_G.items(), selDeep) if m}
+Trace_G_Deep = {i: v for i, v in enumerate(Trace_G_Deep.values())}
 
+PlotAllSpectra(Trace_C_Deep)
+PlotAllSpectra(Trace_G_Deep)
 
-PlotAllSpectra(Trace_C_Surface)
-PlotAllSpectra(Trace_G_Surface)
-
-radius = np.sqrt(SurfacePos[:,0]**2 + SurfacePos[:,1]**2) 
+radius = np.sqrt(DeepPos[:,0]**2 + DeepPos[:,1]**2) 
 radius_idx = np.argsort(radius)
 
-### Testing ###
+### Frequency spectra per radius bin ###
 radius_bins = np.linspace(0, 740, 50)
 for i in range(len(radius_bins)-1):
     mask_rad = (radius >= radius_bins[i]) & (radius < radius_bins[i+1])
-    Trace_G_Surface_bin = {k: v for (k, v), m in zip(Trace_G_Surface.items(), mask_rad) if m}
-    Trace_G_Surface_bin = {j: v for j, v in enumerate(Trace_G_Surface_bin.values())}
-    print(f"Radius bin: {radius_bins[i]} - {radius_bins[i+1]} m, N_antennas: {len(Trace_G_Surface_bin)}")
-    if len(Trace_G_Surface_bin) > 0:
-        PlotAllSpectra(Trace_G_Surface_bin)
-        #PlotAllSignals(Trace_G_Surface_bin)
+    Trace_G_Deep_bin = {k: v for (k, v), m in zip(Trace_G_Deep.items(), mask_rad) if m}
+    Trace_G_Deep_bin = {j: v for j, v in enumerate(Trace_G_Deep_bin.values())}
+    print(f"Radius bin: {radius_bins[i]} - {radius_bins[i+1]} m, N_antennas: {len(Trace_G_Deep_bin)}")
+    if len(Trace_G_Deep_bin) > 0:
+        PlotAllSpectra(Trace_G_Deep_bin)
+        #PlotAllSignals(Trace_G_Deep_bin)
 
 radius_bins = np.linspace(0, 740, 50)
 for i in range(len(radius_bins)-1):
     mask_rad = (radius >= radius_bins[i]) & (radius < radius_bins[i+1])
-    Trace_C_Surface_bin = {k: v for (k, v), m in zip(Trace_C_Surface.items(), mask_rad) if m}
-    Trace_C_Surface_bin = {j: v for j, v in enumerate(Trace_C_Surface_bin.values())}
-    print(f"Radius bin: {radius_bins[i]} - {radius_bins[i+1]} m, N_antennas: {len(Trace_G_Surface_bin)}")
-    if len(Trace_C_Surface_bin) > 0:
-        PlotAllSpectra(Trace_C_Surface_bin)
-        #PlotAllSignals(Trace_C_Surface_bin)
+    Trace_C_Deep_bin = {k: v for (k, v), m in zip(Trace_C_Deep.items(), mask_rad) if m}
+    Trace_C_Deep_bin = {j: v for j, v in enumerate(Trace_C_Deep_bin.values())}
+    print(f"Radius bin: {radius_bins[i]} - {radius_bins[i+1]} m, N_antennas: {len(Trace_G_Deep_bin)}")
+    if len(Trace_C_Deep_bin) > 0:
+        PlotAllSpectra(Trace_C_Deep_bin)
+        #PlotAllSignals(Trace_C_Deep_bin)
+
+
+## In-air spectra on the Cerenkov cone
+radius_bins = np.linspace(0, 740, 50)
+mask_rad = (radius >= 0) & (radius <20)
+Trace_C_Deep_bin = {k: v for (k, v), m in zip(Trace_C_Deep.items(), mask_rad) if m}
+Trace_C_Deep_bin = {j: v for j, v in enumerate(Trace_C_Deep_bin.values())}
+print(f"Radius bin: {radius_bins[i]} - {radius_bins[i+1]} m, N_antennas: {len(Trace_G_Deep_bin)}")
+if len(Trace_C_Deep_bin) > 0:
+    PlotAllSpectra_rbin(Trace_C_Deep_bin, "In-air", OutputPath)
+
+## In-ice spectra on the Cerenkov cone
+mask_rad = (radius >= 60) & (radius <75)
+Trace_G_Deep_bin = {k: v for (k, v), m in zip(Trace_G_Deep.items(), mask_rad) if m}
+Trace_G_Deep_bin = {j: v for j, v in enumerate(Trace_G_Deep_bin.values())}
+print(f"Radius bin: {radius_bins[i]} - {radius_bins[i+1]} m, N_antennas: {len(Trace_G_Deep_bin)}")
+if len(Trace_G_Deep_bin) > 0:
+    PlotAllSpectra_rbin(Trace_G_Deep_bin,"In-ice", OutputPath)
+    #PlotAllSignals(Trace_G_Deep_bin)
 #################
+
+radius = np.sqrt(DeepPos[:,0]**2 + DeepPos[:,1]**2) 
+radius_idx = np.argsort(radius)
 
 Trigger = False
 Threshold = 0
 if(Trigger):    
-    Ex, Ey, Ez, Etot_C = GetPeakTraces(Trace_C_Surface)
+    Ex, Ey, Ez, Etot_C = GetPeakTraces(Trace_C_Deep)
     selE = Etot_C>Threshold
-    Trace_C_Surface_highE = {k: v for (k, v), m in zip(Trace_G_Surface.items(), selE) if m}
-    Trace_C_Surface_highE = {i: v for i, v in enumerate(Trace_C_Surface_highE.values())}
+    Trace_C_Deep_highE = {k: v for (k, v), m in zip(Trace_G_Deep.items(), selE) if m}
+    Trace_C_Deep_highE = {i: v for i, v in enumerate(Trace_C_Deep_highE.values())}
     radius_highE = radius[selE]
     radius_idx = np.argsort(radius_highE)
 
+PlotFrequencyHeatmap(Trace_C_Deep, radius, radius_idx, Shower, OutputPath, label="In-air", rmax=250, Save=False, merge_factor=1)
 
-PlotFrequencyHeatmap(Trace_C_Surface, radius, radius_idx, Shower, OutputPath, label="In-air", rmax=200, Save=True)
-import sys
-sys.exit()
-def EulerIntegral(Signal, X):
-
-    dx = X[1] - X[0]
-    integral = 0
-    for i in range(len(Signal)-1):
-
-        integral =integral + Signal[i]*dx
-    
-    return integral
-
-from scipy.integrate import simpson
-
-freqPower = np.zeros(len(Trace_C_Surface))
-
-for i in range(len(Trace_C_Surface)):
-    time = Trace_C_Surface[i][:,0]
-    signal =Trace_G_Surface[i][:,2] 
-    f, A_x = compute_spectrum(time, Trace_C_Surface[i][:,1] , window='rect',     detrend='none',    # do not remove mean
-        onesided=False     # full FFT; we'll slice positive half like you did
-    )
-    f, A_y = compute_spectrum(time, Trace_C_Surface[i][:,1], window='rect',     detrend='none',    # do not remove mean
-        onesided=False     # full FFT; we'll slice positive half like you did
-    )
-    f, A_z = compute_spectrum(time, Trace_C_Surface[i][:,3], window='rect',     detrend='none',    # do not remove mean
-        onesided=False     # full FFT; we'll slice positive half like you did
-    )
-
-    #FreqWeightInt = EulerIntegral(A*f, f)
-    #NormInt = EulerIntegral(A, f)
-    #freqPower[i] = FreqWeightInt/NormInt
-
-    Px, Py, Pz = A_x**2, A_y**2, A_z**2
-    Ptot = Px + Py + Pz
-
-    FreqWeightInt = simpson(y=Ptot*f, x=f)
-    NormInt = simpson(y=Ptot, x=f)
-    freqPower[i] = FreqWeightInt/NormInt
-    
+PlotFrequencyHeatmap(Trace_G_Deep, radius, radius_idx, Shower, OutputPath, label="In-ice", rmax=250, Save=False, merge_factor=1)
 
 
 
-plt.scatter(SurfacePos[:,0], SurfacePos[:,1], c=freqPower/max(freqPower), cmap="jet")
-cbar = plt.colorbar()
-#plt.ylim(-200,200)
-#plt.xlim(-200,200)
-
-plt.show()
 
 
-
-SurfacePos = Pos[Pos[:,2]==Depths[2]]
-Pos60=  Pos[Pos[:,2]==Depths[1]]
-
-plt.scatter(Pos60[:,0], Pos60[:,1], c='b', label='Surface', s =1)
-plt.scatter(SurfacePos[:,0], SurfacePos[:,1], c='b', label='Surface', s=1)

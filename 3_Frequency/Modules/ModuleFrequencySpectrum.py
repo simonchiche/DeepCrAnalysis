@@ -10,6 +10,7 @@ Created on Sun Apr 28 19:43:13 2024
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+from scipy.ndimage import gaussian_filter
 
 def compute_spectrum(
     t, E,
@@ -104,8 +105,8 @@ def PlotAllSpectra(Traces):
 
         #plt.figure(figsize=(10, 5))
         plt.plot(f/1e6, A)
-        plt.xlabel("Frequency [Hz]")
-        plt.ylabel("Amplitude")
+        plt.xlabel("Frequency [MHz]")
+        plt.ylabel("Amplitude spectrum")
         plt.grid()
         plt.xlim(0, 1500)
     plt.show()
@@ -134,7 +135,7 @@ def PlotFrequencyHeatmap(Trace_Surface, radius, radius_idx, Shower, OutputPath, 
     merge_factor  : pour éventuellement fusionner plusieurs rayons consécutifs (ex: 2 => fusionne 2 anneaux)
     """
 
-    NFREQ = 800
+    NFREQ = 300
     FMAX_MHZ = 1500.0
     FMIN_MHZ = 20.0
     LOG_GRID = True
@@ -164,9 +165,9 @@ def PlotFrequencyHeatmap(Trace_Surface, radius, radius_idx, Shower, OutputPath, 
         #signal = np.sqrt(Ex*2 + Ey**2 + Ez**2)   
         f_hz, A = compute_spectrum(time, signal,
                                    window='rect', detrend='none', onesided=False)
-        mpos = f_hz > 0
-        f_mhz = f_hz[mpos] / 1e6
-        A = A[mpos]
+        mpos = f_hz > 0 #only positive frequencies
+        f_mhz = f_hz[mpos] / 1e6 # convert to MHz
+        A = A[mpos] 
 
         #Amax = np.max(A)
         #if Amax > 0:
@@ -219,8 +220,9 @@ def PlotFrequencyHeatmap(Trace_Surface, radius, radius_idx, Shower, OutputPath, 
     # ---------- 7) Affichage ----------
     plt.figure(figsize=(8, 4.5))
     F, R = np.meshgrid(f_edges, r_edges)
-    denom = np.nanmax(H_binned)
-    pc = plt.pcolormesh(F, R, H_binned/denom, shading='auto', cmap='viridis')
+    H_smooth = H_binned = gaussian_filter(H_binned, sigma=(1.0, 2))
+    denom = np.nanmax(H_smooth)
+    pc = plt.pcolormesh(F, R, H_smooth/denom, shading='auto', cmap='viridis', rasterized=True)
 
     if LOG_GRID:
         plt.xscale('log')
@@ -229,13 +231,13 @@ def PlotFrequencyHeatmap(Trace_Surface, radius, radius_idx, Shower, OutputPath, 
     plt.ylabel('Distance to core [m]')
     plt.colorbar(pc, label='Amplitude (normalized)')
     #plt.title('Frequency–distance heatmap')
-    plt.title(label + f" E={Shower.energy:.2f} EeV, $\\theta$={Shower.zenith:.1f}$^\circ$")
+    plt.title(label + " E=$10^{17.5}\,$eV" +f", $\\theta$={Shower.zenith:.1f}$^\circ$")
     plt.tight_layout()
     #plt.ylim(5,150)
     if Save:
         energy=Shower.energy
         theta=Shower.zenith
-        plt.savefig(OutputPath + label + "FrequencyHeatmap" + f"E{int(energy)}_th{int(theta)}.pdf", bbox_inches='tight')
+        plt.savefig(OutputPath + label + "FrequencyHeatmap" + f"E{int(energy)}_th{int(theta)}.pdf", bbox_inches='tight', dpi=200)
     plt.show()
 
     return fgrid_mhz, unique_r, H_binned
@@ -256,3 +258,34 @@ def GetPeakTraces(Traces):
             (Traces[i][:,2])**2 + (Traces[i][:,3])**2)) 
         
     return Ex, Ey, Ez, Etot
+
+def PlotAllSpectra_rbin(Traces, title, OutputPath):
+    current_max = 0
+    for i in range(len(Traces)):
+        time = Traces[i][:,0]
+        signal =Traces[i][:,2] 
+        #Ex, Ey, Ez =Traces[i][:,1], Traces[i][:,1], Traces[i][:,3]
+        #signal = np.sqrt(Ex*2 + Ey**2 + Ez**2)   
+        f, A = compute_spectrum(time, signal, window='rect',     detrend='none',    # do not remove mean
+            onesided=False     # full FFT; we'll slice positive half like you did
+        )
+        current_max = max(max(A), current_max)
+    for i in range(len(Traces)):
+        time = Traces[i][:,0]
+        signal =Traces[i][:,2] 
+        #Ex, Ey, Ez =Traces[i][:,1], Traces[i][:,1], Traces[i][:,3]
+        #signal = np.sqrt(Ex*2 + Ey**2 + Ez**2)   
+        f, A = compute_spectrum(time, signal, window='rect',     detrend='none',    # do not remove mean
+            onesided=False     # full FFT; we'll slice positive half like you did
+        )
+        #plt.figure(figsize=(10, 5))
+        plt.plot(f/1e6, A/current_max)
+    plt.xlabel("Frequency [MHz]")
+    plt.ylabel("Normalized amplitude")
+        
+    plt.title(title, fontsize=14)
+    plt.xlim(0, 1500)
+    plt.grid()
+    plt.savefig(OutputPath + f"spectra_{title}_rbin.pdf", bbox_inches = "tight")
+    plt.show()
+    return
