@@ -43,13 +43,13 @@ def PlotHVratioIceDistribperZen(ZenithAll, HVratioIceAll, Save, OutputPath):
         plt.legend()
         #if(scale=="log"): plt.yscale("log")
         plt.grid(axis='y', linestyle='--', alpha=0.7)
-        plt.axvline(x=1, color='red', linestyle='--', linewidth=2)
+        plt.axvline(x=np.sqrt(2), color='red', linestyle='--', linewidth=2)
         #plt.title("In-air emission")
         plt.title(r"In-ice, $\theta =%.d^{\circ}$" %ZenithBins[i])
         plt.savefig(OutputPath + "InIceFilteredHVratio_zen%.d.pdf" %ZenithBins[i], bbox_inches="tight") if Save else None
         plt.show()
 
-def GetHVratioAirvsE(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5):
+def GetHVratioAirvsE(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5, OutputPath):
     labels=('$10^{16.5}$ eV', '$10^{17}$ eV', '$10^{17.5}$ eV')
     bin_edges = np.linspace(0, 10, 80) 
 
@@ -71,7 +71,7 @@ def GetHVratioAirvsE(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5):
 
 
 
-def GetHVratioIcevsE(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, OutputPath):
+def GetHVratioIcevsE(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, OutputPath, Save=False):
     labels=('$10^{16.5}$ eV', '$10^{17}$ eV', '$10^{17.5}$ eV')
     bin_edges = np.linspace(0, 10, 80) 
 

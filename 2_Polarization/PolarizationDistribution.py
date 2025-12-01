@@ -36,7 +36,7 @@ from Modules.ModulePlotPolarization import PlotHVratioAirDistribperZen, PlotHVra
 #region Path definition
 SimDir = "DeepCrLib"  #"InterpSim"
 WorkPath = os.getcwd()
-BatchID = "Log10"
+BatchID = "PolarizationDistribution"
 OutputPath = MatplotlibConfig(WorkPath, SimDir, BatchID)
 #endregion
 Save = False
@@ -88,8 +88,13 @@ for simpath in SimpathAll:
 
     # We restrict the analysis to deep antennas only
     #sel = Pos[:,2] == 3116
-    HVratioAir = (np.array(ExC_int) + np.array(EyC_int))/(2*np.array(EzC_int))
-    HVratioIce = (np.array(ExG_int) + np.array(EyG_int))/(2*np.array(EzG_int))
+    triggerthresold=0
+    selair = EtotC_int > triggerthresold
+    selice = EtotG_int > triggerthresold
+    ExC_int, EyC_int, EzC_int = np.array(ExC_int)[selair], np.array(EyC_int)[selair], np.array(EzC_int)[selair]
+    ExG_int, EyG_int, EzG_int = np.array(ExG_int)[selice], np.array(EyG_int)[selice], np.array(EzG_int)[selice]
+    HVratioAir = np.sqrt((np.array(ExC_int)**2 + np.array(EyC_int)**2))/(np.array(EzC_int))
+    HVratioIce = np.sqrt((np.array(ExG_int)**2 + np.array(EyG_int)**2))/(np.array(EzG_int))
 
     HVratioAir[~np.isnan(HVratioAir)]
     HVratioIce[~np.isnan(HVratioIce)]
@@ -97,46 +102,105 @@ for simpath in SimpathAll:
                         [HVratioAir, HVratioIce, ExC_int, EyC_int, EzC_int, ExG_int, EyG_int, EzG_int, energy, theta, Pos]):
         lst.append(val)
 
-
-HVratioAirAll, HVratioIceAll, ExAirAll, EyAirAll, EzAirAll, ExIceAll, EyIceAll, EzIceAll, EnergyAll, ZenithAll, PosAll =\
-      map(np.array, [HVratioAirAll, HVratioIceAll, ExAirAll, EyAirAll, EzAirAll, ExIceAll, EyIceAll, EzIceAll, EnergyAll, ZenithAll, PosAll])
+bin_edges = np.linspace(0, 10, 80) 
+plt.hist(HVratioAirAll[0], bins=bin_edges)
+plt.hist(HVratioIceAll[0], bins=bin_edges)
+plt.show()
+HVratioIceAll = np.shape(HVratioIceAll)
+print(len(HVratioAirAll[15]))
 
 # Getting the Air/Ice Hpol/Vpol ratio at 100 m depth, for each energy bin
 selDepth =3116
 selE = 0.0316
-EtotAirAll16_5 = \
+HVratioAirAll16_5 = \
     GetAmplitudeDistribution(HVratioAirAll, EnergyAll, PosAll, 0.0316, 3116)
-EtotIceAll16_5 = \
+HVratioIceAll16_5 = \
     GetAmplitudeDistribution(HVratioIceAll, EnergyAll, PosAll, 0.0316, 3116)
 
 selE = 0.1
-EtotAirAll17 = \
+HVratioAirAll17 = \
     GetAmplitudeDistribution(HVratioAirAll, EnergyAll, PosAll, 0.1, 3116)
-EtotIceAll17 = \
+HVratioIceAll17 = \
     GetAmplitudeDistribution(HVratioIceAll, EnergyAll, PosAll, 0.1, 3116)
 
 selE = 0.316
-EtotAirAll17_5 = \
+def GetAmplitudeDistribution(Etot, EnergyAll, PosAll, SelE, SelDepth):
+
+    MaskE = (EnergyAll == SelE)
+    #MaskDepth = (PosAll[MaskE].reshape(-1, 3)[:,2] == SelDepth)
+    Emasked = Etot[MaskE]
+
+    EmaskedDepth = []
+    for i in range(len(Emasked)):
+
+        MaskDepth = PosAll[i][:,2] == SelDepth
+        EmaskedDepth.append(Emasked[i])#[MaskDepth])
+    
+    return np.array(EmaskedDepth).flatten()
+HVratioAirAll17_5 = \
     GetAmplitudeDistribution(HVratioAirAll, EnergyAll, PosAll, 0.316, 3116)
-EtotIceAll17_5 = \
+HVratioIceAll17_5 = \
     GetAmplitudeDistribution(HVratioIceAll, EnergyAll, PosAll, 0.316, 3116)
 
 
 # HV ratio  for each zenith
+
+def PlotHVratioIceDistribperZen(ZenithAll, HVratioIceAll, Save, OutputPath):
+    
+    ZenithBins = np.unique(ZenithAll)
+    bin_edges = np.linspace(0, 10, 80) 
+    for i in range(len(ZenithBins)):
+        
+        sel = (ZenithAll == ZenithBins[i])    
+
+        HVratiozen_ice = HVratioIceAll[sel].flatten()
+
+        plt.hist(HVratiozen_ice, bin_edges, alpha=0.6, edgecolor='black')
+        plt.xlabel('Hpol/Vpol')
+        plt.ylabel('Nant')
+        #plt.xlim(0,2000)
+        plt.legend()
+        #if(scale=="log"): plt.yscale("log")
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.axvline(x=np.sqrt(2), color='red', linestyle='--', linewidth=2)
+        #plt.title("In-air emission")
+        plt.title(r"In-ice, $\theta =%.d^{\circ}$" %ZenithBins[i])
+        #plt.savefig(OutputPath + "InIceFilteredHVratio_zen%.d.pdf" %ZenithBins[i], bbox_inches="tight") if Save else None
+        plt.show()
 # In-air
 PlotHVratioAirDistribperZen(ZenithAll, HVratioAirAll, Save, OutputPath)
 # In-ice
 PlotHVratioIceDistribperZen(ZenithAll, HVratioIceAll, Save, OutputPath)
 
+Save= True
+bin_edges = np.linspace(0, 10, 80) 
+plt.hist(HVratioIceAll17_5, bin_edges, alpha=0.6, edgecolor='black', label="In-ice", color="#4AB8E7")
+plt.hist(HVratioAirAll17_5, bin_edges, alpha=0.6, edgecolor='black', label="In-air", color="#E74A6B")
+plt.xlabel('Hpol/Vpol')
+plt.ylabel('Nant')
+#plt.xlim(0,2000)
+plt.legend()
+#if(scale=="log"): plt.yscale("log")
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+#plt.axvline(x=np.sqrt(2), color='red', linestyle='--', linewidth=2)
+#plt.title("In-air emission")
+plt.title(r"All zeniths, $E=10^{17.5}$ eV", fontsize=14)
+plt.legend()
+plt.savefig(OutputPath + "AirvsIce.pdf", bbox_inches="tight") if Save else None
+plt.show()
 
+plt.hist(HVratioAirAll17_5, bin_edges, density=True)
+plt.hist(HVratioIceAll17_5, bin_edges, density=True)
 #HV ratio distrib, all zenith: energy bins comparison
-GetHVratioAirvsE(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5, OutputPath)
-GetHVratioIcevsE(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, OutputPath)
+GetHVratioAirvsE(HVratioAirAll16_5, HVratioAirAll17, HVratioAirAll17_5, OutputPath)
+GetHVratioIcevsE(HVratioIceAll16_5, HVratioIceAll17, HVratioIceAll17_5, OutputPath)
 
 bin_edges = np.linspace(0, 10, 80) 
-PlotAmplitudeDistribution(EtotAirAll16_5, EtotAirAll17, EtotAirAll17_5, bin_edges)
+PlotAmplitudeDistribution(HVratioAirAll16_5, HVratioAirAll17, HVratioAirAll17_5, bin_edges)
 
 bin_edges = np.linspace(0, 10, 60) 
-PlotAmplitudeDistribution(EtotIceAll16_5, EtotIceAll17, EtotIceAll17_5, bin_edges)
+PlotAmplitudeDistribution(HVratioIceAll16_5, HVratioIceAll17, HVratioIceAll17_5, bin_edges)
 
 
+HVratioIceAll17_5_cleaned = HVratioIceAll17_5[~np.isnan(HVratioIceAll17_5)]
+print(len(HVratioIceAll17_5_cleaned))

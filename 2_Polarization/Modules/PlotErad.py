@@ -228,14 +228,14 @@ def PlotMeanHpolVpolEradRatiovsThetavsE(Shower, Erad_allsims, SelDepth, title, O
         plt.errorbar(Erad_allsims[sel][:,6][arg], HVratiomean, yerr = HVratiostd, label ="in-air", marker ="o", color = "#D62728")
     if(title == "In-ice"):
         plt.errorbar(Erad_allsims[sel][:,6][arg], HVratiomean, yerr = HVratiostd, label ="in-ice", marker ="o", color = "#4F81BD")
-    plt.ylabel("$E_{rad}^{Hpol}/E_{rad}^{Vpol}\,$[50-1000 MHz]")
+    plt.ylabel("$E_{\mathrm{rad}}^{\mathrm{Hpol}}/E_{\mathrm{rad}}^{\mathrm{Vpol}}\,$[50-1000 MHz]")
     plt.xlabel("Zenith [Deg.]")
     plt.grid()
     plt.legend()
     if(ylowlim and yhighlim):
         plt.ylim(ylowlim, yhighlim)
     #plt.ylim(1, 4)
-    plt.title(title + ", Depth =%d m" %(Gdeep), fontsize =13)
+    plt.title(title + ", Depth =%d m" %(Gdeep), fontsize =14)
     plt.savefig(OutputPath + "_" + title + "mean_Hpol_over_Vpol_vs_E_vs_zenith_z%d.pdf"\
                  %SelDepth, bbox_inches = "tight") if Save else None
     plt.show()

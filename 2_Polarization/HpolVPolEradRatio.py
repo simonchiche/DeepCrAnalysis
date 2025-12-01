@@ -90,7 +90,7 @@ SelDepth = 3116
 title = "In-ice"
 PlotHpolVpolEradRatiovsThetavsE(Shower, Eradice_allsims, SelDepth, title, OutputPath, Save, 1.0, 4.0)
 
-
+SelDepth = 3116
 title = "In-air"
 PlotMeanHpolVpolEradRatiovsThetavsE(Shower, Eradair_allsims, SelDepth, title, OutputPath, Save=True)
 
