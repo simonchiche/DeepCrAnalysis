@@ -60,9 +60,14 @@ def ClassBumps(Eair, Eice, thresold1, thresold2, pulse_flags, i):
             sel1 = (abs(Eair[j][i]) >= thresold1) & (abs(Eice[j][i]) >= thresold2)
             sel2 = (abs(Eair[j][i]) >= thresold2) & (abs(Eice[j][i]) >= thresold1)
             if(sel1 or sel2):
-                pulse_flags["isDoublePulse"][key].append(True)
                 Deltat = Eair[4][i] - Eice[4][i] 
+                print(Deltat*1e9)
                 pulse_flags["Deltat"][key].append(Deltat)
+                if(abs(Deltat*1e9) > 50):  # 3 ns separation between the two pulses
+                    pulse_flags["isDoublePulse"][key].append(True)
+                else:
+                    pulse_flags["isDoublePulse"][key].append(False)
+
             else:
                 pulse_flags["isDoublePulse"][key].append(False)
                 pulse_flags["Deltat"][key].append(np.nan)
@@ -104,7 +109,7 @@ def GetNtriggered(Epeak_air, Epeak_ice, thresold):
 
     return Ntrigger_x, Ntrigger_y, Ntrigger_z, Ntrigger_tot
 
-def GetDoublePulsesMap(PosDoubleBumpsAll):
+def GetDoublePulsesMap(PosDoubleBumpsAll, OutputPath, zen=-1):
         # KDE
     from scipy.stats import gaussian_kde
     pos_dp_flat = np.concatenate(PosDoubleBumpsAll)
@@ -129,12 +134,14 @@ def GetDoublePulsesMap(PosDoubleBumpsAll):
     plt.colorbar(label="Double pulses density")
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
-    plt.title("E = 0.316 EeV, Depth = 100 m", fontsize=12)
+    plt.title(r"E = 0.316 EeV, $\theta=%.d^{\circ}$, Depth = 100 m" %zen, fontsize=12)
+    if(zen==-1):
+        plt.title(r"E = 0.316 EeV, All zeniths, Depth = 100 m", fontsize=12)
     #plt.title(rf"Double pulse density map at $\theta = {zenith}^\circ$")
     #plt.scatter(x_all, y_all, c="white", s=5, alpha=0.3)  # All antennas in background
     plt.scatter(x_dp, y_dp, c="yellow", s=15, label="Double pulse", edgecolor="black")
     plt.legend()
-    #plt.savefig(OutputPath + "DoublePulseDensityMap.pdf", bbox_inches="tight")
+    plt.savefig(OutputPath + "DoublePulseDensityMap.pdf", bbox_inches="tight")
     plt.show()
 
 
