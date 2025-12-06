@@ -7,7 +7,7 @@ import os
 from ModulePlotDumbleBumps import PlotTrace, PlotDoubleBumpTrace
 import sys
 from scipy.stats import gaussian_kde
-
+'''
 def LoadSimulation(SimDataPath):
 
     if(not(os.path.exists(SimDataPath))):
@@ -34,6 +34,7 @@ def LoadSimulation(SimDataPath):
         Pos  = np.load(SimDataPath + "/Pos.npy", allow_pickle=True)
 
     return Nant, Traces_C, Traces_G, Pos
+'''
 
 
 def ClassBumps(Eair, Eice, thresold1, thresold2, pulse_flags, i):
@@ -134,14 +135,14 @@ def GetDoublePulsesMap(PosDoubleBumpsAll, OutputPath, zen=-1):
     plt.colorbar(label="Double pulses density")
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
-    plt.title(r"E = 0.316 EeV, $\theta=%.d^{\circ}$, Depth = 100 m" %zen, fontsize=12)
+    plt.title(r"$E=10^{17.5}\,$eV, $\theta=%.d^{\circ}$, Depth = 100 m" %zen, fontsize=12)
     if(zen==-1):
-        plt.title(r"E = 0.316 EeV, All zeniths, Depth = 100 m", fontsize=12)
+        plt.title(r"E = $10^{17.5}$ eV, All zeniths, Depth = 100 m", fontsize=12)
     #plt.title(rf"Double pulse density map at $\theta = {zenith}^\circ$")
     #plt.scatter(x_all, y_all, c="white", s=5, alpha=0.3)  # All antennas in background
     plt.scatter(x_dp, y_dp, c="yellow", s=15, label="Double pulse", edgecolor="black")
     plt.legend()
-    plt.savefig(OutputPath + "DoublePulseDensityMap.pdf", bbox_inches="tight")
+    plt.savefig(OutputPath + "DoublePulseDensityMap_zen%.d.pdf" %zen, bbox_inches="tight")
     plt.show()
 
 

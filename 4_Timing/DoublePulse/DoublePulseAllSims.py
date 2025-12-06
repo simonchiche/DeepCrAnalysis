@@ -135,58 +135,6 @@ for simpath in SimpathAll:
 Nsingleair_x, Nsingleair_y, Nsingleair_z, Nsingleice_x, Nsingleice_y, Nsingleice_z,  Ndouble_x, Ndouble_y, Ndouble_z, Ndouble_tot = \
 GetPulseFlagsData(EnergyAll, ZenithAll, Pos, pulse_flags_all, 3116)
 
-def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, sigma):
-
-    colors = ["#0072B2", "#E69F00", "#009E73"]  # Blue, Orange, Green (colorblind-safe)
-    linestyles = ["-", "--", "-."]
-
-    arg = np.argsort(ZenithAll)
-    plt.plot(np.array(ZenithAll)[arg], Ndouble_x[arg]/Ntrigger_All_x[arg], label ="x", color=colors[0], linestyle=linestyles[0], linewidth=2, marker='o', markersize=5)
-    plt.plot(np.array(ZenithAll)[arg], Ndouble_y[arg]/Ntrigger_All_y[arg], label ="y", color=colors[1], linestyle=linestyles[1], linewidth=2, marker='o', markersize=5)
-    plt.plot(np.array(ZenithAll)[arg], Ndouble_z[arg]/Ntrigger_All_z[arg], label="z", color=colors[2], linestyle=linestyles[2], linewidth=2, marker='o', markersize=5)
-    plt.xlabel("Zenith [Deg.]")
-    plt.ylabel(r"$N_{\mathrm{double}}/N_{\mathrm{trigger}}$")
-    plt.title(r"$E = 10^{17.5}\,\mathrm{eV},\ \sigma = %d\,\mu\mathrm{V/m}$" % sigma,
-          fontsize=12)    
-    plt.legend()
-    plt.grid(True, which='both', linestyle=':', linewidth=0.5)
-    plt.savefig(OutputPath + "DoubleRateAllchannels.pdf", bbox_inches="tight")
-    plt.show()
-
-def GetDoublePulsesMap(PosDoubleBumpsAll, OutputPath, zen=-1):
-        # KDE
-    from scipy.stats import gaussian_kde
-    pos_dp_flat = np.concatenate(PosDoubleBumpsAll)
-    x_dp = pos_dp_flat[:, 0]
-    y_dp = pos_dp_flat[:, 1]
-
-    xmin, xmax =-350,350
-    ymin, ymax = -350, 350
-    xx, yy = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
-    positions = np.vstack([xx.ravel(), yy.ravel()])
-
-
-    values = np.vstack([x_dp, y_dp])
-    kde = gaussian_kde(values, bw_method=0.3)  # bw_method à ajuster selon la densité
-    density = kde(positions).reshape(xx.shape)
-
-    # Plot
-    plt.figure(figsize=(6, 5))
-    density_normalized = density / np.max(density)
-    plt.imshow(density_normalized.T, origin='lower', cmap="hot",
-            extent=[xmin, xmax, ymin, ymax], aspect='equal', vmin=0, vmax=1)
-    plt.colorbar(label="Double pulses density")
-    plt.xlabel("x [m]")
-    plt.ylabel("y [m]")
-    plt.title(r"$E=10^{17.5}\,$eV, $\theta=%.d^{\circ}$, Depth = 100 m" %zen, fontsize=12)
-    if(zen==-1):
-        plt.title(r"E = $10^{17.5}$ eV, All zeniths, Depth = 100 m", fontsize=12)
-    #plt.title(rf"Double pulse density map at $\theta = {zenith}^\circ$")
-    #plt.scatter(x_all, y_all, c="white", s=5, alpha=0.3)  # All antennas in background
-    plt.scatter(x_dp, y_dp, c="yellow", s=15, label="Double pulse", edgecolor="black")
-    plt.legend()
-    plt.savefig(OutputPath + "DoublePulseDensityMap_zen%.d.pdf" %zen, bbox_inches="tight")
-    plt.show()
 
     
 GetDoublePulsesMap(PosDoubleBumpsAll, OutputPath)
@@ -204,7 +152,7 @@ PlotNIcetrigger(ZenithAll, Nsingleice_x, Nsingleice_y, Nsingleice_z, threshold1,
 PlotNtriggAll(ZenithAll, NtriggerAll)
 PlotNdoubleTot(ZenithAll, Ndouble_tot)
 PlotDoubleRateTot(ZenithAll, Ndouble_tot, NtriggerAll)
-PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, sigma)
+PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, OutputPath, sigma)
 
 
 
