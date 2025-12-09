@@ -4,7 +4,7 @@ import pickle
 import subprocess
 import os
 #from Modules.Fluence.FunctionsGetFluence import LoadTraces
-from ModulePlotDumbleBumps import PlotTrace, PlotDoubleBumpTrace
+#from ModulePlotDumbleBumps import PlotTrace, PlotDoubleBumpTrace
 import sys
 from scipy.stats import gaussian_kde
 '''

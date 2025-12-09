@@ -23,7 +23,7 @@ from scipy.interpolate import interp1d
 import scipy
 ##from Modules.Fluence.FunctionsGetFluence import  Norm, LoadTraces, GetPeakTraces, Traces_cgs_to_si, GetDepths, CorrectScaling, CombineTraces, CorrectLength, GetIntTraces, GetIntTracesSum, GetRadioExtent
 #from FunctionsPlotFluence import EfieldMap, PlotLDF, PlotTraces, plot_polarisation, PlotMaxTraces, PlotAllTraces, PlotLayer, PlotGivenTrace, PlotAllChannels, PlotSurfaceEz
-from ModuleDoubleBumps import LoadSimulation, GetDoubleBumps, GetNtriggered, GetDoublePulsesMap, GetPulseFlagsData
+from ModuleDoubleBumps import GetDoubleBumps, GetNtriggered, GetDoublePulsesMap, GetPulseFlagsData
 from ModulePlotDumbleBumps import PlotPeakEfield, PlotDumbleBumpsMaps, PlotDoubleBumpVsZen, PlotTimeDelay, PlotNAirtrigger, PlotNIcetrigger, PlotNtriggAll, PlotNdoubleTot, PlotDoubleRateTot, PlotDoubleRateTotperChannel, PlotDumbleBumpsMapsHighRes
 from scipy.interpolate import griddata
 from datetime import datetime

@@ -48,6 +48,8 @@ Save = True
 posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceLDFAll, EnergyAll, ZenithAll = \
      ([] for _ in range(6))
 
+posx60_MaxAirLDFAll, posx60_MaxIceLDFAll, Ex60_MaxAirLDFAll, Ex60_MaxIceLDFAll = ([] for _ in range(4))
+
 for simpath in SimpathAll:
     print(simpath.split("/")[-1])
     Shower = CreateShowerfromHDF5(simpath)
@@ -136,6 +138,11 @@ for simpath in SimpathAll:
     for lst, val in zip([posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceLDFAll, EnergyAll, ZenithAll],
                         [posx100_MaxAirLDF, posx100_MaxIceLDF, Ex100_MaxAirLDF, Ex100_MaxIceLDF, energy, theta]):
         lst.append(val)
+    for lst, val in zip([posx60_MaxAirLDFAll, posx60_MaxIceLDFAll, Ex60_MaxAirLDFAll, Ex60_MaxIceLDFAll],
+                    [posx60_MaxAirLDF, posx60_MaxIceLDF, Ex60_MaxAirLDF, Ex60_MaxIceLDF]):
+        lst.append(val)
+
+        
 
 
 posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceLDFAll, EnergyAll, ZenithAll = \
@@ -143,8 +150,12 @@ map(np.array, [posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceL
 
 selE = 0.316
 selDepth = 100
-
 PlotAllAirLdfsGeneric(posx_MaxAirLDFAll, Ex_MaxAirLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Air", OutputPath, Save=True)
 PlotAllIceLdfsGeneric(posx_MaxIceLDFAll, Ex_MaxIceLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Ice", OutputPath, Save=True)
+
+
+selDepth = 60
+PlotAllAirLdfsGeneric(posx60_MaxAirLDFAll, Ex60_MaxAirLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Air_60m", OutputPath, Save=True)
+PlotAllIceLdfsGeneric(posx60_MaxIceLDFAll, Ex60_MaxIceLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Ice_60m", OutputPath, Save=True)
 
 

@@ -34,7 +34,7 @@ from scipy.signal import butter, filtfilt
 
 #region Path definition
 SimDir = "FullDenseDeepCr" #"DeepCrLibV1"  #"InterpSim"
-SimName = "Polar_Proton_0.316_34_0_1.hdf5"
+SimName = "Polar_Proton_0.316_50_0_1.hdf5"
 WorkPath = os.getcwd()
 simpath = "/Users/chiche/Desktop/DeepCrAnalysis/Simulations/" \
 + SimDir + "/" + SimName 
@@ -53,6 +53,24 @@ Traces_C, Traces_G, Pos = Shower.traces_c, Shower.traces_g, Shower.pos
 Nlay, Nplane, Depths = Shower.GetDepths()
 #Traces_tot = Shower.CombineTraces()
 
+
+x, y = Pos[:,0], Pos[:,1]
+x0 = x[Pos[:,2]==max(Depths)]
+y0 = y[Pos[:,2]==max(Depths)]
+x100 = x[Pos[:,2]==min(Depths)]
+y100 = y[Pos[:,2]==min(Depths)]
+plt.scatter(Pos[:,1], Pos[:,2], s=1)
+plt.show()
+Nlay =1800
+
+plt.scatter(x100, y100, s=1)
+plt.scatter(x0, y0, s=1)
+plt.xlim(-250, 250)
+plt.ylim(-250, 250)
+len(Pos[Pos[:,2]==3116])
+plt.show()
+
+sys.exit()
 # =============================================================================
 #                           Get peak amplitude
 # =============================================================================
@@ -127,7 +145,7 @@ plt.ylabel("Efield [$\mu \, V/m$]")
 plt.legend()
 plt.xlim(480, 700)
 plt.title("In-air, Depth = 100 m", fontsize=14)
-plt.savefig(OutputPath + "vs_r_InAir_Depth100m.pdf", bbox_inches='tight')
+plt.savefig(OutputPath + "vs_r_InAir_Depth100m_th34.pdf", bbox_inches='tight')
 plt.show()
 
 print(radial_dist[arg1], radial_dist[arg2], radial_dist[arg3], radial_dist[arg4], radial_dist[arg5])
@@ -149,7 +167,7 @@ plt.ylabel("Efield [$\mu \, V/m$]")
 plt.legend()
 plt.xlim(800, 1100)
 plt.title("In-ice, Depth = 100 m", fontsize=14)
-plt.savefig(OutputPath + "vs_r_InIce_Depth100m.pdf", bbox_inches='tight')
+plt.savefig(OutputPath + "vs_r_InIce_Depth100m_th34.pdf", bbox_inches='tight')
 plt.show()
 
 
