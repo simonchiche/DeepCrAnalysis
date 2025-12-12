@@ -71,12 +71,14 @@ for simpath in SimpathAll:
     Traces_C, Traces_G, Pos = Shower.traces_c, Shower.traces_g, Shower.pos
     Nlay, Nplane, Depths = Shower.GetDepths()
 
+    SelDepth = min(Depths)  #3116 m
+
     # Initialization
     SignalProp[energy][zenith] = {"Eair": [], "Eice": [], "Pos": []}
     # We skip simulations with issues
 
     # We focus the study on showers at 10^17.5 eV
-    if(energy<0.316):
+    if(energy!=0.1):
         continue
     EnergyAll.append(energy)
     ZenithAll.append(zenith)
@@ -97,8 +99,12 @@ for simpath in SimpathAll:
     # =============================================================================
 
     # Getting the traces peak amplitude
-    Eair_peak = Shower.GetPeakTraces(Traces_C)
-    Eice_peak = Shower.GetPeakTraces(Traces_G)
+    # DepthCut
+    sel = (Pos[:,2] == SelDepth)#min(Depths))
+
+    Eair_peak = Shower.GetPeakTraces(Traces_C, sel)
+    Eice_peak = Shower.GetPeakTraces(Traces_G, sel)
+    
     # Extracting the numbers of trigger for each channel
     Ntrigger_x, Ntrigger_y, Ntrigger_z, Ntrigger_tot = \
         GetNtriggered(Eair_peak, Eice_peak, thresold=threshold1)
@@ -106,6 +112,8 @@ for simpath in SimpathAll:
     NtriggerAll_y.append(Ntrigger_y)
     NtriggerAll_z.append(Ntrigger_z)
     NtriggerAll.append(Ntrigger_tot)
+
+    print("Ntriggered tot:", Ntrigger_tot)
 
     SignalProp[energy][zenith]["Eair"].append(Eair_peak)
     SignalProp[energy][zenith]["Eice"].append(Eice_peak)
@@ -120,9 +128,9 @@ for simpath in SimpathAll:
     DoublePulseFlags = pulse_flags_all[k]["isDoublePulse"]["tot"]
 
     # Double Bump maps
-    PosDoubleBumps = PlotDumbleBumpsMaps(Pos, np.array(DoublePulseFlags), energy, zenith)
+    PosDoubleBumps = PlotDumbleBumpsMaps(Pos, np.array(DoublePulseFlags), energy, zenith, sel)
     
-    PlotDumbleBumpsMapsHighRes(Pos, np.array(DoublePulseFlags), energy, zenith, OutputPath)
+    PlotDumbleBumpsMapsHighRes(Pos, np.array(DoublePulseFlags), energy, zenith, OutputPath, sel)
     if(zenith >= 0):
         PosDoubleBumpsAll.append(PosDoubleBumps)
     if(zenith ==0):
@@ -133,7 +141,7 @@ for simpath in SimpathAll:
     k = k + 1
     
 Nsingleair_x, Nsingleair_y, Nsingleair_z, Nsingleice_x, Nsingleice_y, Nsingleice_z,  Ndouble_x, Ndouble_y, Ndouble_z, Ndouble_tot = \
-GetPulseFlagsData(EnergyAll, ZenithAll, Pos, pulse_flags_all, 3116)
+GetPulseFlagsData(EnergyAll, ZenithAll, Pos, pulse_flags_all, SelDepth)
 
 
     

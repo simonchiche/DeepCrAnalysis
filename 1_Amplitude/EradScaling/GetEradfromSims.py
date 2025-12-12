@@ -187,17 +187,79 @@ DataAll = \
     glob.glob("/Users/chiche/Desktop/DeepCrAnalysis/8_SideStudies/ShowerPhysics/Data/GroundParticleFiles/*")
 EGroundPart, EprimaryAllpart, ZenithAllpart = GetGroundParticleEnergy(DataAll)
 SelE = max(EprimaryAllpart)
+
+
+def GetEgroundPart_E(EGroundPart, EprimaryAllpart, ZenithAllpart, SelE):
+    Ebins = np.unique(EprimaryAllpart)
+
+    ZenE = ZenithAllpart[EprimaryAllpart==SelE]
+    EGroundPartE = EGroundPart[EprimaryAllpart==SelE]
+
+    argzensort = np.argsort(ZenE)
+    ZenE = ZenE[argzensort]
+    EGroundPartE = EGroundPartE[argzensort]
+
+    return ZenE, EGroundPartE
+
+
 ZenE, EGroundPartE = GetEgroundPart_E(EGroundPart, EprimaryAllpart, ZenithAllpart, SelE)
 PlotGroundParticleEVsZenith(ZenE, EGroundPartE, SelE)
 
 # In-ice radiation  Energy vs Zenith Angle at fixed Primary Energy
-SelE = max(EprimaryAllpart)
+#SelE = max(EprimaryAllpart)
+
+def EradicevsZenE(Eradice_allsims, Depths, SelE):
+    
+    Ebins = np.unique(Eradice_allsims[:,5])
+
+    sel = (Eradice_allsims[:,4] == min(Depths))  & (Eradice_allsims[:,5] ==SelE)
+    arg = np.argsort(Eradice_allsims[sel][:,6])
+
+    ZenE_Erad = Eradice_allsims[sel][:,6][arg]
+    EradiceE = Eradice_allsims[sel][:,3][arg]
+
+    return ZenE_Erad, EradiceE
+
+
 ZenE_Erad, EradiceE = EradicevsZenE(Eradice_allsims, Depths, SelE)
 PlotEradIcevsZenE(ZenE_Erad, EradiceE)
 
 # In-ice radiation Energy vs Ground Particle Energy at fixed Primary Energy
 EGroundPartE, EfieldIceE, X, Ylinear = GetEradvsEgroundPart(EGroundPartE, EradiceE)
-PlotEradIcevsEgroundPart(EGroundPartE, EfieldIceE, OutputPath)
+
+def PlotEradIcevsEgroundPart(EGroundPartE, EfieldIceE, OutputPath):
+    from scipy.optimize import curve_fit
+    def ModelFunc(x, a,b):
+        return  a*x**b
+    popt, pcov = curve_fit(ModelFunc, EGroundPartE, EfieldIceE)
+
+    plt.scatter(EGroundPartE, EfieldIceE, marker='*', label="$E_{\mathrm{rad}}^{\mathrm{ice}}$", s=50)
+    #plt.plot(X, Ylinear+0.1e-7, 'r--', label='Linear scaling')
+    plt.plot(EGroundPartE, ModelFunc(EGroundPartE, *popt), label= r"$a (E_{\mathrm{rad}}^{\mathrm{part}})^{b}$", color="red")
+    plt.xlabel('$E_{\mathrm{part}}^{\mathrm{ground}}\,[\mathrm{GeV}]$')
+    plt.ylabel('$\sqrt{E_{\mathrm{rad}}^{\mathrm{ice}}\,[MeV]}$')
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.grid(True, which="both", ls="--", alpha=0.5)
+    plt.legend()
+    plt.savefig(OutputPath + "EfieldIce_vs_EgroundPart.pdf", bbox_inches = 'tight')
+    plt.show()
+
+    a_err, b_err = np.sqrt(np.diag(pcov))
+    yfit = ModelFunc(EGroundPartE, *popt)
+    ss_res = np.sum((EfieldIceE - yfit)**2)
+    ss_tot = np.sum((EfieldIceE - np.mean(EfieldIceE))**2)
+    r2 = 1 - ss_res/ss_tot
+
+
+    print("Fit parameters: a = %.3e, b = %.3f" % (popt[0], popt[1]))
+    print(a_err, b_err, r2)
+    return  a_err, b_err, r2
+
+a_err, b_err, r2 = PlotEradIcevsEgroundPart(EGroundPartE, EfieldIceE, OutputPath)
+
+
+
 
 
 ## Fixer les unités

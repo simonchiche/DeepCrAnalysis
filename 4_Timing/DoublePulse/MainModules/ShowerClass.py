@@ -66,7 +66,7 @@ class Shower:
         
         return Nlay, Nplane, Depths
     
-    def GetPeakTraces(self, Traces):
+    def GetPeakTraces(self, Traces, sel):
     
         Nant = self.nant
         #print(Nant)
@@ -74,15 +74,17 @@ class Shower:
         Ex, Ey, Ez, peaktime = np.zeros(Nant), np.zeros(Nant), np.zeros(Nant), np.zeros(Nant)
         
         for i in range(Nant):
+
+            if(sel[i]):
             
-            Ex[i] = max(abs(Traces[i][:,1]))
-            Ey[i] = max(abs(Traces[i][:,2]))
-            Ez[i] = max(abs(Traces[i][:,3]))
-            Etot[i] = max(np.sqrt((Traces[i][:,1])**2 + \
-                (Traces[i][:,2])**2 + (Traces[i][:,3])**2)) 
-            argmax = np.argmax(np.sqrt((Traces[i][:,1])**2 + \
-                (Traces[i][:,2])**2 + (Traces[i][:,3])**2))
-            peaktime[i] = Traces[i][argmax, 0]
+                Ex[i] = max(abs(Traces[i][:,1]))
+                Ey[i] = max(abs(Traces[i][:,2]))
+                Ez[i] = max(abs(Traces[i][:,3]))
+                Etot[i] = max(np.sqrt((Traces[i][:,1])**2 + \
+                    (Traces[i][:,2])**2 + (Traces[i][:,3])**2)) 
+                argmax = np.argmax(np.sqrt((Traces[i][:,1])**2 + \
+                    (Traces[i][:,2])**2 + (Traces[i][:,3])**2))
+                peaktime[i] = Traces[i][argmax, 0]
 
         return Ex, Ey, Ez, Etot, peaktime
     

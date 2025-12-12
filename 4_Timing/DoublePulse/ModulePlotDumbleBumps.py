@@ -14,13 +14,13 @@ def PlotPeakEfield(Pos, Epeak, Nlay, energy, zenith,label):
     plt.savefig(savedir + "/" + label +"_E%.3f_th%.d.pdf" %(energy, zenith), bbox_inches = "tight")
     plt.show()
 
-def PlotDumbleBumpsMaps(Pos, isDoubleBump, energy, zenith):
+def PlotDumbleBumpsMaps(Pos, isDoubleBump, energy, zenith, sel):
 
     savedir = "/Users/chiche/Desktop/DoublePulseMaps"
 
     
 
-    sel = (Pos[:,2] == 3116)
+    #sel = (Pos[:,2] == 3116)
     Ndouble = np.sum(isDoubleBump[sel])
     plt.scatter(Pos[sel,0], Pos[sel,1], c=isDoubleBump[sel], cmap="viridis", label ="Ndouble = %.d" %Ndouble)
     plt.xlabel("x [m]")
@@ -37,11 +37,11 @@ def PlotDumbleBumpsMaps(Pos, isDoubleBump, energy, zenith):
     print(PosDoubleBumps.shape)
     return  PosDoubleBumps
 
-def PlotDumbleBumpsMapsHighRes(Pos, isDoubleBump, energy, zenith, OutputPath):
+def PlotDumbleBumpsMapsHighRes(Pos, isDoubleBump, energy, zenith, OutputPath, sel):
 
     savedir = "/Users/chiche/Desktop/DoublePulseMaps"
 
-    sel = (Pos[:,2] == 3116)
+    #sel = (Pos[:,2] == 3116)
 
     colors = np.where(isDoubleBump[sel], 'gold', 'indigo')
 
@@ -176,7 +176,7 @@ def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntri
     plt.xlabel("Zenith [Deg.]")
     plt.ylabel(r"$N_{\mathrm{double}}/N_{\mathrm{trigger}}$")
     plt.title(r"$E = 10^{17.5}\,\mathrm{eV},\ \sigma = %d\,\mu\mathrm{V/m}$" % sigma,
-          fontsize=12)    
+          fontsize=14)    
     plt.legend()
     plt.grid(True, which='both', linestyle=':', linewidth=0.5)
     plt.savefig(OutputPath + "DoubleRateAllchannels.pdf", bbox_inches="tight")

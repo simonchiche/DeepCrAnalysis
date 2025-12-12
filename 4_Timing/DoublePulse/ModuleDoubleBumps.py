@@ -98,7 +98,8 @@ def GetDoubleBumps(Shower, Eall_c, Eall_g, thresold1, thresold2, Plot = False):
 def GetNtriggered(Epeak_air, Epeak_ice, thresold):
     
     Emax = np.max([Epeak_air, Epeak_ice], axis=0)
-    Ntrigger_tot = len(Emax[Emax > thresold])
+    print(len(Emax[0]), "Emax:")
+    Ntrigger_tot = len(Emax[3][Emax[3] > thresold])
     thresold_channel =thresold / np.sqrt(3)  # Adjusted threshold for each channel
 
     Emax_x = np.max([Epeak_air[0], Epeak_ice[0]], axis=0)
