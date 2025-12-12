@@ -78,7 +78,7 @@ for simpath in SimpathAll:
     # We skip simulations with issues
 
     # We focus the study on showers at 10^17.5 eV
-    if(energy!=0.1):
+    if(energy<0.316):
         continue
     EnergyAll.append(energy)
     ZenithAll.append(zenith)
