@@ -148,6 +148,11 @@ for simpath in SimpathAll:
 posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceLDFAll, EnergyAll, ZenithAll = \
 map(np.array, [posx_MaxAirLDFAll, posx_MaxIceLDFAll, Ex_MaxAirLDFAll, Ex_MaxIceLDFAll, EnergyAll, ZenithAll])
 
+
+posx60_MaxAirLDFAll, posx60_MaxIceLDFAll, Ex60_MaxAirLDFAll, Ex60_MaxIceLDFAll, EnergyAll, ZenithAll = \
+map(np.array, [posx60_MaxAirLDFAll, posx60_MaxIceLDFAll, Ex60_MaxAirLDFAll, Ex60_MaxIceLDFAll, EnergyAll, ZenithAll])
+
+
 selE = 0.316
 selDepth = 100
 PlotAllAirLdfsGeneric(posx_MaxAirLDFAll, Ex_MaxAirLDFAll, ZenithAll, EnergyAll, selE, selDepth, "Air", OutputPath, Save=True)
