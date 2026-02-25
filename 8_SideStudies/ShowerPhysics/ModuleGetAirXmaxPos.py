@@ -168,6 +168,7 @@ def getXmaxPosition(azimuth, zenith, glevel, injection, showerDistance, Xmax_pri
 
     
     uv = showerdirection(zenith, azimuth)
+    print(Xmax_primary)
     if(Xmax_primary != 0):
         showerDistance = getGroundXmaxDistance(Xmax_primary, zenith, glevel, injection)
     print(showerDistance)
@@ -177,11 +178,43 @@ def getXmaxPosition(azimuth, zenith, glevel, injection, showerDistance, Xmax_pri
     return XmaxPosition
 
 
+def Xmax_param(primary, energy, fluctuations):
 
-#Xmax =  680.25
-#Azimuth = 0
-#Zenith = 43
-#injection = 1e6
-#glevel = 3216
-#Dxmax = 3108
-#getXmaxPosition(Azimuth, Zenith, glevel, injection, Dxmax)
+    
+    if(primary == 'Iron'):
+        a =65.2
+        c =270.6
+        
+        Xmax = a*np.log10(energy*1e6) + c
+
+    elif(primary == 'Proton'):
+        a = 57.4
+        c = 421.9
+        Xmax = a*np.log10(energy*1e6) + c
+
+    return Xmax
+    
+print(Xmax_param('Proton', 3, False))
+print(Xmax_param('Iron', 3, False))
+# Iron 661
+# proton 766
+
+Xmax =  692
+Azimuth = 134
+Zenith = 25
+injection = 1e6
+glevel = 2800
+Dxmax = 0#3108
+XmaxPosition = getXmaxPosition(Azimuth, Zenith, glevel, injection, Dxmax, Xmax)
+print("height",XmaxPosition[2]-glevel)
+
+Xmax =  793
+Azimuth = 134
+Zenith = 25
+injection = 1e6
+glevel = 2800
+Dxmax = 0#3108
+XmaxPosition = getXmaxPosition(Azimuth, Zenith, glevel, injection, Dxmax, Xmax)
+print("height", XmaxPosition[2]-glevel)
+
+

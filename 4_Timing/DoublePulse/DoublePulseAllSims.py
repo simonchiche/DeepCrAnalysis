@@ -56,7 +56,7 @@ PosDoubleBumpsAll_zen50 = []
 NtriggerAll_x, NtriggerAll_y, NtriggerAll_z, NtriggerAll = [], [], [], []
 k= 0
 
-sigma = 20
+sigma = 40
 threshold1 =5*sigma
 threshold2 = 3*sigma
 
@@ -78,7 +78,7 @@ for simpath in SimpathAll:
     # We skip simulations with issues
 
     # We focus the study on showers at 10^17.5 eV
-    if(energy<0.316):
+    if(energy!=0.1):
         continue
     EnergyAll.append(energy)
     ZenithAll.append(zenith)
@@ -154,7 +154,7 @@ Ntrigger_All_x = np.array(NtriggerAll_x)
 Ntrigger_All_y = np.array(NtriggerAll_y)
 Ntrigger_All_z = np.array(NtriggerAll_z)
 
-selE = 0.316
+selE = 0.1
 PlotNAirtrigger(ZenithAll, Nsingleair_x, Nsingleair_y, Nsingleair_z, threshold1, threshold2, selE)
 PlotNIcetrigger(ZenithAll, Nsingleice_x, Nsingleice_y, Nsingleice_z, threshold1, threshold2, selE)
 PlotNtriggAll(ZenithAll, NtriggerAll)
@@ -163,6 +163,27 @@ PlotDoubleRateTot(ZenithAll, Ndouble_tot, NtriggerAll)
 PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, OutputPath, sigma)
 
 
+def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, OutputPath, sigma):
+
+    colors = ["#0072B2", "#E69F00", "#009E73"]  # Blue, Orange, Green (colorblind-safe)
+    linestyles = ["-", "--", "-."]
+
+    arg = np.argsort(ZenithAll)
+    Ndouble_x =Ndouble_x[~np.isnan(Ntrigger_All_x)]
+    Ntrigger_All_x = Ntrigger_All_x[~np.isnan(Ntrigger_All_x)]
+    plt.plot(np.array(ZenithAll)[arg], Ndouble_x[arg]/Ntrigger_All_x[arg], label ="x", color=colors[0], linestyle=linestyles[0], linewidth=2, marker='o', markersize=5)
+    plt.plot(np.array(ZenithAll)[arg], Ndouble_y[arg]/Ntrigger_All_y[arg], label ="y", color=colors[1], linestyle=linestyles[1], linewidth=2, marker='o', markersize=5)
+    plt.plot(np.array(ZenithAll)[arg], Ndouble_z[arg]/Ntrigger_All_z[arg], label="z", color=colors[2], linestyle=linestyles[2], linewidth=2, marker='o', markersize=5)
+    plt.xlabel("Zenith [Deg.]")
+    plt.ylabel(r"$N_{\mathrm{double}}/N_{\mathrm{trigger}}$")
+    plt.title(r"$E = 10^{17}\,\mathrm{eV},\ \sigma = %d\,\mu\mathrm{V/m}$" % sigma,
+          fontsize=14)    
+    plt.legend()
+    plt.grid(True, which='both', linestyle=':', linewidth=0.5)
+    plt.savefig(OutputPath + "DoubleRateAllchannels.pdf", bbox_inches="tight")
+    plt.show()
+
+PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, OutputPath, sigma)
 
 sys.exit()
 bin_edges = np.linspace(0, 100, 41) 
