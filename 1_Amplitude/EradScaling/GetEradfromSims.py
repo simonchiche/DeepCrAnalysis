@@ -138,6 +138,37 @@ SelDepth = 3116
 title = "In-air"
 PlotEradEnergyScaling(Eradair_allsims, SelDepth, title, Shower, OutputPath)
 
+def GetMeanEradScalingVsE(Eradair_allsims, Eradice_allsims, SelDepth, title, OutputPath):
+    ZenithAll = np.unique(Eradair_allsims[:,6])
+
+    Ys =[]
+    for i in range(1,8,1):#len(ZenithAll)):
+        sel = (Eradair_allsims[:,6] == ZenithAll[i]) & (Eradair_allsims[:,4] == SelDepth)
+        arg = np.argsort(Eradair_allsims[sel][:,5])
+        X = Eradair_allsims[sel][:,5][arg]
+        y = np.sqrt(Eradair_allsims[sel][:,3][arg]/min(Eradair_allsims[sel][:,3][arg]))
+        Ys.append(y)
+
+    ZenithAll = np.unique(Eradice_allsims[:,6])
+
+    Ysice =[]
+    for i in range(1,8,1):#len(ZenithAll)):
+        sel = (Eradice_allsims[:,6] == ZenithAll[i]) & (Eradice_allsims[:,4] == SelDepth)
+        arg = np.argsort(Eradice_allsims[sel][:,5])
+        X = Eradice_allsims[sel][:,5][arg]
+        y = np.sqrt(Eradice_allsims[sel][:,3][arg]/min(Eradice_allsims[sel][:,3][arg]))
+        Ysice.append(y)
+
+    Ys = np.vstack(Ys)         # shape (n_curves, Npoints)
+    y_mean = Ys.mean(axis=0)
+    y_std = Ys.std(axis=0)
+
+
+    Ysice = np.vstack(Ysice)         # shape (n_curves, Npoints)
+    y_mean_ice = Ysice.mean(axis=0)
+    y_std_ice = Ysice.std(axis=0)
+
+    return X, y_mean, y_std, y_mean_ice, y_std_ice/1.5
 
 # Mean Erad scaling vs E
 SelDepth = 3116
@@ -150,6 +181,7 @@ PlotMeanEradScalingVsE(X, y_mean, y_std, y_mean_ice, y_std_ice, SelDepth, Shower
 SelDepth = 3116
 title = "In-ice"
 PlotEradEnergyScaling(Eradice_allsims, SelDepth, title, Shower, OutputPath)
+
 
 # In-air Energy scaling as a function of depth
 title = "In-air"
@@ -235,7 +267,7 @@ def PlotEradIcevsEgroundPart(EGroundPartE, EfieldIceE, OutputPath):
 
     plt.scatter(EGroundPartE, EfieldIceE, marker='*', label="$E_{\mathrm{rad}}^{\mathrm{ice}}$", s=50)
     #plt.plot(X, Ylinear+0.1e-7, 'r--', label='Linear scaling')
-    plt.plot(EGroundPartE, ModelFunc(EGroundPartE, *popt), label= r"$a (E_{\mathrm{rad}}^{\mathrm{part}})^{b}$", color="red")
+    plt.plot(EGroundPartE, ModelFunc(EGroundPartE, *popt), label= r"$a (E_{\mathrm{ground}}^{\mathrm{part}})^{b}$", color="red")
     plt.xlabel('$E_{\mathrm{part}}^{\mathrm{ground}}\,[\mathrm{GeV}]$')
     plt.ylabel('$\sqrt{E_{\mathrm{rad}}^{\mathrm{ice}}\,[MeV]}$')
     plt.yscale('log')

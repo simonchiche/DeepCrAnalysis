@@ -77,7 +77,7 @@ def PlotEradEScalingvsDepth(Eradair_allsims, Eindex, title, OutputPath):
         selE2 = (Eradair_allsims[:,6] == ZenithAll[i]) &  (Eradair_allsims[:,5] == EnergyAll[EindexLow])
         EscalingRatio = Eradair_allsims[:,3][selE1]/ Eradair_allsims[:,3][selE2]
 
-        plt.plot(3216 -Eradair_allsims[:,4][selE1], EscalingRatio, label = "$\\theta =%.d^{\circ}$" %ZenithAll[i])
+        plt.plot(3216 -Eradair_allsims[:,4][selE1], EscalingRatio, label = "$\\theta =%.d^{\circ}$" %ZenithAll[i], marker='o', linestyle='-')
     plt.legend(loc='upper left')
     plt.xlabel("Depth [m]")
     plt.ylabel("$E%.2f/E%.2f$" %(EnergyAll[Eindex], EnergyAll[EindexLow]))
@@ -88,6 +88,7 @@ def PlotEradEScalingvsDepth(Eradair_allsims, Eindex, title, OutputPath):
     plt.show()
 
     return
+
 
 
 def PlotAirIceEradRatiovsTheta(Eradair_allsims, Eradice_allsims, Depths, SelE, SelZen, OutputPath):
@@ -260,7 +261,7 @@ def PlotEradIceEScalingvsDepth(Eradair_allsims, Eindex, title, OutputPath):
         EindexLow = (Eindex -1)
         selE2 = (Eradair_allsims[:,6] == ZenithAll[i]) &  (Eradair_allsims[:,5] == EnergyAll[EindexLow])
         EscalingRatio = Eradair_allsims[:,3][selE1]/ Eradair_allsims[:,3][selE2]
-        plt.plot(3216 -Eradair_allsims[:,4][selE1][1:], EscalingRatio[1:], label = "$\\theta =%.d^{\circ}$" %ZenithAll[i])
+        plt.plot(3216 -Eradair_allsims[:,4][selE1][1:], EscalingRatio[1:], label = "$\\theta =%.d^{\circ}$" %ZenithAll[i], marker='o', linestyle='-')
     plt.legend(loc='upper left', framealpha=0.7)
     plt.xlabel("Depth [m]")
     plt.ylabel("$E%.2f/E%.2f$" %(EnergyAll[Eindex], EnergyAll[EindexLow]))

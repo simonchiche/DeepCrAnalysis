@@ -181,3 +181,97 @@ def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntri
     plt.grid(True, which='both', linestyle=':', linewidth=0.5)
     plt.savefig(OutputPath + "DoubleRateAllchannels.pdf", bbox_inches="tight")
     plt.show()
+
+
+def PlotDoublePulsesSubsetMap(PosDoubleBumpsAll, PosSingleTriggerAll, Pos, OutputPath, zen=-1):
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(6,5))
+
+    # --- Full layout
+    sel = (Pos[:,2] == 3116)
+    x_pos = Pos[sel,0]
+    y_pos = Pos[sel,1]
+
+    # --- Double pulses
+    if len(PosDoubleBumpsAll) > 0:
+        pos_dp_flat = np.concatenate(PosDoubleBumpsAll)
+        x_dp = pos_dp_flat[:, 0]
+        y_dp = pos_dp_flat[:, 1]
+    else:
+        x_dp, y_dp = np.array([]), np.array([])
+
+    # --- Single trigger (non double pulse)
+    if len(PosSingleTriggerAll) > 0:
+        pos_single_flat = np.concatenate(PosSingleTriggerAll)
+        x_single = pos_single_flat[:, 0]
+        y_single = pos_single_flat[:, 1]
+    else:
+        x_single, y_single = np.array([]), np.array([])
+
+    if(zen == 0):
+        print(len(x_single))
+        rsingle = np.sqrt(x_single**2 + y_single**2)
+        x_single = x_single[rsingle<150]
+        y_single = y_single[rsingle<150]
+        rmax = max(np.sqrt(x_single**2 + y_single**2))
+
+        r = np.sqrt(x_pos**2 + y_pos**2)
+        x_pos_ring = x_pos[(r>rmax) & (r<rmax+25)]
+        y_pos_ring = y_pos[(r>rmax) & (r<rmax+25)]
+        x_single = np.concatenate([x_single, x_pos_ring])
+        y_single = np.concatenate([y_single, y_pos_ring])
+        print(len(x_single))
+    # -------------------------------------------------
+    # Plot order matters → background first
+    # -------------------------------------------------
+
+    # No trigger (very light)
+    ax.scatter(x_pos, y_pos,
+               s=8,
+               c="lightgray",
+               alpha=0.5,
+               linewidths=0,
+               label="No trigger",
+               zorder=1)
+
+    # Trigger (hollow marker → visually lighter than black filled)
+    ax.scatter(x_single, y_single,
+               s=18,
+               facecolors="none",
+               edgecolors="#2c3e50",
+               linewidth=0.7,
+               label="Trigger",
+               zorder=2)
+
+    # Double pulse (dominant)
+    ax.scatter(x_dp, y_dp,
+               s=45,
+               facecolor="#f1c40f",
+               edgecolor="black",
+               linewidth=0.8,
+               label="Double pulse",
+               zorder=3)
+
+    # -------------------------------------------------
+    print(len(x_dp), "here")
+    ax.set_xlim(-450, 450)
+    ax.set_ylim(-450, 450)
+    ax.set_aspect("equal", adjustable="box")
+
+    ax.set_xlabel("x [m]")
+    ax.set_ylabel("y [m]")
+
+    if zen == -1:
+        title = r"E = $10^{17.5}$ eV, All zeniths, Depth = 100 m"
+    else:
+        title = rf"$E=10^{{17.5}}$ eV, $\theta={zen:.0f}^\circ$, Depth = 100 m"
+
+    ax.set_title(title, fontsize=14)
+
+    ax.legend(frameon=True, loc="upper left")
+
+    plt.savefig(OutputPath + f"DoublePulsesSubsetMap_zen{zen}.pdf", bbox_inches="tight")
+    plt.show()

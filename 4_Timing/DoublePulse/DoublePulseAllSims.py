@@ -24,7 +24,7 @@ import scipy
 ##from Modules.Fluence.FunctionsGetFluence import  Norm, LoadTraces, GetPeakTraces, Traces_cgs_to_si, GetDepths, CorrectScaling, CombineTraces, CorrectLength, GetIntTraces, GetIntTracesSum, GetRadioExtent
 #from FunctionsPlotFluence import EfieldMap, PlotLDF, PlotTraces, plot_polarisation, PlotMaxTraces, PlotAllTraces, PlotLayer, PlotGivenTrace, PlotAllChannels, PlotSurfaceEz
 from ModuleDoubleBumps import GetDoubleBumps, GetNtriggered, GetDoublePulsesMap, GetPulseFlagsData
-from ModulePlotDumbleBumps import PlotPeakEfield, PlotDumbleBumpsMaps, PlotDoubleBumpVsZen, PlotTimeDelay, PlotNAirtrigger, PlotNIcetrigger, PlotNtriggAll, PlotNdoubleTot, PlotDoubleRateTot, PlotDoubleRateTotperChannel, PlotDumbleBumpsMapsHighRes
+from ModulePlotDumbleBumps import PlotPeakEfield, PlotDumbleBumpsMaps, PlotDoubleBumpVsZen, PlotTimeDelay, PlotNAirtrigger, PlotNIcetrigger, PlotNtriggAll, PlotNdoubleTot, PlotDoubleRateTot, PlotDoubleRateTotperChannel, PlotDumbleBumpsMapsHighRes, PlotDoublePulsesSubsetMap
 from scipy.interpolate import griddata
 from datetime import datetime
 from scipy.optimize import curve_fit
@@ -51,12 +51,15 @@ pulse_flags_all = dict()
 SignalProp = defaultdict(lambda: defaultdict(dict))
 EnergyAll, ZenithAll = [], []
 PosDoubleBumpsAll = []
+PosSingleTriggerAll = []
+PosSingleTriggerAll_zen0 = []
+PosSingleTriggerAll_zen50 = []
 PosDoubleBumpsAll_zen0 = []
 PosDoubleBumpsAll_zen50 = []
 NtriggerAll_x, NtriggerAll_y, NtriggerAll_z, NtriggerAll = [], [], [], []
 k= 0
 
-sigma = 40
+sigma = 20
 threshold1 =5*sigma
 threshold2 = 3*sigma
 
@@ -78,7 +81,7 @@ for simpath in SimpathAll:
     # We skip simulations with issues
 
     # We focus the study on showers at 10^17.5 eV
-    if(energy!=0.1):
+    if(energy!=0.316):
         continue
     EnergyAll.append(energy)
     ZenithAll.append(zenith)
@@ -129,14 +132,25 @@ for simpath in SimpathAll:
 
     # Double Bump maps
     PosDoubleBumps = PlotDumbleBumpsMaps(Pos, np.array(DoublePulseFlags), energy, zenith, sel)
+    SingleIceTriggerFlag = pulse_flags_all[k]["isIceSinglePulse"]["tot"]
+    SingleAirTriggerFlag = pulse_flags_all[k]["isAirSinglePulse"]["tot"]
+    SingleTriggerFlag = np.logical_xor(SingleIceTriggerFlag, SingleAirTriggerFlag)
+    PosSingleBumps = PlotDumbleBumpsMaps(Pos, np.array(SingleTriggerFlag), energy, zenith, sel)
+
     
     PlotDumbleBumpsMapsHighRes(Pos, np.array(DoublePulseFlags), energy, zenith, OutputPath, sel)
     if(zenith >= 0):
         PosDoubleBumpsAll.append(PosDoubleBumps)
+        PosSingleTriggerAll.append(PosSingleBumps)
     if(zenith ==0):
+        Pos0 = Pos
         PosDoubleBumpsAll_zen0.append(PosDoubleBumps)
+        PosSingleTriggerAll_zen0.append(PosSingleBumps)
     if(zenith ==50):
+        Pos50 = Pos
+        print(Pos50)
         PosDoubleBumpsAll_zen50.append(PosDoubleBumps)
+        PosSingleTriggerAll_zen50.append(PosSingleBumps)
     #PosDoubleBumpsAll.append(PosDoubleBumps)
     k = k + 1
     
@@ -144,7 +158,10 @@ Nsingleair_x, Nsingleair_y, Nsingleair_z, Nsingleice_x, Nsingleice_y, Nsingleice
 GetPulseFlagsData(EnergyAll, ZenithAll, Pos, pulse_flags_all, SelDepth)
 
 
-    
+PlotDoublePulsesSubsetMap(PosDoubleBumpsAll_zen0, PosSingleTriggerAll_zen0, Pos0, OutputPath, zen=0)
+PlotDoublePulsesSubsetMap(PosDoubleBumpsAll_zen50, PosSingleTriggerAll_zen50, Pos50, OutputPath, zen=50)
+
+
 GetDoublePulsesMap(PosDoubleBumpsAll, OutputPath)
 GetDoublePulsesMap(PosDoubleBumpsAll_zen0, OutputPath, 0)
 GetDoublePulsesMap(PosDoubleBumpsAll_zen50, OutputPath, 50)
@@ -154,7 +171,7 @@ Ntrigger_All_x = np.array(NtriggerAll_x)
 Ntrigger_All_y = np.array(NtriggerAll_y)
 Ntrigger_All_z = np.array(NtriggerAll_z)
 
-selE = 0.1
+selE = 0.316
 PlotNAirtrigger(ZenithAll, Nsingleair_x, Nsingleair_y, Nsingleair_z, threshold1, threshold2, selE)
 PlotNIcetrigger(ZenithAll, Nsingleice_x, Nsingleice_y, Nsingleice_z, threshold1, threshold2, selE)
 PlotNtriggAll(ZenithAll, NtriggerAll)
@@ -216,7 +233,6 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.title(r"In-ice, $\theta =0^{\circ}$, $E=10^{17.5} eV$")
 #plt.savefig("/Users/chiche/Desktop/InIceFilteredPulseDistrib.pdf", bbox_inches="tight")
 plt.show()
-
 
 
 
