@@ -93,7 +93,7 @@ for simpath in SimpathAll:
 
     Filter = True
     if(Filter):
-        fs, lowcut, highcut = 5e9, 50e6, 1e9
+        fs, lowcut, highcut = 5e9, 50, 1e9
         Traces_C =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
         Traces_G =Shower.filter_all_traces(Traces_G, fs, lowcut, highcut)
 
@@ -193,7 +193,7 @@ def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntri
     plt.plot(np.array(ZenithAll)[arg], Ndouble_z[arg]/Ntrigger_All_z[arg], label="z", color=colors[2], linestyle=linestyles[2], linewidth=2, marker='o', markersize=5)
     plt.xlabel("Zenith [Deg.]")
     plt.ylabel(r"$N_{\mathrm{double}}/N_{\mathrm{trigger}}$")
-    plt.title(r"$E = 10^{17}\,\mathrm{eV},\ \sigma = %d\,\mu\mathrm{V/m}$" % sigma,
+    plt.title(r"$E = 10^{17.5}\,\mathrm{eV},\ \sigma = %d\,\mu\mathrm{V/m}$" % sigma,
           fontsize=14)    
     plt.legend()
     plt.grid(True, which='both', linestyle=':', linewidth=0.5)
@@ -201,6 +201,32 @@ def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntri
     plt.show()
 
 PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, OutputPath, sigma)
+
+
+
+### average channel rate
+arg = np.argsort(ZenithAll)
+Ntrigger_All_x_cut = Ntrigger_All_x[~np.isnan(Ntrigger_All_x)]
+Rdb_x =  Ndouble_x[arg]/Ntrigger_All_x_cut[arg]
+Rdb_y = Ndouble_y[arg]/Ntrigger_All_x_cut[arg]
+Rdb_z = Ndouble_z[arg]/Ntrigger_All_x_cut[arg]
+Rdb_h = (Rdb_x + Rdb_y)/2.0
+Rdb_mean = (Rdb_h + Rdb_z)/2.0
+
+colors = ["#0072B2", "#E69F00", "#009E73"] 
+linestyles = ["-", "--", "-."]
+plt.plot(np.array(ZenithAll)[arg], Rdb_x, label ="x", color=colors[0], linestyle=linestyles[0], linewidth=2, marker='o', markersize=5)
+plt.plot(np.array(ZenithAll)[arg], Rdb_y, label ="y", color=colors[1], linestyle=linestyles[1], linewidth=2, marker='o', markersize=5)
+plt.plot(np.array(ZenithAll)[arg], Rdb_z, label="z", color=colors[2], linestyle=linestyles[2], linewidth=2, marker='o', markersize=5)
+#plt.plot(np.array(ZenithAll)[arg], Rdb_mean, label="mean", color="darkred", linestyle=linestyles[2], linewidth=2, marker='o', markersize=5)
+plt.xlabel("Zenith [Deg.]")
+plt.ylabel(r"$N_{\mathrm{double}}/N_{\mathrm{trigger}}$")
+plt.title(r"$E = 10^{17.5}\,\mathrm{eV},\ \sigma = %d\,\mu\mathrm{V/m}$" % sigma,
+        fontsize=14)    
+plt.legend()
+plt.grid(True, which='both', linestyle=':', linewidth=0.5)
+plt.savefig(OutputPath + "DoubleRateAllchannels.pdf", bbox_inches="tight")
+plt.show()
 
 sys.exit()
 bin_edges = np.linspace(0, 100, 41) 
