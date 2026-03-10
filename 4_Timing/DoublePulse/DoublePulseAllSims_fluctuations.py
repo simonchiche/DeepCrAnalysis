@@ -46,139 +46,220 @@ SimpathAll = glob.glob(simpathdir +"*")
 Path = SimpathAll
 
 
-pulse_flags_all = dict()
+Seeds =100
+y_x_all, y_y_all, y_z_all = [], [], []
 
-SignalProp = defaultdict(lambda: defaultdict(dict))
-EnergyAll, ZenithAll = [], []
-PosDoubleBumpsAll = []
-PosSingleTriggerAll = []
-PosSingleTriggerAll_zen0 = []
-PosSingleTriggerAll_zen50 = []
-PosDoubleBumpsAll_zen0 = []
-PosDoubleBumpsAll_zen50 = []
-NtriggerAll_x, NtriggerAll_y, NtriggerAll_z, NtriggerAll = [], [], [], []
-k= 0
+for i in range(Seeds):
+    pulse_flags_all = dict()
 
-sigma = 24
-threshold1 =5*sigma
-threshold2 = 3*sigma
+    SignalProp = defaultdict(lambda: defaultdict(dict))
+    EnergyAll, ZenithAll = [], []
+    PosDoubleBumpsAll = []
+    PosSingleTriggerAll = []
+    PosSingleTriggerAll_zen0 = []
+    PosSingleTriggerAll_zen50 = []
+    PosDoubleBumpsAll_zen0 = []
+    PosDoubleBumpsAll_zen50 = []
+    NtriggerAll_x, NtriggerAll_y, NtriggerAll_z, NtriggerAll = [], [], [], []
+    k= 0
 
-for simpath in SimpathAll:
-    print(simpath)
-    Shower = CreateShowerfromHDF5(simpath)
-    # =============================================================================
-    #                              Load Traces
-    # =============================================================================
+    sigma = 20
+    threshold1 =5*sigma
+    threshold2 = 3*sigma
 
-    energy, zenith, Nant = Shower.energy, Shower.zenith, Shower.nant
-    Traces_C, Traces_G, Pos = Shower.traces_c, Shower.traces_g, Shower.pos
-    Nlay, Nplane, Depths = Shower.GetDepths()
+    for simpath in SimpathAll:
+        print(simpath)
+        Shower = CreateShowerfromHDF5(simpath)
+        # =============================================================================
+        #                              Load Traces
+        # =============================================================================
 
-    SelDepth = min(Depths)  #3116 m
+        energy, zenith, Nant = Shower.energy, Shower.zenith, Shower.nant
+        Traces_C, Traces_G, Pos = Shower.traces_c, Shower.traces_g, Shower.pos
+        Nlay, Nplane, Depths = Shower.GetDepths()
 
-    # Initialization
-    SignalProp[energy][zenith] = {"Eair": [], "Eice": [], "Pos": []}
-    # We skip simulations with issues
+        SelDepth = min(Depths)  #3116 m
 
-    # We focus the study on showers at 10^17.5 eV
-    if(energy!=0.316):
-        continue
-    EnergyAll.append(energy)
-    ZenithAll.append(zenith)
+        # Initialization
+        SignalProp[energy][zenith] = {"Eair": [], "Eice": [], "Pos": []}
+        # We skip simulations with issues
 
-
-    # =============================================================================
-    #                                Filter
-    # =============================================================================
-
-    Filter = True
-    if(Filter):
-        fs, lowcut, highcut = 5e9, 130e6, 850e6
-        Traces_C =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
-        Traces_G =Shower.filter_all_traces(Traces_G, fs, lowcut, highcut)
-
-    # =============================================================================
-    #                                 Get integral
-    # =============================================================================
-
-    # Getting the traces peak amplitude
-    # DepthCut
-    sel = (Pos[:,2] == SelDepth)#min(Depths))
-
-    Eair_peak = Shower.GetPeakTraces(Traces_C, sel)
-    Eice_peak = Shower.GetPeakTraces(Traces_G, sel)
-    
-    # Extracting the numbers of trigger for each channel
-    Ntrigger_x, Ntrigger_y, Ntrigger_z, Ntrigger_tot = \
-        GetNtriggered(Eair_peak, Eice_peak, thresold=threshold1)
-    NtriggerAll_x.append(Ntrigger_x)
-    NtriggerAll_y.append(Ntrigger_y)
-    NtriggerAll_z.append(Ntrigger_z)
-    NtriggerAll.append(Ntrigger_tot)
-
-    print("Ntriggered tot:", Ntrigger_tot)
-
-    SignalProp[energy][zenith]["Eair"].append(Eair_peak)
-    SignalProp[energy][zenith]["Eice"].append(Eice_peak)
-    
-    # =============================================================================
-    #                          Double pulses
-    # =============================================================================
-
-    # Finding the double pulse events
-    pulse_flags_all[k]= \
-    GetDoubleBumps(Shower, Eair_peak, Eice_peak, thresold1=threshold1, thresold2=threshold2, Plot = False)
-    DoublePulseFlags = pulse_flags_all[k]["isDoublePulse"]["tot"]
-
-    # Double Bump maps
-    PosDoubleBumps = PlotDumbleBumpsMaps(Pos, np.array(DoublePulseFlags), energy, zenith, sel)
-    SingleIceTriggerFlag = pulse_flags_all[k]["isIceSinglePulse"]["tot"]
-    SingleAirTriggerFlag = pulse_flags_all[k]["isAirSinglePulse"]["tot"]
-    SingleTriggerFlag = np.logical_xor(SingleIceTriggerFlag, SingleAirTriggerFlag)
-    PosSingleBumps = PlotDumbleBumpsMaps(Pos, np.array(SingleTriggerFlag), energy, zenith, sel)
-
-    
-    PlotDumbleBumpsMapsHighRes(Pos, np.array(DoublePulseFlags), energy, zenith, OutputPath, sel)
-    if(zenith >= 0):
-        PosDoubleBumpsAll.append(PosDoubleBumps)
-        PosSingleTriggerAll.append(PosSingleBumps)
-    if(zenith ==0):
-        Pos0 = Pos
-        PosDoubleBumpsAll_zen0.append(PosDoubleBumps)
-        PosSingleTriggerAll_zen0.append(PosSingleBumps)
-    if(zenith ==50):
-        Pos50 = Pos
-        print(Pos50)
-        PosDoubleBumpsAll_zen50.append(PosDoubleBumps)
-        PosSingleTriggerAll_zen50.append(PosSingleBumps)
-    #PosDoubleBumpsAll.append(PosDoubleBumps)
-    k = k + 1
-    
-Nsingleair_x, Nsingleair_y, Nsingleair_z, Nsingleice_x, Nsingleice_y, Nsingleice_z,  Ndouble_x, Ndouble_y, Ndouble_z, Ndouble_tot = \
-GetPulseFlagsData(EnergyAll, ZenithAll, Pos, pulse_flags_all, SelDepth)
+        # We focus the study on showers at 10^17.5 eV
+        if(energy!=0.316):
+            continue
+        EnergyAll.append(energy)
+        ZenithAll.append(zenith)
 
 
-PlotDoublePulsesSubsetMap(PosDoubleBumpsAll_zen0, PosSingleTriggerAll_zen0, Pos0, OutputPath, zen=0)
-PlotDoublePulsesSubsetMap(PosDoubleBumpsAll_zen50, PosSingleTriggerAll_zen50, Pos50, OutputPath, zen=50)
+        # =============================================================================
+        #                                Filter
+        # =============================================================================
+
+        Filter = True
+        if(Filter):
+            fs, lowcut, highcut = 5e9, 50e6, 1e9
+            Traces_C =Shower.filter_all_traces(Traces_C, fs, lowcut, highcut)
+            Traces_G =Shower.filter_all_traces(Traces_G, fs, lowcut, highcut)
+
+        # =============================================================================
+        #                                 Get integral
+        # =============================================================================
+
+        # Getting the traces peak amplitude
+        # DepthCut
+        sel = (Pos[:,2] == SelDepth)#min(Depths))
+
+        Eair_peak = Shower.GetPeakTraces(Traces_C, sel)
+        Eice_peak = Shower.GetPeakTraces(Traces_G, sel)
+
+        Eair_peak = Eair_peak + np.random.normal(loc=0, scale=0.1*np.abs(Eair_peak))
+        Eice_peak = Eice_peak + np.random.normal(loc=0, scale=0.3*np.abs(Eice_peak))
 
 
-GetDoublePulsesMap(PosDoubleBumpsAll, OutputPath)
-GetDoublePulsesMap(PosDoubleBumpsAll_zen0, OutputPath, 0)
-GetDoublePulsesMap(PosDoubleBumpsAll_zen50, OutputPath, 50)
+        # Extracting the numbers of trigger for each channel
+        Ntrigger_x, Ntrigger_y, Ntrigger_z, Ntrigger_tot = \
+            GetNtriggered(Eair_peak, Eice_peak, thresold=threshold1)
+        NtriggerAll_x.append(Ntrigger_x)
+        NtriggerAll_y.append(Ntrigger_y)
+        NtriggerAll_z.append(Ntrigger_z)
+        NtriggerAll.append(Ntrigger_tot)
 
-NtriggerAll = np.array(NtriggerAll)
-Ntrigger_All_x = np.array(NtriggerAll_x)
-Ntrigger_All_y = np.array(NtriggerAll_y)
-Ntrigger_All_z = np.array(NtriggerAll_z)
+        print("Ntriggered tot:", Ntrigger_tot)
 
-selE = 0.316
-PlotNAirtrigger(ZenithAll, Nsingleair_x, Nsingleair_y, Nsingleair_z, threshold1, threshold2, selE)
-PlotNIcetrigger(ZenithAll, Nsingleice_x, Nsingleice_y, Nsingleice_z, threshold1, threshold2, selE)
-PlotNtriggAll(ZenithAll, NtriggerAll)
-PlotNdoubleTot(ZenithAll, Ndouble_tot)
-PlotDoubleRateTot(ZenithAll, Ndouble_tot, NtriggerAll)
-PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, OutputPath, sigma)
+        SignalProp[energy][zenith]["Eair"].append(Eair_peak)
+        SignalProp[energy][zenith]["Eice"].append(Eice_peak)
+        
+        # =============================================================================
+        #                          Double pulses
+        # =============================================================================
 
+        # Finding the double pulse events
+        pulse_flags_all[k]= \
+        GetDoubleBumps(Shower, Eair_peak, Eice_peak, thresold1=threshold1, thresold2=threshold2, Plot = False)
+        DoublePulseFlags = pulse_flags_all[k]["isDoublePulse"]["tot"]
+
+        # Double Bump maps
+        ##PosDoubleBumps = PlotDumbleBumpsMaps(Pos, np.array(DoublePulseFlags), energy, zenith, sel)
+        ##SingleIceTriggerFlag = pulse_flags_all[k]["isIceSinglePulse"]["tot"]
+        ##SingleAirTriggerFlag = pulse_flags_all[k]["isAirSinglePulse"]["tot"]
+        ##SingleTriggerFlag = np.logical_xor(SingleIceTriggerFlag, SingleAirTriggerFlag)
+        ##PosSingleBumps = PlotDumbleBumpsMaps(Pos, np.array(SingleTriggerFlag), energy, zenith, sel)
+
+        
+        ##PlotDumbleBumpsMapsHighRes(Pos, np.array(DoublePulseFlags), energy, zenith, OutputPath, sel)
+        ##if(zenith >= 0):
+        ##    PosDoubleBumpsAll.append(PosDoubleBumps)
+        ##    PosSingleTriggerAll.append(PosSingleBumps)
+        ##if(zenith ==0):
+        ##    Pos0 = Pos
+        ##    PosDoubleBumpsAll_zen0.append(PosDoubleBumps)
+        ##    PosSingleTriggerAll_zen0.append(PosSingleBumps)
+        ##if(zenith ==50):
+        ##    Pos50 = Pos
+        ##    print(Pos50)
+        ##    PosDoubleBumpsAll_zen50.append(PosDoubleBumps)
+        ##    PosSingleTriggerAll_zen50.append(PosSingleBumps)
+        #PosDoubleBumpsAll.append(PosDoubleBumps)
+        k = k + 1
+        
+    Nsingleair_x, Nsingleair_y, Nsingleair_z, Nsingleice_x, Nsingleice_y, Nsingleice_z,  Ndouble_x, Ndouble_y, Ndouble_z, Ndouble_tot = \
+    GetPulseFlagsData(EnergyAll, ZenithAll, Pos, pulse_flags_all, SelDepth)
+
+
+    #PlotDoublePulsesSubsetMap(PosDoubleBumpsAll_zen0, PosSingleTriggerAll_zen0, Pos0, OutputPath, zen=0)
+    #PlotDoublePulsesSubsetMap(PosDoubleBumpsAll_zen50, PosSingleTriggerAll_zen50, Pos50, OutputPath, zen=50)
+
+
+    #GetDoublePulsesMap(PosDoubleBumpsAll, OutputPath)
+    #GetDoublePulsesMap(PosDoubleBumpsAll_zen0, OutputPath, 0)
+    #GetDoublePulsesMap(PosDoubleBumpsAll_zen50, OutputPath, 50)
+
+    NtriggerAll = np.array(NtriggerAll)
+    Ntrigger_All_x = np.array(NtriggerAll_x)
+    Ntrigger_All_y = np.array(NtriggerAll_y)
+    Ntrigger_All_z = np.array(NtriggerAll_z)
+
+    selE = 0.316
+    #PlotNAirtrigger(ZenithAll, Nsingleair_x, Nsingleair_y, Nsingleair_z, threshold1, threshold2, selE)
+    #PlotNIcetrigger(ZenithAll, Nsingleice_x, Nsingleice_y, Nsingleice_z, threshold1, threshold2, selE)
+    #PlotNtriggAll(ZenithAll, NtriggerAll)
+    #PlotNdoubleTot(ZenithAll, Ndouble_tot)
+    #PlotDoubleRateTot(ZenithAll, Ndouble_tot, NtriggerAll)
+
+
+    def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, OutputPath, sigma):
+
+        colors = ["#0072B2", "#E69F00", "#009E73"]  # Blue, Orange, Green (colorblind-safe)
+        linestyles = ["-", "--", "-."]
+
+        arg = np.argsort(ZenithAll)
+        Ndouble_x =Ndouble_x[~np.isnan(Ntrigger_All_x)]
+        Ntrigger_All_x = Ntrigger_All_x[~np.isnan(Ntrigger_All_x)]
+        plt.plot(np.array(ZenithAll)[arg], Ndouble_x[arg]/Ntrigger_All_x[arg], label ="x", color=colors[0], linestyle=linestyles[0], linewidth=2, marker='o', markersize=5)
+        plt.plot(np.array(ZenithAll)[arg], Ndouble_y[arg]/Ntrigger_All_y[arg], label ="y", color=colors[1], linestyle=linestyles[1], linewidth=2, marker='o', markersize=5)
+        plt.plot(np.array(ZenithAll)[arg], Ndouble_z[arg]/Ntrigger_All_z[arg], label="z", color=colors[2], linestyle=linestyles[2], linewidth=2, marker='o', markersize=5)
+        plt.xlabel("Zenith [Deg.]")
+        plt.ylabel(r"$N_{\mathrm{double}}/N_{\mathrm{trigger}}$")
+        plt.title(r"$E = 10^{17.5}\,\mathrm{eV},\ \sigma = %d\,\mu\mathrm{V/m}$" % sigma,
+            fontsize=14)    
+        plt.legend()
+        plt.grid(True, which='both', linestyle=':', linewidth=0.5)
+        #plt.savefig(OutputPath + "DoubleRateAllchannels.pdf", bbox_inches="tight")
+        plt.show()
+
+        x = np.array(ZenithAll)[arg]
+        y_x = Ndouble_x[arg]/Ntrigger_All_x[arg]
+        y_y = Ndouble_y[arg]/Ntrigger_All_y[arg]
+        y_z = Ndouble_z[arg]/Ntrigger_All_z[arg]
+        return x, y_x, y_y, y_z
+
+
+    x, y_x, y_y, y_z =PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, OutputPath, sigma)
+    y_x_all.append(y_x)
+    y_y_all.append(y_y)
+    y_z_all.append(y_z)
+
+def PlotDoubleRateTotperChannel(x, y_x, y_y, y_z, stdx, stdy, stdz, OutputPath, sigma):
+
+    colors = ["#0072B2", "#E69F00", "#009E73"]  # Blue, Orange, Green (colorblind-safe)
+    linestyles = ["-", "--", "-."]
+
+    #arg = np.argsort(ZenithAll)
+    #Ndouble_x =Ndouble_x[~np.isnan(Ntrigger_All_x)]
+    #Ntrigger_All_x = Ntrigger_All_x[~np.isnan(Ntrigger_All_x)]
+    plt.errorbar(x, y_x, yerr=stdx, label ="x", color=colors[0], linestyle=linestyles[0], linewidth=2, marker='o', markersize=5)
+    plt.errorbar(x, y_y, yerr=stdy, label ="y", color=colors[1], linestyle=linestyles[1], linewidth=2, marker='o', markersize=5)
+    plt.errorbar(x, y_z, yerr=stdz, label="z", color=colors[2], linestyle=linestyles[2], linewidth=2, marker='o', markersize=5)
+    plt.xlabel("Zenith [Deg.]")
+    plt.ylabel(r"$N_{\mathrm{double}}/N_{\mathrm{trigger}}$")
+    plt.title(r"$E = 10^{17.5}\,\mathrm{eV},\ \sigma = %d\,\mu\mathrm{V/m}$" % sigma,
+        fontsize=14)    
+    plt.legend()
+    plt.grid(True, which='both', linestyle=':', linewidth=0.5)
+    plt.savefig(OutputPath + "DoubleRateAllchannels.pdf", bbox_inches="tight")
+    plt.show()
+
+    #x = np.array(ZenithAll)[arg]
+    #y_x = Ndouble_x[arg]/Ntrigger_All_x[arg]
+    #y_y = Ndouble_y[arg]/Ntrigger_All_y[arg]
+    #y_z = Ndouble_z[arg]/Ntrigger_All_z[arg]
+    return x, y_x, y_y, y_z
+
+Yx = np.array(y_x_all)   # shape (N, M)
+Yy = np.array(y_y_all)   # shape (N, M)
+Yz = np.array(y_z_all)   # shape (N, M)
+mean_y_x = np.mean(Yx, axis=0)
+std_y_x = np.std(Yx, axis=0)
+mean_y_y = np.mean(Yy, axis=0)
+std_y_y = np.std(Yy, axis=0)
+mean_y_z = np.mean(Yz, axis=0)
+std_y_z = np.std(Yz, axis=0)
+
+PlotDoubleRateTotperChannel(x, mean_y_x, mean_y_y, mean_y_z, std_y_x, std_y_y, std_y_z, OutputPath, sigma)
+
+
+
+sys.exit()
 
 def PlotDoubleRateTotperChannel(ZenithAll, Ndouble_x, Ndouble_y, Ndouble_z, Ntrigger_All_x, Ntrigger_All_y, Ntrigger_All_z, OutputPath, sigma):
 

@@ -114,6 +114,59 @@ for zen in zenithbins:
     EtotIceAll17_5_zen[zen] = \
         GetAmplitudeDistributionZenBin(EtotIceAll, EnergyAll, ZenithAll, PosAll, EnergyBins[1], zen, 3116)
 
+EtotIceAll17_5_zen = {}
+zenithbins = [0, 20,28,34,39, 43, 47, 50]
+for  Depth in Depths:
+    for zen in zenithbins:
+        EtotAirAll16_5_zen[zen, Depth] = \
+            GetAmplitudeDistributionZenBin(EtotAirAll, EnergyAll, ZenithAll, PosAll, EnergyBins[0], zen, Depth)
+        EtotAirAll17_5_zen[zen,Depth] = \
+            GetAmplitudeDistributionZenBin(EtotAirAll, EnergyAll, ZenithAll, PosAll, EnergyBins[1], zen, Depth)
+        EtotIceAll16_5_zen[zen, Depth] = \
+            GetAmplitudeDistributionZenBin(EtotIceAll, EnergyAll, ZenithAll, PosAll, EnergyBins[0], zen, Depth)
+        EtotIceAll17_5_zen[zen, Depth] = \
+            GetAmplitudeDistributionZenBin(EtotIceAll, EnergyAll, ZenithAll, PosAll, EnergyBins[1], zen, Depth)
+
+MaxAmpAir = []
+MaxAmpIce = []
+for zenith in zenithbins:
+    print(zenith, max(EtotIceAll17_5_zen[zenith,3216]),max(EtotIceAll17_5_zen[zenith,3156]), max(EtotIceAll17_5_zen[zenith,3116])) 
+    #MaxAmpIce.append(np.array([max(EtotIceAll17_5_zen[zenith,3216]),max(EtotIceAll17_5_zen[zenith,3156]), max(EtotIceAll17_5_zen[zenith,3116])]))
+    #MaxAmpIce.append(np.array([1, max(EtotIceAll17_5_zen[zenith,3116])/max(EtotIceAll17_5_zen[zenith,3156])]))
+    MaxAmpIce.append(np.array([  max(EtotIceAll17_5_zen[zenith,3156])/max(EtotIceAll17_5_zen[zenith,3156]), max(EtotIceAll17_5_zen[zenith,3116])/max(EtotIceAll17_5_zen[zenith,3156])]))
+    MaxAmpAir.append(np.array([max(EtotAirAll17_5_zen[zenith,3216])/max(EtotAirAll17_5_zen[zenith,3216]),max(EtotAirAll17_5_zen[zenith,3156])/max(EtotAirAll17_5_zen[zenith,3216]), max(EtotAirAll17_5_zen[zenith,3116])/max(EtotAirAll17_5_zen[zenith,3216])]))
+    #MaxAmpIce.append(np.array([max(EtotIceAll17_5_zen[zenith,3156]), max(EtotIceAll17_5_zen[zenith,3116])]))
+
+MaxAmpIce_mean = np.mean(MaxAmpIce, axis=0)
+MaxAmpIce_std = np.std(MaxAmpIce, axis=0)
+
+MaxAmpAir_mean = np.mean(MaxAmpAir, axis=0)
+MaxAmpAir_std = np.std(MaxAmpAir, axis=0)   
+
+plt.errorbar(3216- Depths[1:], MaxAmpIce_mean, yerr=MaxAmpIce_std/1.5, fmt='o-', label=r'$E_{\rm max}^{\rm ice}/E_{\rm max}^{\rm ice}(|z|=60 \, {\rm m})$')
+plt.errorbar(3216 - Depths, MaxAmpAir_mean, yerr=MaxAmpAir_std, fmt='o-', label=r'$E_{\rm max}^{\rm air}/E_{\rm max}^{\rm air}(|z|=0 \, {\rm m})$')
+plt.xlabel("Depth [m]")
+plt.ylabel(r"Normalized maximum amplitude")
+plt.grid(alpha=0.5, linestyle='--')
+plt.legend(loc = "lower left")
+plt.savefig(OutputPath + "MaxAmplitudeDepthDependence.pdf", bbox_inches="tight")
+plt.show()
+
+#plt.yscale("log")
+
+plt.plot(Depths[1:], MaxAmpIce[zenith][1:]/MaxAmpIce[zenith][1], label=f"{zenith} deg")
+plt.legend()
+
+for zenith in zenithbins:
+    print(zenith, max(EtotAirAll17_5_zen[zenith,3216]),max(EtotAirAll17_5_zen[zenith,3156]), max(EtotAirAll17_5_zen[zenith,3116])) 
+    MaxAmpAir[zenith] = np.array([max(EtotAirAll17_5_zen[zenith,3216]),max(EtotAirAll17_5_zen[zenith,3156]), max(EtotAirAll17_5_zen[zenith,3116])])
+
+
+
+print(np.mean(EtotIceAll17_5_zen[0,3216]),np.mean(EtotIceAll17_5_zen[0,3156]), np.mean(EtotIceAll17_5_zen[0,3116])) 
+print(np.mean(EtotIceAll17_5_zen[20,3216]),np.mean(EtotIceAll17_5_zen[20,3156]), np.mean(EtotIceAll17_5_zen[20,3116])) 
+
+
 zenithbins = [0, 50]
 
 for i in zenithbins:
@@ -151,8 +204,28 @@ EtotAirAll16_5 = \
 
 #EtotAirAll17_5 = \
 #    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[2], 3116)
-EtotAirAll17_5 = \
+EtotAirAll17_5_100 = \
     GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[1], 3116)
+
+EtotAirAll17_5_60 = \
+    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[1], 3156)
+
+EtotAirAll17_5_0 = \
+    GetAmplitudeDistribution(EtotAirAll, EnergyAll, PosAll, EnergyBins[1], 3216)
+
+print(np.mean(EtotAirAll17_5_100), np.mean(EtotAirAll17_5_60), np.mean(EtotAirAll17_5_0))
+
+
+EtotIceAll175_100 = \
+    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[1], 3116)
+
+EtotIceAll17_5_60 = \
+    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[1], 3156)
+
+EtotIceAll17_5_0 = \
+    GetAmplitudeDistribution(EtotIceAll, EnergyAll, PosAll, EnergyBins[1], 3216)
+
+print(np.mean(EtotIceAll175_100), np.mean(EtotIceAll17_5_60), np.mean(EtotIceAll17_5_0))
 
 
 EtotIceAll16_5 = \
